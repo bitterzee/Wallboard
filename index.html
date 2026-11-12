@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wallboard">
+<meta name="theme-color" content="#0f1012">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<title>Wallboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+/* Wallboard — family wall display. Tuned for iPad 7th gen (4:3, older GPU):
+   no backdrop blur, solid translucent panels, light animations. */
+:root{
+  --fg:#f6f3ee; --muted:rgba(246,243,238,.68); --faint:rgba(246,243,238,.18);
+  --panel:rgba(16,17,20,.62); --accent:#ffcf7a;
+  --paper:#faf6ef; --paper2:#f3ece1; --ink:#2a2622; --ink2:#766d63; --line:#e6ddcf;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0f1012;color:var(--fg);font-family:Manrope,system-ui,sans-serif;overflow:hidden;-webkit-user-select:none;user-select:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.serif{font-family:Fraunces,Georgia,serif}
+
+/* background photos */
+.bg{position:fixed;inset:0;background:#15171b center/cover no-repeat;opacity:0;transition:opacity 2s ease}
+.bg.on{opacity:1}
+.shade{position:fixed;inset:0;pointer-events:none;transition:background 1s}
+body[data-mode=morning] .shade{background:linear-gradient(90deg,rgba(0,0,0,.72),rgba(0,0,0,.35))}
+body[data-mode=day] .shade{background:linear-gradient(0deg,rgba(0,0,0,.6) 0%,transparent 28%)}
+body[data-mode=split] .shade,body[data-mode=dinner] .shade{background:linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.15) 60%)}
+body[data-mode=night] .bg{opacity:0!important}
+body[data-mode=night]{background:#000}
+
+/* wall */
+#wall{position:absolute;left:50%;top:50%;width:1080px;height:810px;padding:37px 39px;transform:translate(-50%,-50%) scale(var(--s,1))}
+.t-big{font-weight:300;letter-spacing:-.045em;line-height:.88;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:.5em;background:var(--accent);color:#2b1d07;border-radius:99px;padding:.45em 1em;font-weight:700}
+.fc{display:grid;grid-template-columns:repeat(5,1fr);gap:13px}
+.fc>div{background:var(--panel);border:1px solid var(--faint);border-radius:16px;padding:15px 9px;text-align:center}
+.fc svg{width:52%;max-width:64px;height:auto;margin:6px auto;display:block}
+.fc .d{color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:.8em}
+
+/* morning */
+.m-wrap{height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:32px}
+.m-time{font-size:162px}
+.m-date{font-size:32px;font-weight:500;margin-top:13px}
+.m-wx{display:flex;align-items:center;gap:32px}
+.m-wx svg{width:140px;height:auto}
+.m-temp{font-size:108px;font-weight:300;line-height:1}
+.m-desc{font-size:26px;margin-top:6px}
+.m-wrap .fc{font-size:21px}
+.m-foot{display:flex;justify-content:space-between;align-items:center;font-size:19px}
+
+/* day: photo frame */
+.d-strip{position:absolute;left:0;right:0;bottom:0;padding:26px 39px;display:flex;align-items:flex-end;justify-content:space-between;gap:22px}
+.d-time{font-size:97px}
+.d-date{font-size:23px;margin-top:6px}
+.d-wx{display:flex;align-items:center;gap:13px;font-size:24px}
+.d-wx svg{width:65px;height:auto}
+.d-right{display:flex;flex-direction:column;align-items:flex-end;gap:11px;font-size:19px}
+.d-credit{position:absolute;top:26px;right:32px;font-size:16px;color:var(--muted)}
+
+/* dinner */
+.n-wrap{height:100%;display:grid;grid-template-columns:1fr 46%;gap:32px}
+.n-left{display:flex;flex-direction:column;justify-content:space-between}
+.n-time{font-size:97px}
+.n-date{font-size:23px;margin-top:6px}
+.n-wx{display:flex;align-items:center;gap:13px;font-size:23px}
+.n-wx svg{width:65px;height:auto}
+.fc3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;font-size:17px;max-width:367px}
+.fc3>div{background:var(--panel);border:1px solid var(--faint);border-radius:14px;padding:11px 6px;text-align:center}
+.fc3 svg{width:46%;max-width:52px;height:auto;margin:4px auto;display:block}
+.fc3 .d{color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:.8em}
+.rc{background:var(--paper);color:var(--ink);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;min-height:0;text-align:left}
+.rc .ph{height:34%;min-height:120px;background:#d9cbb6 center/cover;flex:none;display:grid;place-items:center;font-size:65px}
+.rc .b{padding:24px 26px;display:flex;flex-direction:column;gap:11px;min-height:0;flex:1}
+.eyebrow{font-size:15px;text-transform:uppercase;letter-spacing:.16em;font-weight:800;color:#a06b1d}
+.rc h2{font-size:39px;font-weight:600;line-height:1.05}
+.meta{display:flex;gap:.5em;flex-wrap:wrap;font-size:16px;color:var(--ink2)}
+.meta span{border:1px solid var(--line);border-radius:99px;padding:.15em .75em}
+.rc ul{list-style:none;columns:2;column-gap:22px;font-size:19px;overflow:hidden;flex:1}
+.rc li{padding:.25em 0;break-inside:avoid}
+.rc li::before{content:"•";color:#c48a2c;margin-right:.5em}
+.rc .acts{display:flex;gap:11px;align-items:center}
+.btn-cook{background:var(--ink);color:#fff;border-radius:99px;padding:.8em 1.5em;font-weight:700;font-size:19px}
+.btn-ghost{border:1.5px solid var(--line);border-radius:99px;padding:.75em 1.3em;font-weight:700;font-size:17px;color:var(--ink)}
+.by{font-size:15px;color:var(--ink2);margin-left:auto}
+
+/* night */
+.ni{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:rgba(255,255,255,.34)}
+.ni .t-big{font-size:184px}
+.ni .s{font-size:22px}
+
+/* controls */
+.ctl{position:fixed;left:50%;bottom:2vw;transform:translateX(-50%);display:flex;gap:1vw;opacity:0;pointer-events:none;transition:opacity .3s;z-index:5}
+body.awake .ctl{opacity:1;pointer-events:auto}
+.ctl{flex-wrap:wrap;justify-content:center;width:max-content;max-width:94vw}
+.ctl button{white-space:nowrap;background:rgba(0,0,0,.72);border:1px solid var(--faint);border-radius:99px;padding:.8em 1.3em;font-size:15px;font-weight:600;color:var(--fg);min-height:48px}
+
+/* overlays */
+.ov{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;background:var(--paper);color:var(--ink);-webkit-user-select:text;user-select:text}
+.ov.open{display:flex}
+.bar{display:flex;align-items:center;gap:10px;padding:max(14px,env(safe-area-inset-top)) 18px 12px;border-bottom:1px solid var(--line);background:var(--paper2)}
+.bar h1{font-size:24px;font-weight:600;margin-right:auto}
+.pill{border:1px solid var(--line);background:#fff;border-radius:99px;padding:.55em 1.1em;font-weight:700;font-size:15px;min-height:44px}
+.pill.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pill.warn{color:#b3412e}
+
+.book{flex:1;display:grid;grid-template-columns:minmax(260px,330px) 1fr;min-height:0}
+.list{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:var(--paper2)}
+.list .top{padding:14px 14px 8px}
+.search,.f input,.f textarea{width:100%;padding:.75em .95em;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:16px;color:var(--ink)}
+.cats{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.cats button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:.35em .9em;font-size:14px;font-weight:600}
+.cats button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.items{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:4px 8px 12px}
+.item{display:flex;gap:12px;align-items:center;padding:10px;border-radius:14px;width:100%;text-align:left}
+.item.sel{background:#fff}
+.th{width:56px;height:56px;border-radius:12px;background:#dccdb7 center/cover;flex:none;display:grid;place-items:center;font-size:22px}
+.item b{display:block;font-weight:700}
+.item small{color:var(--ink2)}
+.detail{overflow:auto;-webkit-overflow-scrolling:touch;padding:26px 40px 60px}
+.hero{height:min(32vh,300px);border-radius:18px;background:#dccdb7 center/cover;margin-bottom:20px}
+.detail h2{font-size:clamp(28px,4vw,44px);font-weight:600;line-height:1.1}
+.detail .meta{font-size:14px;margin:10px 0 22px}
+.cols{display:grid;grid-template-columns:minmax(220px,1fr) 1.7fr;gap:36px}
+.detail h3{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink2);margin-bottom:10px}
+.ing li{list-style:none;padding:10px 0;border-bottom:1px solid var(--line);font-size:18px;display:flex;gap:12px;align-items:flex-start}
+.ing li .box{width:22px;height:22px;border:2px solid #b8aa96;border-radius:6px;flex:none;margin-top:2px}
+.ing li.done{color:var(--ink2);text-decoration:line-through}
+.ing li.done .box{background:#8a6a3e;border-color:#8a6a3e}
+.steps{counter-reset:s}
+.steps li{list-style:none;counter-increment:s;display:grid;grid-template-columns:38px 1fr;gap:12px;padding:10px 0;font-size:19px;line-height:1.5}
+.steps li::before{content:counter(s);width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:15px;font-weight:700}
+.notes{margin-top:18px;padding:14px 16px;background:#f1e7d7;border-radius:12px;font-size:16px;line-height:1.5}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.src{display:inline-block;margin-top:14px;color:#8a5a14;font-weight:600}
+.empty{padding:40px;color:var(--ink2);font-size:17px;line-height:1.6}
+
+.f{display:grid;gap:14px;max-width:760px}
+.f label{display:grid;gap:6px;font-size:12px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em}
+.f label span{text-transform:none;letter-spacing:0;font-weight:500}
+.f textarea{min-height:150px;line-height:1.5;resize:vertical}
+.f .r3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+/* photos */
+.pgrid{flex:1;overflow:auto;padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;align-content:start}
+.pgrid figure{position:relative;aspect-ratio:1;border-radius:12px;background:#ddd center/cover}
+.pgrid figcaption{position:absolute;left:6px;bottom:6px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:2px 8px;border-radius:99px}
+.pgrid button{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.65);color:#fff;border-radius:99px;padding:4px 10px;font-size:13px;font-weight:700}
+
+/* cooking mode */
+#cook{background:#141210;color:#f6f1e8}
+#cook .bar{background:#1d1a17;border-color:#2e2a25}
+#cook .bar h1{font-size:20px}
+#cook .pill{background:#2a2622;border-color:#3a352f;color:#f6f1e8}
+.ck{flex:1;display:grid;grid-template-columns:1fr;min-height:0;position:relative}
+.ck .step{display:flex;flex-direction:column;justify-content:center;padding:4vw 7vw;gap:2vw}
+.ck .n{font-size:2.2vw;color:var(--accent);font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.ck .txt{font-size:clamp(26px,4.4vw,56px);line-height:1.3;font-weight:500}
+.ck .nav{display:flex;gap:2vw;padding:0 4vw 4vw}
+.ck .nav button{flex:1;min-height:110px;border-radius:24px;font-size:clamp(20px,2.8vw,34px);font-weight:800;background:#2a2622;color:#f6f1e8}
+.ck .nav button.next{background:var(--accent);color:#2b1d07}
+.ck .ingp{position:absolute;inset:0;background:#141210;overflow:auto;padding:3vw 7vw;display:none}
+.ck .ingp.open{display:block}
+.ck .ingp li{font-size:clamp(18px,2.4vw,30px);list-style:none;padding:.5em 0;border-bottom:1px solid #2e2a25}
+.dots{display:flex;gap:6px;justify-content:center;padding-bottom:1.6vw}
+.dots i{width:10px;height:10px;border-radius:50%;background:#3a352f}
+.dots i.on{background:var(--accent)}
+
+/* layout chooser */
+.lchoices{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.lc{text-align:left;background:#1f1c19;border:2px solid #3a352f;border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:8px;color:#f6f1e8}
+.lc.on{border-color:var(--accent);background:#2a241c}
+.lc b{font-size:19px}
+.lc span{color:#bdb3a6;font-size:15px;line-height:1.45}
+.lc .lprev{aspect-ratio:4/3;border-radius:12px;overflow:hidden;display:flex}
+.lc.on>b::after{content:"  ✓ In use";color:var(--accent);font-size:14px}
+@media (max-width:640px){.lchoices{grid-template-columns:1fr}}
+/* login */
+#login{align-items:center;justify-content:center;background:#141210;color:#f6f1e8}
+#login form{width:min(380px,90vw);display:grid;gap:12px}
+#login h1{font-size:34px;font-weight:600}
+#login input{padding:.85em 1em;border-radius:12px;border:1px solid #3a352f;background:#1f1c19;color:#f6f1e8;font-size:17px}
+#login button{background:var(--accent);color:#2b1d07;border-radius:12px;padding:.9em;font-weight:800;font-size:17px}
+#login .err{color:#ff9d8a;font-size:15px;min-height:1.2em}
+
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:.75em 1.3em;border-radius:12px;z-index:30;opacity:0;transition:opacity .3s;pointer-events:none;font-weight:600}
+.toast.show{opacity:1}
+.demo-badge{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:var(--accent);color:#2b1d07;font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px;z-index:40;opacity:.85}
+
+@media (max-width:760px){
+  .book{grid-template-columns:1fr}
+  .book .detail{display:none}
+  .book.show-detail .list{display:none}
+  .book.show-detail .detail{display:block}
+  .detail{padding:16px 18px 60px}
+  .cols{grid-template-columns:1fr;gap:20px}
+  .f .r3{grid-template-columns:1fr 1fr}
+  .bar h1{font-size:20px}
+}
+</style>
+</head>
+<body data-mode="day">
+<div class="bg" id="bgA"></div><div class="bg" id="bgB"></div><div class="shade"></div>
+<main id="wall"></main>
+
+<div class="ctl">
+  <button id="bLayout">Layout</button>
+  <button id="bMode">Mode: Auto</button>
+  <button id="bBook">Recipes</button>
+  <button id="bPhotos">Photos</button>
+</div>
+
+<!-- recipe book -->
+<section class="ov" id="bookOv">
+  <div class="bar">
+    <h1 class="serif">Recipe book</h1>
+    <button class="pill" id="bookLayout">Wall layout</button>
+    <button class="pill" data-open="photosOv">Photos</button>
+    <button class="pill" data-close id="bookClose">Close</button>
+  </div>
+  <div class="book" id="book">
+    <aside class="list">
+      <div class="top">
+        <input class="search" id="q" placeholder="Search recipes or ingredients">
+        <div class="cats" id="cats"></div>
+      </div>
+      <div class="items" id="items"></div>
+      <div style="padding:12px;border-top:1px solid var(--line)"><button class="pill dark" id="bNew" style="width:100%">+ Add recipe</button></div>
+    </aside>
+    <article class="detail" id="detail"></article>
+  </div>
+</section>
+
+<!-- photos -->
+<section class="ov" id="photosOv">
+  <div class="bar">
+    <h1 class="serif">Family photos</h1>
+    <label class="pill dark">+ Add photos<input type="file" id="photoIn" accept="image/*" multiple hidden></label>
+    <button class="pill" data-close>Close</button>
+  </div>
+  <div class="pgrid" id="pgrid"></div>
+  <div style="padding:10px 16px 18px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <span style="color:var(--ink2);font-size:14px;margin-right:auto" id="who"></span>
+    <button class="pill" id="bSignOut">Sign out</button>
+  </div>
+</section>
+
+<!-- cooking mode -->
+<section class="ov" id="cook">
+  <div class="bar">
+    <h1 class="serif" id="ckTitle"></h1>
+    <button class="pill" id="ckIng">Ingredients</button>
+    <button class="pill" data-close>Done</button>
+  </div>
+  <div class="ck">
+    <div class="step"><div class="n" id="ckN"></div><div class="txt" id="ckTxt"></div></div>
+    <div class="ingp" id="ckIngP"></div>
+  </div>
+  <div class="dots" id="ckDots"></div>
+  <div class="ck nav" style="flex:none"><div class="nav" style="display:flex;width:100%;padding:0 4vw 4vw;gap:2vw">
+    <button id="ckBack">← Back</button><button class="next" id="ckNext">Next →</button>
+  </div></div>
+</section>
+
+<!-- layout chooser -->
+<section class="ov" id="layoutOv" style="background:#141210;color:#f6f1e8;align-items:center;justify-content:center;overflow:auto">
+  <div style="width:min(900px,92vw);padding:28px 0">
+    <h1 class="serif" style="font-size:clamp(26px,4vw,40px);font-weight:600">Choose your wall</h1>
+    <p style="color:#bdb3a6;margin:6px 0 22px;font-size:16px">You can change this any time: tap the wall, then Layout. The choice is shared, so it changes the iPad for both of you.</p>
+    <div class="lchoices">
+      <button class="lc" data-layout="B">
+        <div class="lprev"><div style="flex:3;background:#5DCAA5;padding:8px;display:flex;flex-direction:column;justify-content:space-between"><b style="font-size:20px;color:#04342C">06:10</b><span style="font-size:12px;color:#04342C">31° · Sat Sun Mon</span></div><div style="flex:2;background:#FAEEDA;padding:8px;color:#633806;font-size:12px"><span style="font-size:10px">TONIGHT</span><br><b style="font-size:14px">Soto ayam</b><br>• chicken<br>• lemongrass</div></div>
+        <b>B · Kitchen split</b><span>Photo, weather and forecast on the left, tonight's recipe on the right. The same all day.</span>
+      </button>
+      <button class="lc" data-layout="C">
+        <div class="lprev" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#141210"><div style="background:#B5D4F4;color:#0C447C;padding:6px;font-size:11px">Morning<br><b>Weather</b></div><div style="background:#5DCAA5;color:#04342C;padding:6px;font-size:11px">Day<br><b>Photos</b></div><div style="background:#FAEEDA;color:#633806;padding:6px;font-size:11px">4–9 pm<br><b>Dinner</b></div><div style="background:#2C2C2A;color:#D3D1C7;padding:6px;font-size:11px">Night<br><b>Dim clock</b></div></div>
+        <b>C · Changes through the day</b><span>Weather in the morning, family photos in the day, dinner from 4 pm, a dim clock at night.</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- login -->
+<section class="ov" id="login">
+  <form id="loginForm">
+    <h1 class="serif">Wallboard</h1>
+    <p style="color:#bdb3a6">Sign in with your Capcus login.</p>
+    <input type="email" name="email" placeholder="you@example.com" autocomplete="username" required>
+    <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
+    <button type="submit">Sign in</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ======================== CONFIG ======================== */
+const CONFIG = {
+  // From Supabase → Project Settings → API (the Capcus project).
+  // The anon key is safe in the page: row-level security protects the data.
+  supabaseUrl: "https://oetspavwjsfzfgfdeukk.supabase.co",
+  supabaseAnonKey: "sb_publishable_w5XXDt4hnOOLKVDK8f_w9Q_rsPmmFbh",
+
+  place: "Jakarta", lat: -6.2088, lon: 106.8456, tz: "Asia/Jakarta",
+  locale: "en-GB", hour12: false, units: "celsius",
+
+  // Time-of-day modes (24h clock, start hour of each)
+  morningFrom: 5, dayFrom: 10, dinnerFrom: 16, nightFrom: 21,
+  photoSeconds: 30,
+};
+/* ======================================================== */
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+const LS = { get(k,d){try{const v=localStorage.getItem("wb."+k);return v?JSON.parse(v):d}catch(e){return d}}, set(k,v){try{localStorage.setItem("wb."+k,JSON.stringify(v))}catch(e){}} };
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2400)}
+const fmt = (o,d=new Date()) => new Intl.DateTimeFormat(CONFIG.locale,{timeZone:CONFIG.tz,...o}).format(d);
+const today = () => new Intl.DateTimeFormat("en-CA",{timeZone:CONFIG.tz}).format(new Date());
+const hourNow = () => +new Intl.DateTimeFormat("en-GB",{timeZone:CONFIG.tz,hour:"numeric",hourCycle:"h23"}).format(new Date());
+
+function shrink(file,max,q=.85){
+  return new Promise((res,rej)=>{
+    const img=new Image(),url=URL.createObjectURL(file);
+    img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");
+      c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(url);c.toBlob(b=>b?res(b):rej(new Error("resize")),"image/jpeg",q)};
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("image"))};img.src=url;
+  });
+}
+
+/* ======================== DATA LAYER ======================== */
+const DEMO = !CONFIG.supabaseUrl || !CONFIG.supabaseAnonKey || !window.supabase;
+let sb = null, me = { name:"", email:"" };
+
+const SEED = [
+  {title:"Nasi Goreng Kampung",category:"Dinner",cook_time:"20 min",serves:"3",ingredients:["3 cups cooked rice, day-old","2 eggs","3 shallots, sliced","2 cloves garlic","1 red chilli (optional)","2 tbsp kecap manis","1 tsp shrimp paste (terasi)","1 tbsp oil","Fried shallots and cucumber to serve"],steps:["Pound shallots, garlic, chilli and terasi into a rough paste.","Fry the paste in oil over medium heat until fragrant, about 2 minutes.","Push to one side, scramble the eggs, then mix together.","Add the rice and break up any clumps. Stir-fry on high heat for 3–4 minutes.","Add kecap manis and a pinch of salt, toss until evenly coloured.","Serve with fried shallots and sliced cucumber."],notes:"For little ones, leave out the chilli and set a portion aside before adding terasi.",created_by_name:"Renaldo"},
+  {title:"Soto Ayam",category:"Soup",cook_time:"1 hr",serves:"4",ingredients:["500 g chicken thighs or legs","1.5 L water","2 stalks lemongrass, bruised","3 kaffir lime leaves","2 cm galangal, sliced","Spice paste: 6 shallots, 4 garlic, 3 candlenuts, 2 cm turmeric, 1 cm ginger","Glass noodles, bean sprouts, boiled eggs","Lime, fried shallots, celery leaves"],steps:["Blend the spice paste ingredients until smooth.","Fry the paste with lemongrass, lime leaves and galangal until fragrant.","Add chicken and water, bring to a boil, then simmer 40 minutes.","Lift out the chicken, shred it, and season the broth with salt.","Put noodles, sprouts, chicken and half an egg in each bowl.","Ladle over hot broth and top with fried shallots, celery and lime."],notes:"Broth freezes well — make a double batch.",created_by_name:"Your wife"},
+  {title:"Sayur Bening Bayam",category:"Kids",cook_time:"15 min",serves:"3",ingredients:["1 bunch spinach (bayam), picked","1 corn cob, cut into rounds","2 shallots, sliced","1 clove garlic, sliced","1 small piece fingerroot (temu kunci)","800 ml water","Salt and a pinch of sugar"],steps:["Bring water to a boil with shallots, garlic and fingerroot.","Add corn and cook for 6 minutes.","Add spinach and cook for 1–2 minutes only.","Season lightly with salt and sugar. Serve warm."],notes:"Mild and toddler-friendly.",created_by_name:"Your wife"},
+  {title:"Pisang Goreng",category:"Snack",cook_time:"25 min",serves:"4",ingredients:["6 ripe plantains (pisang kepok or raja)","100 g rice flour","50 g plain flour","1 tbsp sugar","Pinch of salt","150 ml cold water","Oil for frying"],steps:["Whisk the flours, sugar, salt and water into a smooth batter.","Peel the bananas and slice in half lengthways.","Heat oil to about 170°C.","Dip bananas in batter and fry until golden, 3–4 minutes each side.","Drain on paper and serve warm."],notes:"",created_by_name:"Renaldo"},
+].map(r=>({id:uuid(),photo_path:null,source_url:null,created_at:new Date().toISOString(),...r}));
+
+const api = DEMO ? (() => {
+  const mem = { recipes:[...SEED], photos:[], tonight:{recipe_id:SEED[1].id,date:today()}, blobs:{} };
+  const listeners=[]; const ping=()=>listeners.forEach(f=>f());
+  return {
+    async session(){ me={name:"Demo",email:"demo"}; return true },
+    async signIn(){ return null }, async signOut(){},
+    async recipes(){ return mem.recipes.slice() },
+    async saveRecipe(r,file){
+      if(file){ const p=`recipes/${uuid()}.jpg`; mem.blobs[p]=URL.createObjectURL(await shrink(file,1400,.82)); r.photo_path=p }
+      const i=mem.recipes.findIndex(x=>x.id===r.id);
+      if(i>=0) mem.recipes[i]={...mem.recipes[i],...r}; else mem.recipes.push({...r,id:uuid(),created_by_name:me.name,created_at:new Date().toISOString()});
+      ping(); return r.id||mem.recipes[mem.recipes.length-1].id;
+    },
+    async deleteRecipe(id){ mem.recipes=mem.recipes.filter(r=>r.id!==id); ping() },
+    async photos(){ return mem.photos.slice() },
+    async addPhoto(file){ const p=`photos/${uuid()}.jpg`; mem.blobs[p]=URL.createObjectURL(await shrink(file,2048,.85)); mem.photos.push({id:uuid(),path:p,uploaded_by_name:me.name}); ping() },
+    async deletePhoto(ph){ mem.photos=mem.photos.filter(x=>x.id!==ph.id); ping() },
+    async tonight(){ return mem.tonight }, async setTonight(id){ mem.tonight={recipe_id:id,date:today()}; ping() },
+    async layout(){ return mem.layout||null }, async setLayout(l){ mem.layout=l; ping() },
+    async urls(paths){ const o={}; paths.forEach(p=>o[p]=mem.blobs[p]); return o },
+    subscribe(f){ listeners.push(f) },
+  };
+})() : (() => {
+  sb = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey, { auth:{ persistSession:true, autoRefreshToken:true } });
+  const cache = {}; // path -> {url, exp}
+  const must = ({data,error}) => { if(error) throw error; return data };
+  async function loadMe(){
+    const { data:{ user } } = await sb.auth.getUser(); if(!user) return false;
+    const rows = must(await sb.from("wb_members").select("display_name,email"));
+    const row = rows.find(r=>r.email.toLowerCase()===user.email.toLowerCase());
+    if(!row) throw new Error("not-member");
+    me = { name:row.display_name, email:user.email }; return true;
+  }
+  return {
+    async session(){ const { data:{ session } } = await sb.auth.getSession(); return session ? loadMe() : false },
+    async signIn(email,password){ const { error } = await sb.auth.signInWithPassword({email,password}); if(error) return error.message; try{ await loadMe(); return null }catch(e){ await sb.auth.signOut(); return "This login isn't on the household list (wb_members)." } },
+    async signOut(){ await sb.auth.signOut() },
+    async recipes(){ return must(await sb.from("wb_recipes").select("*").order("title")) },
+    async saveRecipe(r,file){
+      if(file){ const p=`recipes/${uuid()}.jpg`; must(await sb.storage.from("wallboard").upload(p, await shrink(file,1400,.82), {contentType:"image/jpeg"})); if(r.photo_path) sb.storage.from("wallboard").remove([r.photo_path]); r.photo_path=p }
+      const row={title:r.title,category:r.category,cook_time:r.cook_time,serves:r.serves,ingredients:r.ingredients,steps:r.steps,notes:r.notes,source_url:r.source_url,photo_path:r.photo_path,updated_at:new Date().toISOString()};
+      if(r.id){ must(await sb.from("wb_recipes").update(row).eq("id",r.id)); return r.id }
+      return must(await sb.from("wb_recipes").insert({...row,created_by_name:me.name}).select("id").single()).id;
+    },
+    async deleteRecipe(id){ const r=recipes.find(x=>x.id===id); must(await sb.from("wb_recipes").delete().eq("id",id)); if(r?.photo_path) sb.storage.from("wallboard").remove([r.photo_path]) },
+    async photos(){ return must(await sb.from("wb_photos").select("*").order("created_at",{ascending:false})) },
+    async addPhoto(file){ const p=`photos/${uuid()}.jpg`; must(await sb.storage.from("wallboard").upload(p, await shrink(file,2048,.85), {contentType:"image/jpeg"})); must(await sb.from("wb_photos").insert({path:p,uploaded_by_name:me.name})) },
+    async deletePhoto(ph){ must(await sb.from("wb_photos").delete().eq("id",ph.id)); sb.storage.from("wallboard").remove([ph.path]) },
+    async tonight(){ const d=must(await sb.from("wb_state").select("value").eq("key","tonight").maybeSingle()); return d?.value||null },
+    async setTonight(id){ must(await sb.from("wb_state").upsert({key:"tonight",value:{recipe_id:id,date:today()},updated_at:new Date().toISOString()})) },
+    async layout(){ const d=must(await sb.from("wb_state").select("value").eq("key","layout").maybeSingle()); return d?.value?.layout||null },
+    async setLayout(l){ must(await sb.from("wb_state").upsert({key:"layout",value:{layout:l},updated_at:new Date().toISOString()})) },
+    async urls(paths){
+      const now=Date.now(), need=[...new Set(paths.filter(p=>p&&!(cache[p]&&cache[p].exp>now)))];
+      for(let i=0;i<need.length;i+=100){
+        const chunk=need.slice(i,i+100), res=must(await sb.storage.from("wallboard").createSignedUrls(chunk, 86400));
+        res.forEach(x=>{ if(x.signedUrl) cache[x.path]={url:x.signedUrl,exp:now+20*3600e3} });
+      }
+      const o={}; paths.forEach(p=>{ if(cache[p]) o[p]=cache[p].url }); return o;
+    },
+    subscribe(f){
+      let t; const deb=()=>{clearTimeout(t);t=setTimeout(f,400)};
+      sb.channel("wallboard").on("postgres_changes",{event:"*",schema:"public",table:"wb_recipes"},deb)
+        .on("postgres_changes",{event:"*",schema:"public",table:"wb_photos"},deb)
+        .on("postgres_changes",{event:"*",schema:"public",table:"wb_state"},deb).subscribe();
+    },
+  };
+})();
+
+/* ======================== STATE ======================== */
+let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false;
+let modeOverride = LS.get("mode","auto");
+let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
+const MODES=["auto","morning","day","dinner","night"];
+
+function autoMode(){ const h=hourNow(), c=CONFIG;
+  if(h>=c.nightFrom || h<c.morningFrom) return "night";
+  if(h>=c.dinnerFrom) return "dinner"; if(h>=c.dayFrom) return "day"; return "morning"; }
+const mode = () => layout==="B" ? "split" : (modeOverride==="auto" ? autoMode() : modeOverride);
+
+function tonightRecipe(){
+  if(tonightState && tonightState.date===today()){ const r=recipes.find(x=>x.id===tonightState.recipe_id); if(r) return {r,picked:true} }
+  if(!recipes.length) return null;
+  const mains=recipes.filter(r=>!/snack|dessert|drink/i.test(r.category||"")); const pool=mains.length?mains:recipes;
+  return { r: pool[Math.floor(Date.now()/864e5)%pool.length], picked:false };
+}
+const photoUrl = p => p ? urlMap[p] : null;
+
+async function refreshAll(){
+  try{
+    let lay; [recipes, photos, tonightState, lay] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout()]);
+    layoutChosen = !!lay; if(lay && lay!==layout){ layout=lay; LS.set("layout",layout); nextPhoto() }
+    recipes.sort((a,b)=>a.title.localeCompare(b.title));
+    urlMap = await api.urls([...recipes.map(r=>r.photo_path), ...photos.map(p=>p.path)].filter(Boolean));
+  }catch(e){ console.error(e); toast("Couldn't reach Supabase — showing last data") }
+  buildPhotoOrder(); renderWall(); renderBookList(); renderPhotoGrid();
+  if($("bookOv").classList.contains("open") && selId && !editing) showRecipe(selId);
+}
+
+/* ======================== WEATHER ======================== */
+const I={
+  sun:`<svg viewBox="0 0 64 64" fill="none" stroke="#ffcf7a" stroke-width="3" stroke-linecap="round"><circle cx="32" cy="32" r="11" fill="#ffcf7a"/>${[0,45,90,135,180,225,270,315].map(a=>{const r=a*Math.PI/180;return `<line x1="${(32+18*Math.cos(r)).toFixed(1)}" y1="${(32+18*Math.sin(r)).toFixed(1)}" x2="${(32+25*Math.cos(r)).toFixed(1)}" y2="${(32+25*Math.sin(r)).toFixed(1)}"/>`}).join("")}</svg>`,
+  part:`<svg viewBox="0 0 64 64"><circle cx="24" cy="24" r="10" fill="#ffcf7a"/><path d="M20 48h26a10 10 0 0 0 0-20 14 14 0 0 0-26 4 8 8 0 0 0 0 16z" fill="#ece8e1"/></svg>`,
+  cloud:`<svg viewBox="0 0 64 64"><path d="M16 46h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#dcd8d1"/></svg>`,
+  fog:`<svg viewBox="0 0 64 64" stroke="#dcd8d1" stroke-width="3.5" stroke-linecap="round"><line x1="12" y1="24" x2="52" y2="24"/><line x1="8" y1="34" x2="48" y2="34"/><line x1="14" y1="44" x2="54" y2="44"/></svg>`,
+  rain:`<svg viewBox="0 0 64 64"><path d="M16 38h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#dcd8d1"/><g stroke="#8cc8ff" stroke-width="3" stroke-linecap="round"><line x1="22" y1="44" x2="19" y2="54"/><line x1="32" y1="44" x2="29" y2="54"/><line x1="42" y1="44" x2="39" y2="54"/></g></svg>`,
+  storm:`<svg viewBox="0 0 64 64"><path d="M16 36h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#bdb9b2"/><path d="M33 38l-7 12h7l-4 10 12-15h-7l5-7z" fill="#ffcf7a"/></svg>`,
+  snow:`<svg viewBox="0 0 64 64"><path d="M16 38h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#dcd8d1"/><g fill="#fff"><circle cx="22" cy="48" r="2.5"/><circle cx="32" cy="53" r="2.5"/><circle cx="42" cy="48" r="2.5"/></g></svg>`,
+};
+function wmo(c){ if(c===0)return["sun","Clear"]; if(c<=2)return["part",c===1?"Mostly clear":"Partly cloudy"]; if(c===3)return["cloud","Overcast"]; if(c<=48)return["fog","Fog"]; if(c<=57)return["rain","Drizzle"]; if(c<=67)return["rain","Rain"]; if(c<=77)return["snow","Snow"]; if(c<=82)return["rain","Showers"]; if(c<=86)return["snow","Snow showers"]; return["storm","Thunderstorm"] }
+async function loadWeather(){
+  try{
+    const u=`https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=${encodeURIComponent(CONFIG.tz)}&temperature_unit=${CONFIG.units}&forecast_days=5`;
+    const r=await fetch(u); if(!r.ok) throw 0; wx=await r.json(); wxDemo=false;
+  }catch(e){
+    if(wx && !wxDemo) return; wxDemo=true; const t=new Date();
+    const days=[...Array(5)].map((_,i)=>{const x=new Date(t);x.setDate(t.getDate()+i);return x.toLocaleDateString("en-CA")});
+    wx={current:{temperature_2m:31,apparent_temperature:36,relative_humidity_2m:70,weather_code:2,wind_speed_10m:9},daily:{time:days,weather_code:[2,80,95,3,1],temperature_2m_max:[33,32,31,32,33],temperature_2m_min:[25,25,24,25,25],precipitation_probability_max:[20,70,85,40,15]}};
+  }
+  renderWall();
+}
+const wxNow = () => { const c=wx.current, [ic,desc]=wmo(c.weather_code); return {ic:I[ic],desc,t:Math.round(c.temperature_2m),feels:Math.round(c.apparent_temperature),hum:c.relative_humidity_2m,wind:Math.round(c.wind_speed_10m),rain:wx.daily.precipitation_probability_max[0]??0} };
+const fcHTML = () => wx.daily.time.map((t,i)=>`<div><div class="d">${i===0?"Today":new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div>${Math.round(wx.daily.temperature_2m_max[i])}° <span class="muted">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div><div class="muted">${wx.daily.precipitation_probability_max[i]??0}%</div></div>`).join("");
+
+/* ======================== WALL ======================== */
+const timeStr = () => fmt({hour:"2-digit",minute:"2-digit",hour12:CONFIG.hour12});
+const dateStr = () => `${fmt({weekday:"long"})}, ${fmt({day:"numeric",month:"long"})}`;
+let lastMode=null;
+function renderWall(){
+  const m=mode(); document.body.dataset.mode=m; lastMode=m;
+  if(!wx){ $("wall").innerHTML=""; return }
+  const w=wxNow(), tn=tonightRecipe();
+  const tChip = tn ? `<span class="chip">${tn.picked?"Tonight":"Idea"}: ${esc(tn.r.title)}</span>` : "";
+  let h="";
+  if(m==="morning"){
+    h=`<div class="m-wrap">
+      <div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}</div></div>
+      <div style="display:flex;flex-direction:column;justify-content:center;gap:32px">
+        <div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc muted">${w.desc} · feels ${w.feels}° · ${w.rain}% chance of rain</div></div></div>
+        <div class="fc">${fcHTML()}</div>
+      </div>
+      <div class="m-foot"><span class="muted">${esc(CONFIG.place)}${wxDemo?" · sample weather":""}</span>${tChip}</div></div>`;
+  } else if(m==="day"){
+    const ph=currentPhoto();
+    h=`${ph&&ph.uploaded_by_name?`<div class="d-credit">Added by ${esc(ph.uploaded_by_name)}</div>`:""}
+      <div class="d-strip"><div><div class="t-big d-time js-time">${timeStr()}</div><div class="d-date">${dateStr()}</div></div>
+      <div class="d-right"><div class="d-wx">${w.ic}<span><b style="font-size:1.4em;font-weight:400">${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${tChip}</div></div>`;
+  } else if(m==="dinner"||m==="split"){
+    let card;
+    if(tn){ const r=tn.r, pu=photoUrl(r.photo_path), ing=r.ingredients||[], show=ing.slice(0,10);
+      card=`<div class="rc"><div class="ph" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":"🍲"}</div><div class="b">
+        <div class="eyebrow">${tn.picked?"Tonight's dinner":(m==="split"?"Recipe of the day":"Dinner idea")}</div><h2 class="serif">${esc(r.title)}</h2>
+        <div class="meta">${metaHTML(r)}</div>
+        <ul>${show.map(i=>`<li>${esc(i)}</li>`).join("")}${ing.length>show.length?`<li style="color:var(--ink2)">+ ${ing.length-show.length} more</li>`:""}</ul>
+        <div class="acts"><button class="btn-cook" data-cook="${r.id}">Start cooking</button><button class="btn-ghost" data-openbook="${r.id}">${tn.picked?"Recipe":"Pick another"}</button>${r.created_by_name?`<span class="by">by ${esc(r.created_by_name)}</span>`:""}</div></div></div>`;
+    } else card=`<div class="rc"><div class="b" style="justify-content:center"><div class="eyebrow">Dinner</div><h2 class="serif">Add your first recipe</h2><div class="acts"><button class="btn-cook" data-new>Add recipe</button></div></div></div>`;
+    const fc3 = m==="split" ? `<div class="fc3">${wx.daily.time.slice(1,4).map((t,j)=>{const i=j+1;return `<div><div class="d">${new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div>${Math.round(wx.daily.temperature_2m_max[i])}° <span class="muted">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div></div>`}).join("")}</div>` : "";
+    const ph = m==="split" ? currentPhoto() : null;
+    h=`<div class="n-wrap"><div class="n-left"><div><div class="t-big n-time js-time">${timeStr()}</div><div class="n-date">${dateStr()}</div></div>
+      <div style="display:flex;flex-direction:column;gap:15px"><div class="n-wx">${w.ic}<span><b style="font-size:1.5em;font-weight:400">${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${fc3}
+      ${ph&&ph.uploaded_by_name?`<div class="muted" style="font-size:15px">Photo by ${esc(ph.uploaded_by_name)}</div>`:""}</div></div>${card}</div>`;
+  } else {
+    const d1=wx.daily; h=`<div class="ni"><div class="t-big js-time">${timeStr()}</div><div class="s">${dateStr()}</div>
+      <div class="s">Tomorrow ${Math.round(d1.temperature_2m_max[1])}° / ${Math.round(d1.temperature_2m_min[1])}° · ${wmo(d1.weather_code[1])[1]}</div></div>`;
+  }
+  $("wall").innerHTML=h;
+  $("bMode").textContent = "Mode: " + (modeOverride==="auto" ? `Auto (${m})` : m[0].toUpperCase()+m.slice(1));
+  $("bMode").style.display = layout==="B" ? "none" : "";
+  $("bLayout").textContent = layout==="B" ? "Layout: B · Split" : "Layout: C · Day cycle";
+}
+const metaHTML = r => [r.category, r.cook_time&&("⏱ "+r.cook_time), r.serves&&("Serves "+r.serves)].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("");
+
+function tick(){
+  document.querySelectorAll(".js-time").forEach(e=>e.textContent=timeStr());
+  if(mode()!==lastMode) renderWall();
+}
+
+/* ======================== PHOTOS ======================== */
+const gradients=["#2b3245","#3d2c25","#24362f","#33283d"];
+let order=[], pi=0, front=$("bgA"), back=$("bgB"), shown=null;
+function buildPhotoOrder(){ const ids=photos.filter(p=>photoUrl(p.path)).map(p=>p.id); if(ids.join()!==order.slice().sort().join()&&ids.slice().sort().join()!==order.slice().sort().join()){ order=ids.sort(()=>Math.random()-.5); pi=0; if(!shown||!ids.includes(shown.id)) nextPhoto() } }
+const currentPhoto = () => shown;
+function nextPhoto(){
+  if(mode()==="night") return;
+  if(!order.length){ shown=null; back.style.background=gradients[pi++%gradients.length]; swap(); return }
+  const ph=photos.find(p=>p.id===order[pi%order.length]); pi++; if(!ph) return;
+  const url=photoUrl(ph.path), img=new Image();
+  img.onload=()=>{ back.style.background=`#15171b url("${url}") center/cover no-repeat`; shown=ph; swap(); if(mode()==="day"||mode()==="split") renderWall() };
+  img.src=url;
+}
+function swap(){ back.classList.add("on"); front.classList.remove("on"); [front,back]=[back,front] }
+
+function renderPhotoGrid(){
+  $("pgrid").innerHTML = photos.length ? photos.map(p=>`<figure style="background-image:url('${photoUrl(p.path)||""}')">${p.uploaded_by_name?`<figcaption>${esc(p.uploaded_by_name)}</figcaption>`:""}<button data-delphoto="${p.id}">Remove</button></figure>`).join("")
+    : `<p class="empty">No family photos yet. Add some from your phone or this iPad — they'll show on the wall right away.</p>`;
+  $("who").textContent = DEMO ? "Demo mode — add your Supabase keys to share with your wife" : `Signed in as ${me.name} (${me.email})`;
+}
+$("photoIn").onchange=async e=>{
+  const files=[...e.target.files]; e.target.value=""; if(!files.length) return;
+  let n=0; toast(`Uploading ${files.length}…`);
+  for(const f of files){ try{ await api.addPhoto(f); n++ }catch(err){ console.error(err) } }
+  toast(n===files.length?`Added ${n} photo${n>1?"s":""}`:`Added ${n} of ${files.length} — some failed`); refreshAll();
+};
+let armed={};
+function twoTap(key,btn,label){ if(armed[key]&&Date.now()-armed[key]<3000) return true; armed[key]=Date.now(); btn.textContent=label; setTimeout(()=>{ if(btn.isConnected) btn.textContent=btn.dataset.label||btn.textContent },3000); return false }
+$("pgrid").onclick=async e=>{ const id=e.target.dataset.delphoto; if(!id) return; if(!twoTap("p"+id,e.target,"Tap to confirm")) return; await api.deletePhoto(photos.find(p=>p.id===id)); refreshAll() };
+
+/* ======================== RECIPE BOOK ======================== */
+let selId=null, cat="All", editing=false;
+function renderBookList(){
+  const cats=["All",...new Set(recipes.map(r=>r.category).filter(Boolean))]; if(!cats.includes(cat)) cat="All";
+  $("cats").innerHTML=cats.map(c=>`<button class="${c===cat?"on":""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("");
+  const q=$("q").value.trim().toLowerCase(), tn=tonightRecipe();
+  const list=recipes.filter(r=>(cat==="All"||r.category===cat)&&(!q||(r.title+" "+(r.ingredients||[]).join(" ")).toLowerCase().includes(q)));
+  $("items").innerHTML=list.map(r=>{ const pu=photoUrl(r.photo_path); return `<button class="item ${r.id===selId?"sel":""}" data-id="${r.id}">
+    <span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":"🍲"}</span>
+    <span><b>${esc(r.title)}${tn&&tn.picked&&tn.r.id===r.id?" · 🌙":""}</b><small>${esc([r.category,r.cook_time,r.created_by_name&&("by "+r.created_by_name)].filter(Boolean).join(" · "))}</small></span></button>` }).join("")
+    || `<p class="empty" style="padding:16px">No recipes match.</p>`;
+}
+function showRecipe(id){
+  editing=false; selId=id; renderBookList(); const r=recipes.find(x=>x.id===id);
+  if(!r){ $("detail").innerHTML=`<p class="empty">Pick a recipe, or add a new one.</p>`; return }
+  $("book").classList.add("show-detail");
+  const pu=photoUrl(r.photo_path), tn=tonightRecipe(), isT=tn&&tn.picked&&tn.r.id===r.id;
+  $("detail").innerHTML=`<button class="pill mobile-back" data-back style="margin-bottom:14px">← All recipes</button>
+    ${pu?`<div class="hero" style="background-image:url('${pu}')"></div>`:""}
+    <h2 class="serif">${esc(r.title)}</h2><div class="meta">${metaHTML(r)}${r.created_by_name?`<span>Added by ${esc(r.created_by_name)}</span>`:""}</div>
+    <div class="row" style="margin:0 0 24px">
+      <button class="pill dark" data-cook="${r.id}">Start cooking</button>
+      <button class="pill" data-tonight="${r.id}">${isT?"✓ Tonight's dinner":"Cook this tonight"}</button>
+    </div>
+    <div class="cols">
+      <div><h3>Ingredients</h3><ul class="ing">${(r.ingredients||[]).map(i=>`<li><span class="box"></span><span>${esc(i)}</span></li>`).join("")}</ul></div>
+      <div><h3>Method</h3><ol class="steps">${(r.steps||[]).map(s=>`<li><span>${esc(s)}</span></li>`).join("")}</ol>
+      ${r.notes?`<div class="notes"><b>Notes</b><br>${esc(r.notes)}</div>`:""}
+      ${r.source_url?`<a class="src" href="${esc(r.source_url)}" target="_blank" rel="noopener">Original recipe ↗</a>`:""}</div>
+    </div>
+    <div class="row"><button class="pill" data-edit="${r.id}">Edit</button><button class="pill warn" data-del="${r.id}" data-label="Delete">Delete</button></div>`;
+  if(innerWidth>760) $("detail").querySelector("[data-back]").style.display="none";
+  $("detail").scrollTop=0;
+}
+function editRecipe(r){
+  editing=true; $("book").classList.add("show-detail");
+  r=r||{title:"",category:"",cook_time:"",serves:"",ingredients:[],steps:[],notes:"",source_url:"",photo_path:null};
+  const cats=[...new Set(recipes.map(x=>x.category).filter(Boolean))];
+  $("detail").innerHTML=`<form class="f" id="rf">
+    <h2 class="serif" style="font-size:30px">${r.id?"Edit recipe":"Add a recipe"}</h2>
+    <label>Title<input name="title" required value="${esc(r.title)}" placeholder="Ayam goreng lengkuas"></label>
+    <div class="r3">
+      <label>Category<input name="category" list="catList" value="${esc(r.category)}" placeholder="Dinner"></label>
+      <label>Time<input name="cook_time" value="${esc(r.cook_time)}" placeholder="30 min"></label>
+      <label>Serves<input name="serves" value="${esc(r.serves)}" placeholder="4"></label>
+    </div>
+    <datalist id="catList">${cats.map(c=>`<option value="${esc(c)}">`).join("")}</datalist>
+    <label>Ingredients <span>one per line</span><textarea name="ingredients" placeholder="500 g chicken&#10;3 cloves garlic">${esc((r.ingredients||[]).join("\n"))}</textarea></label>
+    <label>Method <span>one step per line</span><textarea name="steps" style="min-height:200px">${esc((r.steps||[]).join("\n"))}</textarea></label>
+    <label>Notes<textarea name="notes" style="min-height:80px">${esc(r.notes)}</textarea></label>
+    <label>Link to original <span>optional</span><input name="source_url" type="url" value="${esc(r.source_url)}" placeholder="https://"></label>
+    <label>Photo <span>optional</span><input name="photo" type="file" accept="image/*"></label>
+    <div class="row"><button class="pill dark" type="submit" id="rfSave">Save recipe</button><button class="pill" type="button" id="rfCancel">Cancel</button></div>
+  </form>`;
+  $("rfCancel").onclick=()=> r.id ? showRecipe(r.id) : (innerWidth<=760 ? $("book").classList.remove("show-detail") : showRecipe(selId));
+  $("rf").onsubmit=async e=>{
+    e.preventDefault(); const f=new FormData(e.target), lines=k=>String(f.get(k)||"").split("\n").map(s=>s.trim()).filter(Boolean), file=f.get("photo");
+    const rec={...r,title:String(f.get("title")).trim(),category:String(f.get("category")||"").trim()||null,cook_time:String(f.get("cook_time")||"").trim()||null,serves:String(f.get("serves")||"").trim()||null,
+      ingredients:lines("ingredients"),steps:lines("steps"),notes:String(f.get("notes")||"").trim()||null,source_url:String(f.get("source_url")||"").trim()||null};
+    $("rfSave").textContent="Saving…";
+    try{ const id=await api.saveRecipe(rec, file&&file.size?file:null); await refreshAll(); showRecipe(id); toast("Recipe saved") }
+    catch(err){ console.error(err); $("rfSave").textContent="Save recipe"; toast("Couldn't save — check your connection") }
+  };
+}
+$("items").onclick=e=>{ const b=e.target.closest(".item"); if(b) showRecipe(b.dataset.id) };
+$("cats").onclick=e=>{ if(e.target.dataset.cat){ cat=e.target.dataset.cat; renderBookList() } };
+$("q").oninput=renderBookList;
+$("bNew").onclick=()=>editRecipe();
+$("detail").onclick=async e=>{
+  const t=e.target.closest("button,li"); if(!t) return;
+  if(t.matches(".ing li")){ t.classList.toggle("done"); return }
+  if(t.dataset.back!==undefined){ $("book").classList.remove("show-detail"); return }
+  if(t.dataset.edit) editRecipe(recipes.find(r=>r.id===t.dataset.edit));
+  if(t.dataset.tonight){ await api.setTonight(t.dataset.tonight); await refreshAll(); showRecipe(t.dataset.tonight); toast("On the wall for tonight") }
+  if(t.dataset.del){ if(!twoTap("r"+t.dataset.del,t,"Tap again to delete")) return; await api.deleteRecipe(t.dataset.del); selId=null; await refreshAll(); showRecipe(recipes[0]?.id); toast("Recipe deleted") }
+};
+
+/* ======================== COOKING MODE ======================== */
+let ck={r:null,i:0}, wakeLock=null;
+function openCook(id){
+  const r=recipes.find(x=>x.id===id); if(!r||!(r.steps||[]).length){ toast("This recipe has no steps yet"); return }
+  ck={r,i:0}; $("ckTitle").textContent=r.title;
+  $("ckIngP").innerHTML=`<ul>${(r.ingredients||[]).map(i=>`<li>${esc(i)}</li>`).join("")}</ul>`; $("ckIngP").classList.remove("open"); $("ckIng").textContent="Ingredients";
+  renderCook(); open("cook");
+  try{ navigator.wakeLock?.request("screen").then(l=>wakeLock=l).catch(()=>{}) }catch(e){}
+}
+function renderCook(){
+  const s=ck.r.steps, n=s.length;
+  $("ckN").textContent=`Step ${ck.i+1} of ${n}`; $("ckTxt").textContent=s[ck.i];
+  $("ckDots").innerHTML=s.map((_,i)=>`<i class="${i===ck.i?"on":""}"></i>`).join("");
+  $("ckBack").style.visibility=ck.i?"visible":"hidden"; $("ckNext").textContent=ck.i===n-1?"Finished ✓":"Next →";
+}
+$("ckNext").onclick=()=>{ if(ck.i<ck.r.steps.length-1){ ck.i++; renderCook() } else close("cook") };
+$("ckBack").onclick=()=>{ if(ck.i>0){ ck.i--; renderCook() } };
+$("ckIng").onclick=()=>{ const p=$("ckIngP"); p.classList.toggle("open"); $("ckIng").textContent=p.classList.contains("open")?"Steps":"Ingredients" };
+
+/* ======================== OVERLAYS, CONTROLS ======================== */
+function open(id){ $(id).classList.add("open"); if(id==="bookOv"){ renderBookList(); if(!selId && innerWidth>760) showRecipe(tonightRecipe()?.r.id) } }
+function close(id){ $(id).classList.remove("open"); if(id==="cook"){ try{ wakeLock?.release() }catch(e){} } }
+document.addEventListener("click",e=>{
+  const c=e.target.closest("[data-close]"); if(c){ close(c.closest(".ov").id); return }
+  const o=e.target.closest("[data-open]"); if(o){ open(o.dataset.open); return }
+  const ck=e.target.closest("[data-cook]"); if(ck){ openCook(ck.dataset.cook); return }
+  const ob=e.target.closest("[data-openbook]"); if(ob){ open("bookOv"); showRecipe(ob.dataset.openbook); return }
+  if(e.target.closest("[data-new]")){ open("bookOv"); editRecipe(); return }
+});
+$("bBook").onclick=()=>open("bookOv");
+$("bPhotos").onclick=()=>open("photosOv");
+$("bMode").onclick=()=>{ modeOverride=MODES[(MODES.indexOf(modeOverride)+1)%MODES.length]; LS.set("mode",modeOverride); renderWall(); if(mode()!=="night") nextPhoto() };
+function openLayout(){ document.querySelectorAll(".lc").forEach(b=>b.classList.toggle("on", layoutChosen && b.dataset.layout===layout)); open("layoutOv") }
+async function chooseLayout(l){
+  layout=l; layoutChosen=true; LS.set("layout",l); renderWall(); nextPhoto(); close("layoutOv");
+  toast(l==="B"?"Wall set to B · Kitchen split":"Wall set to C · Changes through the day");
+  try{ await api.setLayout(l) }catch(e){ toast("Saved on this screen only — couldn't reach Supabase") }
+}
+$("bLayout").onclick=openLayout;
+$("bookLayout").onclick=openLayout;
+$("layoutOv").onclick=e=>{ const b=e.target.closest("[data-layout]"); if(b) chooseLayout(b.dataset.layout) };
+$("bSignOut").onclick=async()=>{ if(DEMO) return toast("Demo mode — nothing to sign out of"); await api.signOut(); location.reload() };
+let wakeT; function wake(){ document.body.classList.add("awake"); clearTimeout(wakeT); wakeT=setTimeout(()=>document.body.classList.remove("awake"),7000) }
+["touchstart","mousemove","keydown"].forEach(ev=>addEventListener(ev,wake,{passive:true}));
+$("wall").addEventListener("click",wake);
+
+/* ======================== LOGIN & START ======================== */
+$("loginForm").onsubmit=async e=>{
+  e.preventDefault(); const f=new FormData(e.target); $("loginErr").textContent="";
+  const err=await api.signIn(f.get("email"),f.get("password"));
+  if(err){ $("loginErr").textContent=err; return } close("login"); start();
+};
+let started=false;
+async function start(){
+  if(started) return; started=true;
+  await refreshAll(); api.subscribe(refreshAll);
+  setInterval(refreshAll, 10*60e3);           // safety net + renews photo links
+  setInterval(nextPhoto, Math.max(8,CONFIG.photoSeconds)*1000);
+  if(innerWidth<=760 && !DEMO){ open("bookOv"); $("bookClose").textContent="Wall" }
+  if(!layoutChosen) openLayout();
+}
+(async()=>{
+  if(DEMO){ const b=document.createElement("div"); b.className="demo-badge"; b.textContent="DEMO DATA"; document.body.appendChild(b) }
+  renderWall(); loadWeather(); setInterval(loadWeather,15*60e3); setInterval(tick,1000); nextPhoto();
+  let ok=false; try{ ok=await api.session() }catch(e){ ok=false }
+  if(ok) start(); else open("login");
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden && started){ refreshAll(); loadWeather() } });
+  setTimeout(()=>location.reload(), 12*3600e3); // fresh start twice a day for a long-running kiosk
+})();
+function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)) }
+fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
+window.__wb={setMode:m=>{layout="C";modeOverride=m;renderWall();nextPhoto()},setLayout:l=>{layout=l;renderWall();nextPhoto()}};
+</script>
+</body>
+</html>
