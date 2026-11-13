@@ -87,3 +87,25 @@ When a video's description has no recipe, `import-recipe` fetches the video's ca
 - **Memory book**: Menu → Memory book. Claude writes a page for the month from the journal, growth and photos. Print or save as PDF.
 - **Story time** (v2026-11-13.31): from 18:30 the wall shows a "Story time" button (also in Menu). Claude writes a calm bedtime story in English or Bahasa from the child's real day; the wall can read it aloud. The last 30 stories are kept in `wb_state` "stories".
 - **Vaccines and checkups**: a Vaccines tab on the child's page with IDAI's 2024 schedule plus routine checkups, computed from the birthday. Tick what's done; the next vaccine shows on the child's card a month ahead, and "Add to calendar" puts a doctor visit on her calendar. Saved in `wb_state` "kid_vax".
+
+## Reliability and security (v2026-11-13.33)
+
+**Keeps working when the internet drops**
+- The last good copy of the household data is kept on each device. If the network or Supabase is down, the wall shows that copy with an "Offline" badge and retries on its own (10 s, 20 s, 40 s… up to every 5 minutes, and straight away when the device comes back online).
+- A small service worker (`sw.js`) keeps the app itself, so the wall still opens after a reboot without internet. It's network-first, so updates still arrive straight away; it never stores household data.
+- Every request has a time limit, the live-update connection reconnects by itself, and the twice-daily fresh start only happens when the internet is up.
+- Weather: if Open-Meteo is down, the wall uses the last forecast (up to 36 hours old) or says "Weather unavailable". It never shows made-up weather, rain or air-quality warnings.
+- Saving a setting that someone else changed at the same moment (two phones, or the wall and Claude) merges both changes instead of silently losing one.
+- If drawing the wall ever fails, it falls back to a plain clock instead of a blank screen. Settings → Health shows the version, last sync and recent problems.
+
+**Security**
+- The database library is served from this site (`vendor/supabase-js-2.119.0.js`), pinned, not pulled from a CDN at run time. If it fails to load, the wall retries rather than falling back to demo data.
+- A Content-Security-Policy limits where the page can load scripts from and send data to (Supabase, Open-Meteo, YouTube embeds, Google Fonts). No referrer is sent to other sites.
+- All text from the database, imports and Claude is escaped before it's shown; links from imported recipes must be http(s).
+- Edge functions only answer the wallboard's own site (CORS allowlist), refuse links to private or internal network addresses (also checking what a hostname resolves to), and cap Claude use at 200 calls per person per day (`wb_ai_tick`).
+- Claude is told to treat recipes, notes and calendar text as information, never as instructions.
+- Adding a helper can't touch a parent's account (case-insensitive check), and there can be at most 3 helpers.
+
+**Recommended in the Supabase dashboard (can't be set from code)**
+- Authentication → Sign In / Providers → turn off "Allow new users to sign up". Accounts are created only by you or the helper screen.
+- Authentication → Rate Limits: keep the email OTP limits low.

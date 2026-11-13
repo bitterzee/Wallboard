@@ -145,3 +145,32 @@ grant execute on function public.wb_is_member() to authenticated;
 revoke all on public.wb_members, public.wb_recipes, public.wb_photos, public.wb_state, public.wb_meal_plan,
   public.wb_shopping, public.wb_pantry, public.wb_calendars, public.wb_reviews from anon;
 revoke insert, update, delete on public.wb_members from authenticated;
+
+-- Hardening (2026-11-13): daily cap on Claude calls per person, and a size limit on stored settings
+create table if not exists public.wb_ai_usage (
+  day   date not null,
+  email text not null,
+  n     int  not null default 0,
+  primary key (day, email)
+);
+alter table public.wb_ai_usage enable row level security;   -- no policies: only the function below touches it
+revoke all on public.wb_ai_usage from anon, authenticated;
+create or replace function public.wb_ai_tick()
+returns boolean language plpgsql security definer set search_path to 'public'
+as $$
+declare
+  e text := lower(coalesce(auth.jwt() ->> 'email', ''));
+  d date := (now() at time zone 'Asia/Jakarta')::date;
+  used int;
+begin
+  if public.wb_role() is null then return false; end if;
+  insert into public.wb_ai_usage (day, email, n) values (d, e, 1)
+    on conflict (day, email) do update set n = public.wb_ai_usage.n + 1
+    returning n into used;
+  delete from public.wb_ai_usage where day < d - 60;
+  return used <= 200;
+end $$;
+revoke all on function public.wb_ai_tick() from anon, public;
+grant execute on function public.wb_ai_tick() to authenticated;
+alter table public.wb_state drop constraint if exists wb_state_value_size;
+alter table public.wb_state add constraint wb_state_value_size check (pg_column_size(value) < 1500000) not valid;

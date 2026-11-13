@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net blob:; worker-src 'self' blob: https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://oetspavwjsfzfgfdeukk.supabase.co https://i.ytimg.com https://*.ytimg.com; connect-src 'self' https://oetspavwjsfzfgfdeukk.supabase.co wss://oetspavwjsfzfgfdeukk.supabase.co https://api.open-meteo.com https://air-quality-api.open-meteo.com https://cdn.jsdelivr.net https://tessdata.projectnaptha.com; media-src 'self' blob: data:; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'none'; form-action 'self'; manifest-src 'self'">
+<meta name="referrer" content="no-referrer">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -459,6 +461,8 @@ body.phone .jform{grid-template-columns:1fr}
 .swctl{display:flex;gap:22px;align-items:center}
 body.phone .swc h2{font-size:22px}
 .rc .swbtn{width:46px;height:46px;font-size:19px}
+#offBadge{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 8px);transform:translateX(-50%);z-index:45;display:none;padding:.35em .9em;border-radius:99px;background:rgba(var(--warn-rgb,200,120,60),.92);color:#fff;font-size:13px;font-weight:600;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+body.offline #offBadge{display:block}
 /* bedtime story */
 #storyOv{background:#07090d}
 #storyOv .bar h1{color:#e9dcc4}
@@ -889,6 +893,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <div class="bg" id="bgA"></div><div class="bg" id="bgB"></div><div class="shade"></div><div class="fx" aria-hidden="true"><svg width="0" height="0" style="position:absolute"><defs><radialGradient id="gBrass" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fbe2a0"/><stop offset=".55" stop-color="#d4a046"/><stop offset=".85" stop-color="#9a6a22"/><stop offset="1" stop-color="#5e3d0e"/></radialGradient><radialGradient id="gHub" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff1c4"/><stop offset=".5" stop-color="#c79438"/><stop offset="1" stop-color="#5e3d0e"/></radialGradient></defs></svg><svg class="gw g1 sh" viewBox="-204 -204 408 408"><g class="spin"><path d="M174.0,0.0 L199.8,9.4 L198.4,25.1 L171.4,29.9 L168.1,45.0 L190.5,60.8 L185.2,75.6 L157.8,73.3 L150.7,87.0 L168.3,108.0 L159.3,120.9 L133.5,111.6 L123.0,123.0 L134.6,147.9 L122.6,158.0 L100.1,142.4 L87.0,150.7 L91.7,177.7 L77.5,184.4 L59.8,163.4 L45.0,168.1 L42.6,195.4 L27.1,198.1 L15.5,173.3 L0.0,174.0 L-9.4,199.8 L-25.1,198.4 L-29.9,171.4 L-45.0,168.1 L-60.8,190.5 L-75.6,185.2 L-73.3,157.8 L-87.0,150.7 L-108.0,168.3 L-120.9,159.3 L-111.6,133.5 L-123.0,123.0 L-147.9,134.6 L-158.0,122.6 L-142.4,100.1 L-150.7,87.0 L-177.7,91.7 L-184.4,77.5 L-163.4,59.8 L-168.1,45.0 L-195.4,42.6 L-198.1,27.1 L-173.3,15.5 L-174.0,0.0 L-199.8,-9.4 L-198.4,-25.1 L-171.4,-29.9 L-168.1,-45.0 L-190.5,-60.8 L-185.2,-75.6 L-157.8,-73.3 L-150.7,-87.0 L-168.3,-108.0 L-159.3,-120.9 L-133.5,-111.6 L-123.0,-123.0 L-134.6,-147.9 L-122.6,-158.0 L-100.1,-142.4 L-87.0,-150.7 L-91.7,-177.7 L-77.5,-184.4 L-59.8,-163.4 L-45.0,-168.1 L-42.6,-195.4 L-27.1,-198.1 L-15.5,-173.3 L-0.0,-174.0 L9.4,-199.8 L25.1,-198.4 L29.9,-171.4 L45.0,-168.1 L60.8,-190.5 L75.6,-185.2 L73.3,-157.8 L87.0,-150.7 L108.0,-168.3 L120.9,-159.3 L111.6,-133.5 L123.0,-123.0 L147.9,-134.6 L158.0,-122.6 L142.4,-100.1 L150.7,-87.0 L177.7,-91.7 L184.4,-77.5 L163.4,-59.8 L168.1,-45.0 L195.4,-42.6 L198.1,-27.1 L173.3,-15.5 Z M124.0,0 A124.0,124.0 0 1,0 -124.0,0 A124.0,124.0 0 1,0 124.0,0 Z" fill="#000" fill-rule="evenodd"/></g></svg><svg class="gw g1" viewBox="-204 -204 408 408"><g class="spin"><path d="M174.0,0.0 L199.8,9.4 L198.4,25.1 L171.4,29.9 L168.1,45.0 L190.5,60.8 L185.2,75.6 L157.8,73.3 L150.7,87.0 L168.3,108.0 L159.3,120.9 L133.5,111.6 L123.0,123.0 L134.6,147.9 L122.6,158.0 L100.1,142.4 L87.0,150.7 L91.7,177.7 L77.5,184.4 L59.8,163.4 L45.0,168.1 L42.6,195.4 L27.1,198.1 L15.5,173.3 L0.0,174.0 L-9.4,199.8 L-25.1,198.4 L-29.9,171.4 L-45.0,168.1 L-60.8,190.5 L-75.6,185.2 L-73.3,157.8 L-87.0,150.7 L-108.0,168.3 L-120.9,159.3 L-111.6,133.5 L-123.0,123.0 L-147.9,134.6 L-158.0,122.6 L-142.4,100.1 L-150.7,87.0 L-177.7,91.7 L-184.4,77.5 L-163.4,59.8 L-168.1,45.0 L-195.4,42.6 L-198.1,27.1 L-173.3,15.5 L-174.0,0.0 L-199.8,-9.4 L-198.4,-25.1 L-171.4,-29.9 L-168.1,-45.0 L-190.5,-60.8 L-185.2,-75.6 L-157.8,-73.3 L-150.7,-87.0 L-168.3,-108.0 L-159.3,-120.9 L-133.5,-111.6 L-123.0,-123.0 L-134.6,-147.9 L-122.6,-158.0 L-100.1,-142.4 L-87.0,-150.7 L-91.7,-177.7 L-77.5,-184.4 L-59.8,-163.4 L-45.0,-168.1 L-42.6,-195.4 L-27.1,-198.1 L-15.5,-173.3 L-0.0,-174.0 L9.4,-199.8 L25.1,-198.4 L29.9,-171.4 L45.0,-168.1 L60.8,-190.5 L75.6,-185.2 L73.3,-157.8 L87.0,-150.7 L108.0,-168.3 L120.9,-159.3 L111.6,-133.5 L123.0,-123.0 L147.9,-134.6 L158.0,-122.6 L142.4,-100.1 L150.7,-87.0 L177.7,-91.7 L184.4,-77.5 L163.4,-59.8 L168.1,-45.0 L195.4,-42.6 L198.1,-27.1 L173.3,-15.5 Z M124.0,0 A124.0,124.0 0 1,0 -124.0,0 A124.0,124.0 0 1,0 124.0,0 Z" fill="url(#gBrass)" fill-rule="evenodd" stroke="#4a2f0c" stroke-width="2"/><circle r="124.0" fill="none" stroke="#5a3a10" stroke-width="10.0"/><circle r="158.0" fill="none" stroke="#f6dc94" stroke-opacity=".35" stroke-width="1.5"/><rect x="-14.0" y="0" width="28.0" height="126.0" transform="rotate(0.0)" fill="url(#gBrass)"/><rect x="-14.0" y="0" width="28.0" height="126.0" transform="rotate(60.0)" fill="url(#gBrass)"/><rect x="-14.0" y="0" width="28.0" height="126.0" transform="rotate(120.0)" fill="url(#gBrass)"/><rect x="-14.0" y="0" width="28.0" height="126.0" transform="rotate(180.0)" fill="url(#gBrass)"/><rect x="-14.0" y="0" width="28.0" height="126.0" transform="rotate(240.0)" fill="url(#gBrass)"/><rect x="-14.0" y="0" width="28.0" height="126.0" transform="rotate(300.0)" fill="url(#gBrass)"/><circle r="40.0" fill="url(#gHub)" stroke="#4a2f0c" stroke-width="2"/><circle r="14.0" fill="#2a1a06"/></g></svg><svg class="gw g2 sh" viewBox="-122 -122 244 244"><g class="spin"><path d="M102.7,0.0 L117.6,9.5 L115.3,25.2 L98.2,30.0 L92.5,44.5 L101.8,59.6 L92.9,72.7 L75.5,69.6 L64.0,80.3 L65.9,97.9 L52.2,105.9 L37.8,95.5 L22.8,100.1 L16.9,116.8 L1.1,118.0 L-7.4,102.4 L-22.8,100.1 L-35.5,112.5 L-50.2,106.8 L-51.1,89.1 L-64.0,80.3 L-80.8,86.0 L-91.6,74.4 L-84.6,58.1 L-92.5,44.5 L-110.1,42.5 L-114.8,27.3 L-101.5,15.6 L-102.7,0.0 L-117.6,-9.5 L-115.3,-25.2 L-98.2,-30.0 L-92.5,-44.5 L-101.8,-59.6 L-92.9,-72.7 L-75.5,-69.6 L-64.0,-80.3 L-65.9,-97.9 L-52.2,-105.9 L-37.8,-95.5 L-22.8,-100.1 L-16.9,-116.8 L-1.1,-118.0 L7.4,-102.4 L22.8,-100.1 L35.5,-112.5 L50.2,-106.8 L51.1,-89.1 L64.0,-80.3 L80.8,-86.0 L91.6,-74.4 L84.6,-58.1 L92.5,-44.5 L110.1,-42.5 L114.8,-27.3 L101.5,-15.6 Z M73.16,0 A73.16,73.16 0 1,0 -73.16,0 A73.16,73.16 0 1,0 73.16,0 Z" fill="#000" fill-rule="evenodd"/></g></svg><svg class="gw g2" viewBox="-122 -122 244 244"><g class="spin"><path d="M102.7,0.0 L117.6,9.5 L115.3,25.2 L98.2,30.0 L92.5,44.5 L101.8,59.6 L92.9,72.7 L75.5,69.6 L64.0,80.3 L65.9,97.9 L52.2,105.9 L37.8,95.5 L22.8,100.1 L16.9,116.8 L1.1,118.0 L-7.4,102.4 L-22.8,100.1 L-35.5,112.5 L-50.2,106.8 L-51.1,89.1 L-64.0,80.3 L-80.8,86.0 L-91.6,74.4 L-84.6,58.1 L-92.5,44.5 L-110.1,42.5 L-114.8,27.3 L-101.5,15.6 L-102.7,0.0 L-117.6,-9.5 L-115.3,-25.2 L-98.2,-30.0 L-92.5,-44.5 L-101.8,-59.6 L-92.9,-72.7 L-75.5,-69.6 L-64.0,-80.3 L-65.9,-97.9 L-52.2,-105.9 L-37.8,-95.5 L-22.8,-100.1 L-16.9,-116.8 L-1.1,-118.0 L7.4,-102.4 L22.8,-100.1 L35.5,-112.5 L50.2,-106.8 L51.1,-89.1 L64.0,-80.3 L80.8,-86.0 L91.6,-74.4 L84.6,-58.1 L92.5,-44.5 L110.1,-42.5 L114.8,-27.3 L101.5,-15.6 Z M73.16,0 A73.16,73.16 0 1,0 -73.16,0 A73.16,73.16 0 1,0 73.16,0 Z" fill="url(#gBrass)" fill-rule="evenodd" stroke="#4a2f0c" stroke-width="2"/><circle r="73.2" fill="none" stroke="#5a3a10" stroke-width="5.9"/><circle r="93.2" fill="none" stroke="#f6dc94" stroke-opacity=".35" stroke-width="1.5"/><rect x="-8.3" y="0" width="16.5" height="75.2" transform="rotate(0.0)" fill="url(#gBrass)"/><rect x="-8.3" y="0" width="16.5" height="75.2" transform="rotate(72.0)" fill="url(#gBrass)"/><rect x="-8.3" y="0" width="16.5" height="75.2" transform="rotate(144.0)" fill="url(#gBrass)"/><rect x="-8.3" y="0" width="16.5" height="75.2" transform="rotate(216.0)" fill="url(#gBrass)"/><rect x="-8.3" y="0" width="16.5" height="75.2" transform="rotate(288.0)" fill="url(#gBrass)"/><circle r="23.6" fill="url(#gHub)" stroke="#4a2f0c" stroke-width="2"/><circle r="8.3" fill="#2a1a06"/></g></svg><svg class="gw g3 sh" viewBox="-154 -154 308 308"><g class="spin"><path d="M130.5,0.0 L149.7,9.4 L147.9,25.0 L127.1,29.8 L122.6,44.6 L137.5,60.1 L130.4,74.1 L109.2,71.5 L100.0,83.9 L108.6,103.4 L97.2,114.2 L78.2,104.5 L65.3,113.0 L66.7,134.4 L52.3,140.6 L37.7,124.9 L22.7,128.5 L16.7,149.1 L1.0,150.0 L-7.3,130.3 L-22.7,128.5 L-35.3,145.8 L-50.3,141.3 L-51.4,119.9 L-65.2,113.0 L-83.0,124.9 L-95.6,115.6 L-89.3,95.1 L-100.0,83.9 L-120.7,89.0 L-129.4,75.9 L-116.5,58.8 L-122.6,44.6 L-143.9,42.4 L-147.5,27.1 L-129.6,15.5 L-130.5,0.0 L-149.7,-9.4 L-147.9,-25.0 L-127.1,-29.8 L-122.6,-44.6 L-137.5,-60.1 L-130.4,-74.1 L-109.2,-71.5 L-100.0,-83.9 L-108.6,-103.4 L-97.2,-114.2 L-78.2,-104.5 L-65.3,-113.0 L-66.7,-134.4 L-52.3,-140.6 L-37.7,-124.9 L-22.7,-128.5 L-16.7,-149.1 L-1.0,-150.0 L7.3,-130.3 L22.7,-128.5 L35.3,-145.8 L50.3,-141.3 L51.4,-119.9 L65.2,-113.0 L83.0,-124.9 L95.6,-115.6 L89.3,-95.1 L100.0,-83.9 L120.7,-89.0 L129.4,-75.9 L116.5,-58.8 L122.6,-44.6 L143.9,-42.4 L147.5,-27.1 L129.6,-15.5 Z M93.0,0 A93.0,93.0 0 1,0 -93.0,0 A93.0,93.0 0 1,0 93.0,0 Z" fill="#000" fill-rule="evenodd"/></g></svg><svg class="gw g3" viewBox="-154 -154 308 308"><g class="spin"><path d="M130.5,0.0 L149.7,9.4 L147.9,25.0 L127.1,29.8 L122.6,44.6 L137.5,60.1 L130.4,74.1 L109.2,71.5 L100.0,83.9 L108.6,103.4 L97.2,114.2 L78.2,104.5 L65.3,113.0 L66.7,134.4 L52.3,140.6 L37.7,124.9 L22.7,128.5 L16.7,149.1 L1.0,150.0 L-7.3,130.3 L-22.7,128.5 L-35.3,145.8 L-50.3,141.3 L-51.4,119.9 L-65.2,113.0 L-83.0,124.9 L-95.6,115.6 L-89.3,95.1 L-100.0,83.9 L-120.7,89.0 L-129.4,75.9 L-116.5,58.8 L-122.6,44.6 L-143.9,42.4 L-147.5,27.1 L-129.6,15.5 L-130.5,0.0 L-149.7,-9.4 L-147.9,-25.0 L-127.1,-29.8 L-122.6,-44.6 L-137.5,-60.1 L-130.4,-74.1 L-109.2,-71.5 L-100.0,-83.9 L-108.6,-103.4 L-97.2,-114.2 L-78.2,-104.5 L-65.3,-113.0 L-66.7,-134.4 L-52.3,-140.6 L-37.7,-124.9 L-22.7,-128.5 L-16.7,-149.1 L-1.0,-150.0 L7.3,-130.3 L22.7,-128.5 L35.3,-145.8 L50.3,-141.3 L51.4,-119.9 L65.2,-113.0 L83.0,-124.9 L95.6,-115.6 L89.3,-95.1 L100.0,-83.9 L120.7,-89.0 L129.4,-75.9 L116.5,-58.8 L122.6,-44.6 L143.9,-42.4 L147.5,-27.1 L129.6,-15.5 Z M93.0,0 A93.0,93.0 0 1,0 -93.0,0 A93.0,93.0 0 1,0 93.0,0 Z" fill="url(#gBrass)" fill-rule="evenodd" stroke="#4a2f0c" stroke-width="2"/><circle r="93.0" fill="none" stroke="#5a3a10" stroke-width="7.5"/><circle r="118.5" fill="none" stroke="#f6dc94" stroke-opacity=".35" stroke-width="1.5"/><rect x="-10.5" y="0" width="21.0" height="95.0" transform="rotate(0.0)" fill="url(#gBrass)"/><rect x="-10.5" y="0" width="21.0" height="95.0" transform="rotate(72.0)" fill="url(#gBrass)"/><rect x="-10.5" y="0" width="21.0" height="95.0" transform="rotate(144.0)" fill="url(#gBrass)"/><rect x="-10.5" y="0" width="21.0" height="95.0" transform="rotate(216.0)" fill="url(#gBrass)"/><rect x="-10.5" y="0" width="21.0" height="95.0" transform="rotate(288.0)" fill="url(#gBrass)"/><circle r="30.0" fill="url(#gHub)" stroke="#4a2f0c" stroke-width="2"/><circle r="10.5" fill="#2a1a06"/></g></svg><svg class="gw g4 sh" viewBox="-86 -86 172 172"><g class="spin"><path d="M71.3,0.0 L81.5,9.3 L78.3,24.4 L65.3,28.7 L57.7,41.9 L60.5,55.4 L49.0,65.7 L35.9,61.6 L22.0,67.8 L16.4,80.3 L1.0,82.0 L-7.2,71.0 L-22.0,67.8 L-34.0,74.6 L-47.4,66.9 L-47.5,53.2 L-57.7,41.9 L-71.4,40.4 L-77.7,26.3 L-69.7,15.1 L-71.3,0.0 L-81.5,-9.3 L-78.3,-24.4 L-65.3,-28.7 L-57.7,-41.9 L-60.5,-55.4 L-49.0,-65.7 L-35.9,-61.6 L-22.0,-67.8 L-16.4,-80.3 L-1.0,-82.0 L7.2,-71.0 L22.0,-67.8 L34.0,-74.6 L47.4,-66.9 L47.5,-53.2 L57.7,-41.9 L71.4,-40.4 L77.7,-26.3 L69.7,-15.1 Z M50.839999999999996,0 A50.839999999999996,50.839999999999996 0 1,0 -50.839999999999996,0 A50.839999999999996,50.839999999999996 0 1,0 50.839999999999996,0 Z" fill="#000" fill-rule="evenodd"/></g></svg><svg class="gw g4" viewBox="-86 -86 172 172"><g class="spin"><path d="M71.3,0.0 L81.5,9.3 L78.3,24.4 L65.3,28.7 L57.7,41.9 L60.5,55.4 L49.0,65.7 L35.9,61.6 L22.0,67.8 L16.4,80.3 L1.0,82.0 L-7.2,71.0 L-22.0,67.8 L-34.0,74.6 L-47.4,66.9 L-47.5,53.2 L-57.7,41.9 L-71.4,40.4 L-77.7,26.3 L-69.7,15.1 L-71.3,0.0 L-81.5,-9.3 L-78.3,-24.4 L-65.3,-28.7 L-57.7,-41.9 L-60.5,-55.4 L-49.0,-65.7 L-35.9,-61.6 L-22.0,-67.8 L-16.4,-80.3 L-1.0,-82.0 L7.2,-71.0 L22.0,-67.8 L34.0,-74.6 L47.4,-66.9 L47.5,-53.2 L57.7,-41.9 L71.4,-40.4 L77.7,-26.3 L69.7,-15.1 Z M50.839999999999996,0 A50.839999999999996,50.839999999999996 0 1,0 -50.839999999999996,0 A50.839999999999996,50.839999999999996 0 1,0 50.839999999999996,0 Z" fill="url(#gBrass)" fill-rule="evenodd" stroke="#4a2f0c" stroke-width="2"/><circle r="50.8" fill="none" stroke="#5a3a10" stroke-width="4.1"/><circle r="64.8" fill="none" stroke="#f6dc94" stroke-opacity=".35" stroke-width="1.5"/><rect x="-5.7" y="0" width="11.5" height="52.8" transform="rotate(0.0)" fill="url(#gBrass)"/><rect x="-5.7" y="0" width="11.5" height="52.8" transform="rotate(90.0)" fill="url(#gBrass)"/><rect x="-5.7" y="0" width="11.5" height="52.8" transform="rotate(180.0)" fill="url(#gBrass)"/><rect x="-5.7" y="0" width="11.5" height="52.8" transform="rotate(270.0)" fill="url(#gBrass)"/><circle r="16.4" fill="url(#gHub)" stroke="#4a2f0c" stroke-width="2"/><circle r="5.7" fill="#2a1a06"/></g></svg><i class="puff p1"></i><i class="puff p2"></i><i class="puff p3"></i></div><div class="fxk" aria-hidden="true"><div class="sk-land"><svg class="sk-scene" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax slice"><circle cx="980" cy="120" r="70" fill="#F0643F" opacity=".18"/><path d="M0,210 C120,150 220,170 330,140 C450,105 560,160 690,130 C820,100 930,150 1050,120 C1120,105 1170,125 1200,118 L1200,300 L0,300 Z" fill="#33263d" opacity=".9"/><g transform="translate(860,40)" fill="#46334f"><path d="M-70,210 L70,210 L38.5,196 L-38.5,196 Z"/><rect x="-31.5" y="178" width="63.0" height="18"/><path d="M-60,178 L60,178 L33.0,165 L-33.0,165 Z"/><rect x="-27.0" y="147" width="54.0" height="18"/><path d="M-52,147 L52,147 L28.6,135 L-28.6,135 Z"/><rect x="-23.400000000000002" y="117" width="46.800000000000004" height="18"/><path d="M-44,117 L44,117 L24.200000000000003,106 L-24.200000000000003,106 Z"/><rect x="-19.8" y="88" width="39.6" height="18"/><path d="M-36,88 L36,88 L19.8,78 L-19.8,78 Z"/><rect x="-16.2" y="60" width="32.4" height="18"/><rect x="-2" y="14" width="4" height="46"/></g><path d="M0,250 C160,220 300,236 460,214 C640,190 760,232 940,212 C1060,200 1140,214 1200,206 L1200,300 L0,300 Z" fill="#1c1522"/></svg><div class="sk-rail"></div><svg class="sk-train" viewBox="0 0 1400 60" preserveAspectRatio="xMinYMid meet"><path d="M0,14 L1230,14 C1310,14 1370,30 1400,46 L1400,48 L0,48 Z" fill="#F3F4F1"/><path d="M0,36 L1340,36 C1365,38 1385,42 1398,46 L0,46 Z" fill="#1D49A8"/><rect x="0" y="40" width="1360" height="2" fill="#E8EEF8"/><path d="M1250,20 C1300,20 1325,26 1342,33 L1250,33 Z" fill="#1b2433"/><g fill="#26324a"><rect x="12" y="21" width="9" height="7" rx="2"/><rect x="27" y="21" width="9" height="7" rx="2"/><rect x="42" y="21" width="9" height="7" rx="2"/><rect x="57" y="21" width="9" height="7" rx="2"/><rect x="72" y="21" width="9" height="7" rx="2"/><rect x="87" y="21" width="9" height="7" rx="2"/><rect x="102" y="21" width="9" height="7" rx="2"/><rect x="117" y="21" width="9" height="7" rx="2"/><rect x="167" y="21" width="9" height="7" rx="2"/><rect x="182" y="21" width="9" height="7" rx="2"/><rect x="197" y="21" width="9" height="7" rx="2"/><rect x="212" y="21" width="9" height="7" rx="2"/><rect x="227" y="21" width="9" height="7" rx="2"/><rect x="242" y="21" width="9" height="7" rx="2"/><rect x="257" y="21" width="9" height="7" rx="2"/><rect x="272" y="21" width="9" height="7" rx="2"/><rect x="322" y="21" width="9" height="7" rx="2"/><rect x="337" y="21" width="9" height="7" rx="2"/><rect x="352" y="21" width="9" height="7" rx="2"/><rect x="367" y="21" width="9" height="7" rx="2"/><rect x="382" y="21" width="9" height="7" rx="2"/><rect x="397" y="21" width="9" height="7" rx="2"/><rect x="412" y="21" width="9" height="7" rx="2"/><rect x="427" y="21" width="9" height="7" rx="2"/><rect x="477" y="21" width="9" height="7" rx="2"/><rect x="492" y="21" width="9" height="7" rx="2"/><rect x="507" y="21" width="9" height="7" rx="2"/><rect x="522" y="21" width="9" height="7" rx="2"/><rect x="537" y="21" width="9" height="7" rx="2"/><rect x="552" y="21" width="9" height="7" rx="2"/><rect x="567" y="21" width="9" height="7" rx="2"/><rect x="582" y="21" width="9" height="7" rx="2"/><rect x="632" y="21" width="9" height="7" rx="2"/><rect x="647" y="21" width="9" height="7" rx="2"/><rect x="662" y="21" width="9" height="7" rx="2"/><rect x="677" y="21" width="9" height="7" rx="2"/><rect x="692" y="21" width="9" height="7" rx="2"/><rect x="707" y="21" width="9" height="7" rx="2"/><rect x="722" y="21" width="9" height="7" rx="2"/><rect x="737" y="21" width="9" height="7" rx="2"/><rect x="787" y="21" width="9" height="7" rx="2"/><rect x="802" y="21" width="9" height="7" rx="2"/><rect x="817" y="21" width="9" height="7" rx="2"/><rect x="832" y="21" width="9" height="7" rx="2"/><rect x="847" y="21" width="9" height="7" rx="2"/><rect x="862" y="21" width="9" height="7" rx="2"/><rect x="877" y="21" width="9" height="7" rx="2"/><rect x="892" y="21" width="9" height="7" rx="2"/><rect x="942" y="21" width="9" height="7" rx="2"/><rect x="957" y="21" width="9" height="7" rx="2"/><rect x="972" y="21" width="9" height="7" rx="2"/><rect x="987" y="21" width="9" height="7" rx="2"/><rect x="1002" y="21" width="9" height="7" rx="2"/><rect x="1017" y="21" width="9" height="7" rx="2"/><rect x="1032" y="21" width="9" height="7" rx="2"/><rect x="1047" y="21" width="9" height="7" rx="2"/><rect x="1097" y="21" width="9" height="7" rx="2"/><rect x="1112" y="21" width="9" height="7" rx="2"/><rect x="1127" y="21" width="9" height="7" rx="2"/><rect x="1142" y="21" width="9" height="7" rx="2"/><rect x="1157" y="21" width="9" height="7" rx="2"/><rect x="1172" y="21" width="9" height="7" rx="2"/><rect x="1187" y="21" width="9" height="7" rx="2"/><rect x="1202" y="21" width="9" height="7" rx="2"/></g><rect x="155" y="13" width="2" height="34" fill="#9aa3ad"/><rect x="310" y="13" width="2" height="34" fill="#9aa3ad"/><rect x="465" y="13" width="2" height="34" fill="#9aa3ad"/><rect x="620" y="13" width="2" height="34" fill="#9aa3ad"/><rect x="775" y="13" width="2" height="34" fill="#9aa3ad"/><rect x="930" y="13" width="2" height="34" fill="#9aa3ad"/><rect x="1085" y="13" width="2" height="34" fill="#9aa3ad"/><rect x="1240" y="13" width="2" height="34" fill="#9aa3ad"/><rect x="0" y="48" width="1380" height="4" fill="#5d6570"/></svg></div><i class="sk-p" style="left:33%;--d:12.2s;--dl:-12.4s;--x:-122px;--s:0.76"><b></b></i><i class="sk-p" style="left:58%;--d:18.3s;--dl:-4.1s;--x:-83px;--s:0.75"><b></b></i><i class="sk-p" style="left:11%;--d:14.4s;--dl:-15.7s;--x:-135px;--s:1.11"><b></b></i><i class="sk-p" style="left:58%;--d:11.5s;--dl:-11.1s;--x:-138px;--s:0.73"><b></b></i><i class="sk-p" style="left:84%;--d:13.3s;--dl:-2.7s;--x:-97px;--s:1.06"><b></b></i><i class="sk-p" style="left:67%;--d:11.8s;--dl:-10.9s;--x:-77px;--s:1.06"><b></b></i><i class="sk-p" style="left:8%;--d:11.5s;--dl:-3.9s;--x:118px;--s:1.00"><b></b></i><i class="sk-p" style="left:91%;--d:13.9s;--dl:-4.7s;--x:-110px;--s:0.86"><b></b></i><i class="sk-p" style="left:57%;--d:15.2s;--dl:-16.6s;--x:69px;--s:1.34"><b></b></i><i class="sk-p" style="left:13%;--d:14.3s;--dl:-14.4s;--x:-133px;--s:0.97"><b></b></i><i class="sk-p" style="left:94%;--d:11.6s;--dl:-10.6s;--x:74px;--s:0.93"><b></b></i><i class="sk-p" style="left:50%;--d:17.4s;--dl:-1.3s;--x:-134px;--s:1.01"><b></b></i><i class="sk-p" style="left:66%;--d:11.5s;--dl:-13.3s;--x:68px;--s:0.95"><b></b></i><i class="sk-p" style="left:66%;--d:11.2s;--dl:-8.8s;--x:-101px;--s:1.02"><b></b></i></div>
 <main id="wall"></main>
 
+<div id="offBadge" aria-live="polite"></div>
 <div class="ctl"><button id="bAsk" aria-label="Ask the wall" style="margin-right:8px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>Ask</button><button id="bMenu" aria-label="Open menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Menu</button></div>
 
 <!-- wall menu -->
@@ -997,6 +1002,8 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <p class="hint2">Give your helper or nanny their own sign-in. They see today's meals with recipes in Bahasa Indonesia, the child's schedule and packing list, the shopping list and a notes page. They can't see the journal, growth, notes for Mama, calendars or settings.</p>
     <div id="hpList"></div>
     <div class="r3" style="grid-template-columns:1fr 1.4fr auto;align-items:end"><div class="f"><label>Name<input id="hpName" maxlength="30" placeholder="Mbak Sri"></label></div><div class="f"><label>Email<input id="hpEmail" type="email" placeholder="sri@gmail.com"></label></div><button class="pill dark" id="hpAdd" style="margin-bottom:2px">Add</button></div>
+    <h2 class="sh">Health</h2>
+    <p class="hint2" id="diag"></p>
     <h2 class="sh">Family names</h2>
     <p class="hint2">Used around the wall and in the daily notes. They're stored with your data, not in the website's code, so only the two of you can see them.</p>
     <div class="r3" style="grid-template-columns:1fr 1fr"><div class="f"><label>Child's name<input id="famKid" maxlength="30"></label></div><div class="f"><label>Mom's name<input id="famMom" maxlength="30"></label></div></div>
@@ -1273,7 +1280,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
   <button data-tab="photos"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5L5 20"/></svg>Photos</button>
 </nav>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="vendor/supabase-js-2.119.0.js"></script>
 <script>
 /* ======================== CONFIG ======================== */
 const CONFIG = {
@@ -1292,9 +1299,34 @@ const CONFIG = {
 /* ======================================================== */
 
 const $ = id => document.getElementById(id);
-const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = u => /^https?:\/\/[^\s"'<>]+$/i.test(String(u||"").trim()) ? String(u).trim() : "#";
+/* Two people (or the wall and a phone) saving the same setting at once: merge both changes instead of losing one */
+const J = x => JSON.stringify(x), isObj = x => !!x && typeof x==="object" && !Array.isArray(x);
+function merge3(b,l,s){
+  if(J(l)===J(b)) return s; if(J(s)===J(b) || J(s)===J(l)) return l;
+  if(isObj(l) && isObj(s)){ const bb=isObj(b)?b:{}, o={}; new Set([...Object.keys(bb),...Object.keys(l),...Object.keys(s)]).forEach(k=>{ const v=merge3(bb[k],l[k],s[k]); if(v!==undefined) o[k]=v }); return o }
+  if(Array.isArray(l) && Array.isArray(s)){ const bb=Array.isArray(b)?b:[], all=[...bb,...l,...s];
+    if(all.length && all.every(x=>isObj(x) && x.id!=null)){ const B=new Map(bb.map(x=>[x.id,x])), L=new Map(l.map(x=>[x.id,x])), S=new Set(s.map(x=>x.id)), out=[];
+      s.forEach(x=>{ if(L.has(x.id)) out.push(merge3(B.get(x.id),L.get(x.id),x)); else if(!B.has(x.id)) out.push(x) });
+      l.forEach(x=>{ if(!S.has(x.id) && !B.has(x.id)) out.push(x) }); return out }
+    if(all.every(x=>x===null || typeof x!=="object")){ const Bs=new Set(bb.map(J)), Ls=new Set(l.map(J)), rm=new Set(bb.map(J).filter(x=>!Ls.has(x))), seen=new Set(), out=[];
+      [...s, ...l.filter(x=>!Bs.has(J(x)))].forEach(x=>{ const k=J(x); if(!rm.has(k) && !seen.has(k)){ seen.add(k); out.push(x) } }); return out }
+  }
+  return l;
+}
 const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
 const LS = { get(k,d){try{const v=localStorage.getItem("wb."+k);return v?JSON.parse(v):d}catch(e){return d}}, set(k,v){try{localStorage.setItem("wb."+k,JSON.stringify(v))}catch(e){}} };
+const tmo = ms => { try{ return AbortSignal.timeout(ms) }catch(e){ const c=new AbortController(); setTimeout(()=>c.abort(),ms); return c.signal } };
+const isNetErr = e => !!e && (e.name==="AbortError" || e.name==="TimeoutError" || e.name==="AuthRetryableFetchError" || e instanceof TypeError || /fetch|network|load failed|timed? ?out|aborted|offline/i.test(String(e.message||e)));
+const ERRS=[]; function logErr(where, e){ try{ const m=String((e&&(e.message||e.reason&&e.reason.message))||e||"").slice(0,200); if(!m) return; ERRS.push({t:Date.now(),where,m}); if(ERRS.length>30) ERRS.shift(); console.error(where, e) }catch(x){} }
+addEventListener("error", e=>logErr("error", e.error||e.message));
+addEventListener("unhandledrejection", e=>logErr("promise", e.reason));
+// last good copy of the household data, so the wall still shows everything when the internet drops
+let SNAP={}; try{ SNAP=JSON.parse(localStorage.getItem("wb_snap")||"{}")||{} }catch(e){ SNAP={} }
+let usedSnap=false, snapDirty=false, forceSnap=false;
+function saveSnap(){ if(!snapDirty) return; snapDirty=false; try{ localStorage.setItem("wb_snap", JSON.stringify(SNAP)) }catch(e){ try{ const {photos:_,...rest}=SNAP; localStorage.setItem("wb_snap", JSON.stringify(rest)) }catch(e2){} } }
+function clearLocalData(){ try{ ["wb_snap","wb_me"].forEach(k=>localStorage.removeItem(k)) }catch(e){} SNAP={} }
 function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2400)}
 const fmt = (o,d=new Date()) => new Intl.DateTimeFormat(CONFIG.locale,{timeZone:CONFIG.tz,...o}).format(d);
 const today = () => new Intl.DateTimeFormat("en-CA",{timeZone:CONFIG.tz}).format(new Date());
@@ -1359,7 +1391,11 @@ async function photoDate(file){
 }
 
 /* ======================== DATA LAYER ======================== */
-const DEMO = !CONFIG.supabaseUrl || !CONFIG.supabaseAnonKey || !window.supabase;
+const DEMO = !CONFIG.supabaseUrl || !CONFIG.supabaseAnonKey;
+if(!DEMO && !window.supabase){ // the database library didn't load (network blip): never fall back to demo data, retry instead
+  document.body.innerHTML='<div style="position:fixed;inset:0;display:grid;place-items:center;background:#0b1214;color:#cfd8d4;font:20px system-ui;text-align:center;padding:30px">Couldn\'t load the wall. Trying again in a minute…</div>';
+  setTimeout(()=>location.reload(), 60e3); throw new Error("supabase-js failed to load");
+}
 let sb = null, me = { name:"", email:"" };
 
 const SEED = [
@@ -1428,11 +1464,16 @@ At home, Soto Ayam was the dinner everyone asked for again and again.`,highlight
     async urls(paths){ const o={}; paths.forEach(p=>o[p]=mem.blobs[p]); return o },
     async uploadFile(file,folder){ const p=`${folder}/${uuid()}.jpg`; mem.blobs[p]=URL.createObjectURL(await shrink(file,1600,.84)); urlMap[p]=mem.blobs[p]; return p },
     async removeFile(p){ delete mem.blobs[p] },
-    subscribe(f){ listeners.push(f) },
+    subscribe(f){ listeners.push(f) }, beginRefresh(){}, endRefresh(){},
   };
 })() : (() => {
-  sb = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey, { auth:{ persistSession:true, autoRefreshToken:true } });
-  const cache = {}; // path -> {url, exp}
+  // every request gets a time limit, so a stuck connection can't freeze the wall (uploads get longer)
+  const tfetch = (u,o={}) => { if(o.signal) return fetch(u,o); const big=o.body && typeof o.body!=="string"; return fetch(u,{...o,signal:tmo(big?120e3:/\/functions\/v1\//.test(String(u))?150e3:25e3)}) };
+  sb = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey, { auth:{ persistSession:true, autoRefreshToken:true }, global:{ fetch:tfetch } });
+  sb.auth.onAuthStateChange(ev=>{ if(ev==="SIGNED_OUT" && me){ clearLocalData(); location.reload() } });
+  const cache = (SNAP.urls && typeof SNAP.urls==="object") ? SNAP.urls : {}; // path -> {url, exp}
+  const sVer={}, sBase={}; let sAll=null;
+  function remember(k,r){ sVer[k]=r?r.updated_at:null; sBase[k]=r?J(r.value):null }
   const must = ({data,error}) => { if(error) throw error; return data };
   async function fnCall(name, body, fallback){
     const { data, error } = await sb.functions.invoke(name, { body });
@@ -1440,17 +1481,20 @@ At home, Soto Ayam was the dinner everyone asked for again and again.`,highlight
     if(data?.error) throw new Error(data.error); return data;
   }
   async function loadMe(){
-    const { data:{ user } } = await sb.auth.getUser(); if(!user) return false;
+    const { data:{ user }, error } = await sb.auth.getUser();
+    if(error && (isNetErr(error) || /Retryable/i.test(error.name||"") || (error.status||0)>=500 || !error.status)) throw Object.assign(new Error("offline: "+(error.message||"")),{name:"TypeError"});
+    if(!user) return false;
     const rows = must(await sb.from("wb_members").select("display_name,email,role"));
     const row = rows.find(r=>r.email.toLowerCase()===user.email.toLowerCase());
     if(!row) throw new Error("not-member");
-    me = { name:row.display_name, email:user.email, role:row.role||null }; return true;
+    me = { name:row.display_name, email:user.email, role:row.role||null }; LS.set("wb_me",me); return true;
   }
   return {
-    async session(){ const { data:{ session } } = await sb.auth.getSession(); return session ? loadMe() : false },
+    async session(){ const { data:{ session } } = await sb.auth.getSession(); if(!session) return false;
+      try{ return await loadMe() }catch(e){ const c=LS.get("wb_me",null); if(isNetErr(e) && c && c.email && c.email.toLowerCase()===String(session.user?.email||"").toLowerCase()){ me=c; usedSnap=true; return true } throw e } },
     async sendCode(email){ const { error } = await sb.auth.signInWithOtp({ email, options:{ shouldCreateUser:false } }); return error ? (/signups? not allowed|not found/i.test(error.message) ? "No Capcus account uses that email." : error.message) : null },
     async verifyCode(email,token){ const { error } = await sb.auth.verifyOtp({ email, token, type:"email" }); if(error) return /expired|invalid/i.test(error.message) ? "That code is wrong or has expired. Check the newest email, or send a new code." : error.message; try{ await loadMe(); return null }catch(e){ await sb.auth.signOut(); return "This email isn't on the wallboard's household list yet." } },
-    async signOut(){ await sb.auth.signOut() },
+    async signOut(){ clearLocalData(); await sb.auth.signOut() },
     async recipes(){ return must(await sb.from("wb_recipes").select("*").order("title")) },
     async saveRecipe(r,file){
       if(file){ const p=`recipes/${uuid()}.jpg`; must(await sb.storage.from("wallboard").upload(p, await shrink(file,1400,.82), {contentType:"image/jpeg"})); if(r.photo_path) sb.storage.from("wallboard").remove([r.photo_path]); r.photo_path=p }
@@ -1462,9 +1506,9 @@ At home, Soto Ayam was the dinner everyone asked for again and again.`,highlight
     async photos(){ return must(await sb.from("wb_photos").select("*").order("created_at",{ascending:false})) },
     async addPhoto(file){ const taken_at=await photoDate(file), p=`photos/${uuid()}.jpg`; must(await sb.storage.from("wallboard").upload(p, await shrink(file,2048,.85), {contentType:"image/jpeg"})); must(await sb.from("wb_photos").insert({path:p,uploaded_by_name:me.name,taken_at})) },
     async deletePhoto(ph){ must(await sb.from("wb_photos").delete().eq("id",ph.id)); sb.storage.from("wallboard").remove([ph.path]) },
-    async tonight(){ const d=must(await sb.from("wb_state").select("value").eq("key","tonight").maybeSingle()); return d?.value||null },
+    async tonight(){ return await this.state("tonight") },
     async setTonight(id){ must(await sb.from("wb_state").upsert({key:"tonight",value:{recipe_id:id,date:today()},updated_at:new Date().toISOString()})) },
-    async layout(){ const d=must(await sb.from("wb_state").select("value").eq("key","layout").maybeSingle()); return d?.value?.layout||null },
+    async layout(){ const v=await this.state("layout"); return v?.layout||null },
     async setLayout(l){ must(await sb.from("wb_state").upsert({key:"layout",value:{layout:l},updated_at:new Date().toISOString()})) },
     async plan(){ const t=today(); return must(await sb.from("wb_meal_plan").select("day,meal,recipe_id").gte("day",addDays(t,-1)).lte("day",addDays(t,14))) },
     async setPlan(day,id,meal="dinner"){ if(id) must(await sb.from("wb_meal_plan").upsert({day,meal,recipe_id:id,updated_by_name:me.name,updated_at:new Date().toISOString()},{onConflict:"day,meal"})); else must(await sb.from("wb_meal_plan").delete().eq("day",day).eq("meal",meal)) },
@@ -1474,8 +1518,27 @@ At home, Soto Ayam was the dinner everyone asked for again and again.`,highlight
     async deleteShop(ids){ if(ids.length) must(await sb.from("wb_shopping").delete().in("id",ids)) },
     async pantry(){ return must(await sb.from("wb_pantry").select("name,label,qty,location,expires,added_by_name,updated_at")) },
     async setPantry(name,on,extra={}){ if(on) must(await sb.from("wb_pantry").upsert({name,...extra,added_by_name:me.name,updated_at:new Date().toISOString()})); else must(await sb.from("wb_pantry").delete().eq("name",name)) },
-    async state(k){ const d=must(await sb.from("wb_state").select("value").eq("key",k).maybeSingle()); return d?.value??null },
-    async setState(k,v){ must(await sb.from("wb_state").upsert({key:k,value:v,updated_at:new Date().toISOString()})) },
+    async state(k){
+      if(sAll && !/^(tr|book)_/.test(k)){ const m=await sAll; const r=m[k]||null; remember(k,r); return r?JSON.parse(J(r.value)):null }
+      const r=must(await sb.from("wb_state").select("value,updated_at").eq("key",k).maybeSingle()); remember(k,r); return r?.value??null },
+    async setState(k,v){
+      let merged=false;
+      for(let attempt=0; attempt<4; attempt++){
+        if(sVer[k]===undefined){ const r=must(await sb.from("wb_state").select("value,updated_at").eq("key",k).maybeSingle()); remember(k,r) }
+        const ver=sVer[k], now=new Date().toISOString(); let res;
+        if(ver===null){ res=await sb.from("wb_state").insert({key:k,value:v,updated_at:now}).select("updated_at"); if(res.error && res.error.code!=="23505") throw res.error }
+        else { res=await sb.from("wb_state").update({value:v,updated_at:now}).eq("key",k).eq("updated_at",ver).select("updated_at"); if(res.error) throw res.error }
+        if(res.data && res.data.length){ sVer[k]=res.data[0].updated_at; sBase[k]=J(v); if(merged) setTimeout(()=>refreshAll(),300); return v }
+        // someone else saved this in the meantime: merge their change with ours and try again
+        const cur=must(await sb.from("wb_state").select("value,updated_at").eq("key",k).maybeSingle());
+        const base=sBase[k]!=null ? JSON.parse(sBase[k]) : (cur?cur.value:undefined);
+        v = cur ? merge3(base, v, cur.value) : v; remember(k,cur); merged=true;
+      }
+      // still clashing after several tries: fall back to a plain save of the merged value
+      const now=new Date().toISOString(); must(await sb.from("wb_state").upsert({key:k,value:v,updated_at:now})); sVer[k]=undefined; sBase[k]=J(v); logErr("save", "conflict fallback "+k); return v;
+    },
+    beginRefresh(){ if(forceSnap) return; sAll = sb.from("wb_state").select("key,value,updated_at").not("key","like","tr_%").not("key","like","book_%").then(r=>{ if(r.error) throw r.error; const m={}; (r.data||[]).forEach(x=>m[x.key]=x); return m }); sAll.catch(()=>{}) },
+    endRefresh(){ sAll=null },
     async calendars(){ return must(await sb.from("wb_calendars").select("id,name,color,owner_name,created_at").order("created_at")) },
     async addCalendar(c){ must(await sb.from("wb_calendars").insert({...c,owner_name:me.name})) },
     async deleteCalendar(id){ must(await sb.from("wb_calendars").delete().eq("id",id)) },
@@ -1516,22 +1579,37 @@ At home, Soto Ayam was the dinner everyone asked for again and again.`,highlight
       for(let i=0;i<need.length;i+=100){
         const chunk=need.slice(i,i+100), res=must(await sb.storage.from("wallboard").createSignedUrls(chunk, 86400));
         res.forEach(x=>{ if(x.signedUrl) cache[x.path]={url:x.signedUrl,exp:now+20*3600e3} });
+        SNAP.urls=cache; snapDirty=true;
       }
       const o={}; paths.forEach(p=>{ if(cache[p]) o[p]=cache[p].url }); return o;
     },
     subscribe(f){
       let t; const deb=()=>{clearTimeout(t);t=setTimeout(f,400)};
-      sb.channel("wallboard").on("postgres_changes",{event:"*",schema:"public",table:"wb_recipes"},deb)
+      let down=false, retryT=null;
+      const watch = ch => ch.subscribe(st=>{
+        if(ch!==chan) return; // a channel we already replaced
+        if(st==="SUBSCRIBED"){ if(down){ down=false; f() } return }
+        if((st==="CHANNEL_ERROR"||st==="TIMED_OUT"||st==="CLOSED") && !retryT){ down=true;
+          retryT=setTimeout(()=>{ retryT=null; const old=chan; chan=mk(); try{ sb.removeChannel(old) }catch(e){} watch(chan) }, 15e3) } });
+      let chan=mk(); watch(chan);
+      function mk(){ return sb.channel("wallboard-"+Date.now())
+        .on("postgres_changes",{event:"*",schema:"public",table:"wb_recipes"},deb)
         .on("postgres_changes",{event:"*",schema:"public",table:"wb_photos"},deb)
         .on("postgres_changes",{event:"*",schema:"public",table:"wb_state"},deb)
         .on("postgres_changes",{event:"*",schema:"public",table:"wb_meal_plan"},deb)
         .on("postgres_changes",{event:"*",schema:"public",table:"wb_shopping"},deb)
         .on("postgres_changes",{event:"*",schema:"public",table:"wb_pantry"},deb)
         .on("postgres_changes",{event:"*",schema:"public",table:"wb_calendars"},deb)
-        .on("postgres_changes",{event:"*",schema:"public",table:"wb_reviews"},deb).subscribe();
+        .on("postgres_changes",{event:"*",schema:"public",table:"wb_reviews"},deb) }
     },
   };
 })();
+// reads fall back to the last good copy when the network is down
+if(!DEMO) ["recipes","photos","plan","shopping","pantry","calendars","reviews","events"].forEach(n=>{ const f=api[n]; if(!f) return;
+  api[n]=async(...a)=>{ if(forceSnap) return SNAP[n] ?? (n==="events" ? {events:[],failed:[]} : []); try{ const v=await f.apply(api,a); SNAP[n]=v; snapDirty=true; return v }catch(e){ if(isNetErr(e) && (n in SNAP || SNAP.state)){ usedSnap=true; return SNAP[n] ?? (n==="events" ? {events:[],failed:[]} : []) } throw e } } });
+if(!DEMO){ const st=api.state, br=api.beginRefresh;
+  api.state=async k=>{ if(forceSnap) return (SNAP.state||{})[k] ?? null; try{ const v=await st.call(api,k); if(!/^(tr|book)_/.test(k)){ (SNAP.state ||= {})[k]=v; snapDirty=true } return v }catch(e){ if(isNetErr(e) && SNAP.state){ usedSnap=true; return SNAP.state[k] ?? null } throw e } };
+  api.urls=(u=>async p=>{ if(forceSnap){ const o={}, c=SNAP.urls||{}; p.forEach(x=>{ if(c[x]) o[x]=c[x].url }); return o } try{ return await u.call(api,p) }catch(e){ if(!isNetErr(e)) throw e; usedSnap=true; const o={}, c=SNAP.urls||{}; p.forEach(x=>{ if(c[x]) o[x]=c[x].url }); return o } })(api.urls) }
 
 /* ======================== STATE ======================== */
 let reviews={}, rvEdit=null, stockRows=[], stEdit=null, tsRecipe=null, tsSel=[];
@@ -1571,7 +1649,16 @@ function rankFor(meal){
 }
 const photoUrl = p => p ? urlMap[p] : null;
 
+let refreshing=null, refreshAgain=false, lastOk=0, failN=0, retryT=null, offline=false;
 async function refreshAll(){
+  if(refreshing){ refreshAgain=true; return refreshing }
+  refreshing=refreshAll0();
+  try{ await refreshing } finally{ refreshing=null; if(refreshAgain){ refreshAgain=false; setTimeout(refreshAll,50) } }
+}
+function setOffline(on){ offline=on; document.body.classList.toggle("offline",on); const b=$("offBadge"); if(b) b.textContent = on ? `Offline${lastOk?`, showing info from ${new Date(lastOk).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"})}`:""}` : "" }
+async function primeFromSnap(){ if(DEMO || !SNAP.state) return; forceSnap=true; try{ await refreshAll0(true) }catch(e){} finally{ forceSnap=false } }
+async function refreshAll0(prime){
+  usedSnap=false; let failed=false; api.beginRefresh();
   try{
     let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
     planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[pk(p.day,p.meal||"dinner"),p.recipe_id]));
@@ -1583,11 +1670,17 @@ async function refreshAll(){
     layoutChosen = !!lay; if(lay && lay!==layout){ layout=lay; LS.set("layout",layout); nextPhoto() }
     recipes.sort((a,b)=>a.title.localeCompare(b.title));
     urlMap = await api.urls([...recipes.map(r=>r.photo_path), ...photos.map(p=>p.path), ...journal().map(j=>j.photo)].filter(Boolean));
-  }catch(e){ console.error(e); toast("Couldn't reach Supabase — showing last data") }
+  }catch(e){ failed=true; logErr("refresh",e); if(!offline && !isNetErr(e)) toast("Couldn't load everything. Retrying shortly") }
+  finally{ api.endRefresh() }
+  if(prime){}
+  else if(!failed && !usedSnap){ lastOk=Date.now(); failN=0; if(offline) setOffline(false); saveSnap() }
+  else if(!DEMO){ failN++; setOffline(true); clearTimeout(retryT); retryT=setTimeout(refreshAll, Math.min(300e3, 10e3*2**Math.min(failN,5))) }
+  try{
   buildPhotoOrder(); renderWall(); renderBookList(); renderPhotoGrid(); renderPlan(); renderShop();
   if($("pantryOv").classList.contains("open")) renderPantry();
   if($("stockOv").classList.contains("open")) renderStock();
   if($("setOv").classList.contains("open")) renderCalList();
+  }catch(e){ logErr("render",e) }
   if($("bookOv").classList.contains("open") && selId && !editing) showRecipe(selId);
 }
 
@@ -1602,12 +1695,18 @@ const I={
   snow:`<svg viewBox="0 0 64 64"><path d="M16 38h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#dcd8d1"/><g fill="#fff"><circle cx="22" cy="48" r="2.5"/><circle cx="32" cy="53" r="2.5"/><circle cx="42" cy="48" r="2.5"/></g></svg>`,
 };
 function wmo(c){ if(c===0)return["sun","Clear"]; if(c<=2)return["part",c===1?"Mostly clear":"Partly cloudy"]; if(c===3)return["cloud","Overcast"]; if(c<=48)return["fog","Fog"]; if(c<=57)return["rain","Drizzle"]; if(c<=67)return["rain","Rain"]; if(c<=77)return["snow","Snow"]; if(c<=82)return["rain","Showers"]; if(c<=86)return["snow","Snow showers"]; return["storm","Thunderstorm"] }
+let wxAt=0;
+function trimWx(w){ try{ const t=today(), i=w.daily.time.findIndex(d=>d>=t); if(i>0) Object.keys(w.daily).forEach(k=>w.daily[k]=w.daily[k].slice(i)); }catch(e){} return w }
+const wxFake = () => wxDemo && !DEMO;
+const wxNote = () => wxFake() ? " (weather offline)" : wxDemo ? " (sample weather)" : (Date.now()-wxAt>3*3600e3 && wxAt ? ` (weather from ${new Date(wxAt).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"})})` : "");
 async function loadWeather(){
   try{
     const u=`https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=precipitation_probability,precipitation&forecast_hours=12&timezone=${encodeURIComponent(CONFIG.tz)}&temperature_unit=${CONFIG.units}&forecast_days=5`;
-    const r=await fetch(u); if(!r.ok) throw 0; wx=await r.json(); wxDemo=false;
+    const r=await fetch(u,{signal:tmo(15000)}); if(!r.ok) throw 0; const j=await r.json(); if(!j||!j.current||!j.daily) throw 0; wx=j; wxDemo=false; wxAt=Date.now(); LS.set("wx_cache",{t:wxAt,wx:j});
   }catch(e){
-    if(wx && !wxDemo) return; wxDemo=true; const t=new Date();
+    if(wx && !wxDemo){ renderWall(); return }
+    if(!DEMO){ const c=LS.get("wx_cache",null); if(c && c.wx && Date.now()-c.t<36*3600e3){ wx=trimWx(c.wx); wxDemo=false; wxAt=c.t; renderWall(); return } }
+    wxDemo=true; const t=new Date();
     const days=[...Array(5)].map((_,i)=>{const x=new Date(t);x.setDate(t.getDate()+i);return x.toLocaleDateString("en-CA")});
     wx={current:{temperature_2m:31,apparent_temperature:36,relative_humidity_2m:70,weather_code:2,wind_speed_10m:9},daily:{time:days,weather_code:[2,80,95,3,1],temperature_2m_max:[33,32,31,32,33],temperature_2m_min:[25,25,24,25,25],precipitation_probability_max:[20,70,85,40,15]}};
     const h0=hourNow(); wx.hourly={time:[...Array(12)].map((_,i)=>{const hh=(h0+i)%24, d=h0+i>=24?addDays(today(),1):today(); return `${d}T${String(hh).padStart(2,"0")}:00`}),precipitation_probability:[10,10,20,40,80,85,60,30,20,10,10,10],precipitation:[0,0,0,.2,6,4,1,0,0,0,0,0]};
@@ -1618,7 +1717,7 @@ let aq=null;
 async function loadAir(){
   try{ const u=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&current=us_aqi,pm2_5&hourly=us_aqi&forecast_hours=12&timezone=${encodeURIComponent(CONFIG.tz)}`;
     const r=await fetch(u); if(!r.ok) throw 0; aq=await r.json() }
-  catch(e){ if(!aq && (wxDemo||DEMO)) aq={current:{us_aqi:128,pm2_5:46},hourly:{us_aqi:[128,135,140,120,95,80,70,60,58,60,70,90]}} }
+  catch(e){ if(!aq && DEMO) aq={current:{us_aqi:128,pm2_5:46},hourly:{us_aqi:[128,135,140,120,95,80,70,60,58,60,70,90]}} }
   renderWall();
 }
 const AQB=[[50,"Good"],[100,"Moderate"],[150,"Unhealthy for kids"],[200,"Unhealthy"],[300,"Very unhealthy"],[1e9,"Hazardous"]];
@@ -1631,6 +1730,7 @@ function aqInfo(){
 const aqHTML = (px) => { const a=aqInfo(); if(!a) return ""; return `<span class="aq l${a.lvl}" style="font-size:${px}px" title="US air quality index"><i></i>Air ${a.v}, ${a.label.toLowerCase()}${a.tip?`: ${a.tip}`:""}</span>` };
 const wxChips = (px) => { const h=rainHTML(px)+aqHTML(px); return h?`<div class="wxchips">${h}</div>`:"" };
 function rainAlert(){
+  if(wxFake()) return null;
   const h=wx&&wx.hourly; if(!h||!h.time) return null;
   const nowKey=`${today()}T${String(hourNow()).padStart(2,"0")}:00`;
   let s0=h.time.findIndex(t=>t>=nowKey); if(s0<0) s0=0;
@@ -1644,17 +1744,19 @@ function rainAlert(){
   return null;
 }
 const rainHTML = (px) => { const r=rainAlert(); return r ? `<span class="rain ${r.heavy?"heavy":""}" style="font-size:${px}px"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5c-.3 0-.6.2-.8.5C9.4 5.6 5.5 11 5.5 14.5a6.5 6.5 0 0 0 13 0C18.5 11 14.6 5.6 12.8 3c-.2-.3-.5-.5-.8-.5z"/></svg>${esc(r.text)}</span>` : "" };
-const wxNow = () => { const c=wx.current, [ic,desc]=wmo(c.weather_code); return {ic:I[ic],desc,t:Math.round(c.temperature_2m),feels:Math.round(c.apparent_temperature),hum:c.relative_humidity_2m,wind:Math.round(c.wind_speed_10m),rain:wx.daily.precipitation_probability_max[0]??0} };
-const fcHTML = () => wx.daily.time.map((t,i)=>`<div><div class="d">${i===0?"Today":new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div><span class="hi">${Math.round(wx.daily.temperature_2m_max[i])}°</span> <span class="lo">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div><div class="pp">${wx.daily.precipitation_probability_max[i]??0}% rain</div></div>`).join("");
+const wxNow = () => { if(wxFake()) return {ic:I.cloud,desc:"Weather unavailable",t:"–",feels:"–",hum:"–",wind:"–",rain:0}; const c=wx.current, [ic,desc]=wmo(c.weather_code); return {ic:I[ic],desc,t:Math.round(c.temperature_2m),feels:Math.round(c.apparent_temperature),hum:c.relative_humidity_2m,wind:Math.round(c.wind_speed_10m),rain:wx.daily.precipitation_probability_max[0]??0} };
+const fcHTML = () => wxFake() ? "" : wx.daily.time.map((t,i)=>`<div><div class="d">${i===0?"Today":new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div><span class="hi">${Math.round(wx.daily.temperature_2m_max[i])}°</span> <span class="lo">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div><div class="pp">${wx.daily.precipitation_probability_max[i]??0}% rain</div></div>`).join("");
 
 /* ======================== WALL ======================== */
 const timeStr = () => fmt({hour:"2-digit",minute:"2-digit",hour12:CONFIG.hour12});
 const dateStr = () => `${fmt({weekday:"long"})}, ${fmt({day:"numeric",month:"long"})}`;
 let lastMode=null;
 function renderWall(){
-  document.body.classList.toggle("helper", !!isHelper());
-  if(isHelper()){ $("wall").innerHTML=helperHTML(); return }
-  renderWall0(); try{ hookWallSwipe() }catch(e){} }
+  try{
+    document.body.classList.toggle("helper", !!isHelper());
+    if(isHelper()){ $("wall").innerHTML=helperHTML(); return }
+    renderWall0(); try{ hookWallSwipe() }catch(e){}
+  }catch(e){ logErr("wall",e); try{ $("wall").innerHTML=`<div class="ni" style="color:rgba(var(--fg-rgb),.7)"><div class="t-big js-time">${timeStr()}</div><div class="s">${dateStr()}</div></div>` }catch(e2){} } }
 function renderWall0(){
   const m=mode(); document.body.dataset.mode=m; lastMode=m;
   if(!wx){ $("wall").innerHTML=""; return }
@@ -1672,7 +1774,7 @@ function renderWall0(){
         ${wxChips(19)}</div>
       <div class="m2-r">${apBanner()}${storyChip()}${rt}${kid}${ag}${useSoonHTML()}</div>
       <div class="m2-b"><div class="fc">${fcHTML()}</div>
-        <div class="m-foot"><span class="muted">${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span>${tChip}</div></div></div>`;
+        <div class="m-foot"><span class="muted">${esc(CONFIG.place)}${wxNote()}</span>${tChip}</div></div></div>`;
   } else if(m==="day"){
     const ph=currentPhoto();
     const ol=otdLabel(ph);
@@ -1682,7 +1784,7 @@ function renderWall0(){
   } else if(m==="dinner"||m==="split"||m==="phone"){
     let card; const tmr=plannedFor(addDays(today(),1));
     if(tn){ const r=tn.r, pu=photoUrl(r.photo_path), ing=r.ingredients||[], show=ing.slice(0,10);
-      card=`<div class="rc ${tn.picked?"":"swipeable"}" ${tn.picked?"":`data-swipe-id="${r.id}"`}><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span><div class="ph" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":`<span class="mono">${mono(r)}</span>`}</div><div class="b">
+      card=`<div class="rc ${tn.picked?"":"swipeable"}" ${tn.picked?"":`data-swipe-id="${esc(r.id)}"`}><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span><div class="ph" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":`<span class="mono">${mono(r)}</span>`}</div><div class="b">
         <div class="eyebrow">${tn.picked?"Tonight's dinner":(m==="split"?"Recipe of the day":"Dinner idea")}</div><h2 class="serif">${esc(r.title)}</h2>
         <div class="meta">${metaHTML(r)}</div>
         ${rvMini(r)}
@@ -1690,8 +1792,8 @@ function renderWall0(){
         ${(()=>{ const b=plannedFor(today(),"breakfast"), l=plannedFor(today(),"lunch"), x=[b&&`Breakfast <b>${esc(b.title)}</b>`, l&&`Lunch <b>${esc(l.title)}</b>`].filter(Boolean);
           return x.length||tmr ? `<div class="tmr">${x.length?`Today: ${x.join(", ")}`:""}${x.length&&tmr?"<br>":""}${tmr?`Tomorrow: <b>${esc(tmr.title)}</b>`:""}</div>` : "" })()}
         ${tn.picked
-          ? `<div class="acts"><button class="btn-cook" data-cook="${r.id}">Start cooking</button><button class="btn-ghost" data-openbook="${r.id}">Recipe</button><button class="btn-ghost" data-unplan>Not tonight</button></div>`
-          : `<div class="acts"><button class="swbtn no" data-ideano aria-label="Show another idea">✕</button><button class="swbtn yes" data-ideayes="${r.id}" aria-label="Cook this tonight">♥</button><button class="btn-ghost" data-swipe="dinner">See all ideas</button></div><div class="swhint">Swipe right to cook it tonight, left for another idea</div>`}</div></div>`;
+          ? `<div class="acts"><button class="btn-cook" data-cook="${esc(r.id)}">Start cooking</button><button class="btn-ghost" data-openbook="${esc(r.id)}">Recipe</button><button class="btn-ghost" data-unplan>Not tonight</button></div>`
+          : `<div class="acts"><button class="swbtn no" data-ideano aria-label="Show another idea">✕</button><button class="swbtn yes" data-ideayes="${esc(r.id)}" aria-label="Cook this tonight">♥</button><button class="btn-ghost" data-swipe="dinner">See all ideas</button></div><div class="swhint">Swipe right to cook it tonight, left for another idea</div>`}</div></div>`;
     } else card=`<div class="rc"><div class="b" style="justify-content:center"><div class="eyebrow">Dinner</div><h2 class="serif">Add your first recipe</h2><div class="acts"><button class="btn-cook" data-new>Add recipe</button></div></div></div>`;
     const fc3 = m==="split" && !(bagNow().length && aqInfo() && rainAlert()) ? `<div class="fc3">${wx.daily.time.slice(1,4).map((t,j)=>{const i=j+1;return `<div><div class="d">${new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div><span class="hi">${Math.round(wx.daily.temperature_2m_max[i])}°</span> <span class="lo">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div></div>`}).join("")}</div>` : "";
     const ph = m==="split"||m==="phone" ? currentPhoto() : null, ol=otdLabel(ph);
@@ -1709,7 +1811,7 @@ function renderWall0(){
         ${useSoonHTML()}
         <div class="fc">${fcHTML()}</div>
         ${card}
-        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span><span style="display:flex;gap:6px"><button data-open="timerOv">Timer</button><button data-open="kidOv">${KID}</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
+        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxNote()}</span><span style="display:flex;gap:6px"><button data-open="timerOv">Timer</button><button data-open="kidOv">${KID}</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
       </div>`;
     }
     const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : kidHTML("row",bagNow().length?1:2);
@@ -1720,7 +1822,7 @@ function renderWall0(){
       ${ph&&ph.uploaded_by_name?`<div class="muted" style="font-size:15px">Photo by ${esc(ph.uploaded_by_name)}</div>`:""}</div></div>${card}</div>`;
   } else {
     const d1=wx.daily; h=`<div class="ni"><div class="t-big js-time">${timeStr()}</div><div class="s">${dateStr()}</div>
-      <div class="s">Tomorrow ${Math.round(d1.temperature_2m_max[1])}° to ${Math.round(d1.temperature_2m_min[1])}°, ${wmo(d1.weather_code[1])[1].toLowerCase()}</div>
+${wxFake()?"":`<div class="s">Tomorrow ${Math.round(d1.temperature_2m_max[1])}° to ${Math.round(d1.temperature_2m_min[1])}°, ${wmo(d1.weather_code[1])[1].toLowerCase()}</div>`}
       ${(()=>{const e=tomorrowFirst();return e?`<div class="s">First thing tomorrow: ${e.allDay?"":evTime(e)+" "}${esc(e.title)}</div>`:""})()}${storyChip()}</div>`;
   }
   $("wall").innerHTML=h; $("wall").scrollTop=scrollY;
@@ -1763,12 +1865,12 @@ const ICON={youtube:`<svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" heigh
 function sourceHTML(r){
   if(!r.source_url) return "";
   const k=r.source_kind||kindOf(r.source_url), label=k==="youtube"?"Watch on YouTube":k==="instagram"?"Open on Instagram":"Open the original";
-  return `<div class="srcbar"><a class="srclink" href="${esc(r.source_url)}" target="_blank" rel="noopener">${ICON[k]||ICON.web}${label}<span>${esc(hostOf(r.source_url))}</span></a></div>`;
+  return `<div class="srcbar"><a class="srclink" href="${esc(safeUrl(r.source_url))}" target="_blank" rel="noopener">${ICON[k]||ICON.web}${label}<span>${esc(hostOf(r.source_url))}</span></a></div>`;
 }
 function triedHTML(r){
   const n=r.cooked_count||0, madeToday=r.last_cooked===today();
   const txt = n ? `<span>Made <b>${n} time${n>1?"s":""}</b>${r.last_cooked?`, last on ${dayShort(r.last_cooked)}`:""}</span>` : reviews[r.id] ? `<span><b>Tried</b>, reviewed by the family</span>` : `<span><b>Not tried yet</b></span>`;
-  return `<div class="tried">${txt}<button class="pill" data-made="${r.id}" style="min-height:36px;padding:.3em 1em;font-size:13px">${madeToday?"Made today ✓ (undo)":"We made this today"}</button></div>`;
+  return `<div class="tried">${txt}<button class="pill" data-made="${esc(r.id)}" style="min-height:36px;padding:.3em 1em;font-size:13px">${madeToday?"Made today ✓ (undo)":"We made this today"}</button></div>`;
 }
 const daysTo = d => Math.round((new Date(d+"T12:00:00Z")-new Date(today()+"T12:00:00Z"))/864e5);
 function expLabel(d){ const n=daysTo(d); return n<0?"Expired":n===0?"Use today":n===1?"Use by tomorrow":n<=3?`Use within ${n} days`:`Use by ${dayShort(d)}` }
@@ -1839,7 +1941,7 @@ function bagNow(){ // what to pack: today's bags until the activity starts; afte
   return kinds.map(k=>({key:`${d}|${k}`,kind:k,items:bags()[k],tomorrow:evening,done:new Set(((kidBagDone||{})[`${d}|${k}`])||[])}));
 }
 function bagHTML(compact){
-  return bagNow().map(b=>`<div class="bag ${compact?"bag-x":""}"><div class="bag-h">${b.tomorrow?"Pack tonight for tomorrow's":"Pack for"} <b>${RK[b.kind][1].toLowerCase()==="other"?"outing":RK[b.kind][1].toLowerCase()}</b>${b.done.size===b.items.length?", all packed ✓":""}</div><div class="bag-c">${b.items.map((it,i)=>`<button class="${b.done.has(i)?"on":""}" data-bag="${b.key}" data-bagi="${i}" aria-pressed="${b.done.has(i)}">${esc(it)}</button>`).join("")}</div></div>`).join("");
+  return bagNow().map(b=>`<div class="bag ${compact?"bag-x":""}"><div class="bag-h">${b.tomorrow?"Pack tonight for tomorrow's":"Pack for"} <b>${RK[b.kind][1].toLowerCase()==="other"?"outing":RK[b.kind][1].toLowerCase()}</b>${b.done.size===b.items.length?", all packed ✓":""}</div><div class="bag-c">${b.items.map((it,i)=>`<button class="${b.done.has(i)?"on":""}" data-bag="${esc(b.key)}" data-bagi="${i}" aria-pressed="${b.done.has(i)}">${esc(it)}</button>`).join("")}</div></div>`).join("");
 }
 document.addEventListener("click", async e=>{
   const b=e.target.closest("[data-bag]"); if(!b) return; e.stopPropagation(); e.preventDefault();
@@ -1872,11 +1974,11 @@ function renderKidCal(){
   let h=WD_ORDER.map(i=>`<div class="wd">${WD[i]}</div>`).join("");
   const weeks = Math.ceil((lead + new Date(Date.UTC(y,mo,0)).getUTCDate())/7);
   for(let i=0;i<weeks*7;i++){ const d=addDays(start,i), o=occOn(d);
-    h+=`<button class="mday ${d.slice(0,7)!==rm?"out":""} ${d===t?"today":""} ${d===rSel?"sel":""}" data-rday="${d}" aria-label="${d}${o.length?", "+o.map(x=>x.title).join(", "):""}"><span class="dn">${+d.slice(8)}</span><span class="ic">${o.slice(0,4).map(rIcon).join("")}</span></button>` }
+    h+=`<button class="mday ${d.slice(0,7)!==rm?"out":""} ${d===t?"today":""} ${d===rSel?"sel":""}" data-rday="${d}" aria-label="${d}${o.length?", "+esc(o.map(x=>x.title).join(", ")):""}"><span class="dn">${+d.slice(8)}</span><span class="ic">${o.slice(0,4).map(rIcon).join("")}</span></button>` }
   $("rmGrid").innerHTML=h;
   $("rdTitle").textContent=new Intl.DateTimeFormat(CONFIG.locale,{weekday:"long",day:"numeric",month:"long",timeZone:"UTC"}).format(new Date(rSel+"T12:00:00Z"));
   const o=occOn(rSel);
-  $("rdList").innerHTML=(o.length?o.map(x=>`<div class="calrow"><span class="e">${rIcon(x)}</span><div class="grow"><b>${esc(x.title)}</b><small>${timeRange(x)}${x.days&&x.days.length?`, every ${x.days.length===5&&!x.days.includes(0)&&!x.days.includes(6)?"weekday":WD_ORDER.filter(i=>x.days.includes(i)).map(i=>WD[i]).join(", ")}`:""}${x.note?` · ${esc(x.note)}`:""}</small></div><button class="pill" data-redit="${x.id}" style="min-height:36px;padding:.3em .9em;font-size:13px">Edit</button></div>`).join("")
+  $("rdList").innerHTML=(o.length?o.map(x=>`<div class="calrow"><span class="e">${rIcon(x)}</span><div class="grow"><b>${esc(x.title)}</b><small>${timeRange(x)}${x.days&&x.days.length?`, every ${x.days.length===5&&!x.days.includes(0)&&!x.days.includes(6)?"weekday":WD_ORDER.filter(i=>x.days.includes(i)).map(i=>WD[i]).join(", ")}`:""}${x.note?` · ${esc(x.note)}`:""}</small></div><button class="pill" data-redit="${esc(x.id)}" style="min-height:36px;padding:.3em .9em;font-size:13px">Edit</button></div>`).join("")
     : `<p class="hint2" style="color:var(--fg3)">Nothing on this day.</p>`) + `<div class="row" style="margin-top:12px"><button class="pill" data-readd>Add on this day</button></div>`;
 }
 $("rmPrev").onclick=()=>{ const [y,m]=rm.split("-").map(Number), d=new Date(Date.UTC(y,m-2,1)); rm=d.toISOString().slice(0,7); renderKidCal() };
@@ -1953,7 +2055,7 @@ function renderGrowth(){
     return `<div><span class="lbl">${lbl}</span><b>${(+x[key]).toFixed(1)} ${unit}</b><small>${z!=null?`<span class="${out?"flag":""}">${pctl(z)} percentile</span>, `:""}${dayShort(x.d)}${b?`, at ${ageLabel(b,x.d)}`:""}</small>${out?`<small class="flag" style="display:block;margin-top:4px">Outside the usual range. Worth mentioning at her next check-up.</small>`:""}</div>` };
   $("grNow").innerHTML = (b?`<div><span class="lbl">Age</span><b>${ageLabel(b)}</b><small>Born ${new Intl.DateTimeFormat(CONFIG.locale,{day:"numeric",month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(b+"T12:00:00Z"))}</small></div>`:`<div><span class="lbl">Age</span><b>?</b><small>Add ${KID}'s birthday above to see percentiles</small></div>`) + card("Height",lh,"cm","h","hz") + card("Weight",lw,"kg","w","wz");
   $("grCharts").innerHTML = b && g.length ? chartSVG("Height","cm",WHO_HFA_G,g.filter(x=>x.h).map(x=>[ageMonths(b,x.d),+x.h])) + chartSVG("Weight","kg",WHO_WFA_G,g.filter(x=>x.w).map(x=>[ageMonths(b,x.d),+x.w])) : "";
-  $("grList").innerHTML = last.map(x=>{ const i=measureInfo(x); return `<div class="calrow"><div class="grow"><b>${dayShort(x.d)}${b?` <span style="color:var(--fg3);font-weight:400">, ${ageLabel(b,x.d)}</span>`:""}</b><small>${[x.h?`${(+x.h).toFixed(1)} cm${i.hz!=null?` (${pctl(i.hz)})`:""}`:"",x.w?`${(+x.w).toFixed(1)} kg${i.wz!=null?` (${pctl(i.wz)})`:""}`:""].filter(Boolean).join(", ")}</small></div><button class="pill" data-grdel="${x.id}" style="min-height:34px;padding:.3em .9em;font-size:13px">Delete</button></div>` }).join("");
+  $("grList").innerHTML = last.map(x=>{ const i=measureInfo(x); return `<div class="calrow"><div class="grow"><b>${dayShort(x.d)}${b?` <span style="color:var(--fg3);font-weight:400">, ${ageLabel(b,x.d)}</span>`:""}</b><small>${[x.h?`${(+x.h).toFixed(1)} cm${i.hz!=null?` (${pctl(i.hz)})`:""}`:"",x.w?`${(+x.w).toFixed(1)} kg${i.wz!=null?` (${pctl(i.wz)})`:""}`:""].filter(Boolean).join(", ")}</small></div><button class="pill" data-grdel="${esc(x.id)}" style="min-height:34px;padding:.3em .9em;font-size:13px">Delete</button></div>` }).join("");
 }
 function chartSVG(title, unit, T, pts){
   if(!pts.length) return "";
@@ -2072,7 +2174,7 @@ function renderJournal(){
   const b=birth(), items=journal(); let last="", h="";
   for(const j of items){ const mo=new Intl.DateTimeFormat(CONFIG.locale,{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(j.d+"T12:00:00Z")); if(mo!==last){ h+=`<div class="jmonth">${mo}</div>`; last=mo }
     const u=j.photo&&photoUrl(j.photo);
-    h+=`<div class="jent">${u?`<a class="ph" href="${u}" target="_blank" rel="noopener" style="background-image:url('${u}')" aria-label="Open photo"></a>`:`<span class="ic">${AREA_IC[j.area]||"⭐"}</span>`}<div class="tx"><b>${esc(j.text)}</b><small>${dayShort(j.d)}${b?`, at ${ageLabel(b,j.d)}`:""}${j.area?`, ${esc(j.area.toLowerCase())}`:""}</small></div><button class="pill" data-jdel="${j.id}" style="min-height:34px;padding:.3em .9em;font-size:13px">Delete</button></div>` }
+    h+=`<div class="jent">${u?`<a class="ph" href="${u}" target="_blank" rel="noopener" style="background-image:url('${u}')" aria-label="Open photo"></a>`:`<span class="ic">${AREA_IC[j.area]||"⭐"}</span>`}<div class="tx"><b>${esc(j.text)}</b><small>${dayShort(j.d)}${b?`, at ${ageLabel(b,j.d)}`:""}${j.area?`, ${esc(j.area.toLowerCase())}`:""}</small></div><button class="pill" data-jdel="${esc(j.id)}" style="min-height:34px;padding:.3em .9em;font-size:13px">Delete</button></div>` }
   $("jList").innerHTML = h || `<p class="hint2" style="color:var(--fg3)">Nothing yet. Her next new word, first jump or first drawing goes here.</p>`;
 }
 $("jAreas").onclick=e=>{ const b=e.target.closest("[data-jarea]"); if(!b) return; jArea=b.dataset.jarea; renderJournal() };
@@ -2119,7 +2221,7 @@ function renderSwipeHead(){
 }
 function cardHTML(r){
   const pu=photoUrl(r.photo_path), c=coverage(r), sc=score(r.id);
-  return `<div class="swc" data-swid="${r.id}"><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span>
+  return `<div class="swc" data-swid="${esc(r.id)}"><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span>
     <div class="ph" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</div>
     <div class="bd"><h2>${esc(r.title)}</h2>
       <div class="mt">${[r.cook_time,r.category,sc!=null?`★ ${sc.toFixed(1)}`:null,isTried(r)?`Made ${r.cooked_count||1}×`:"New to us"].filter(Boolean).map(esc).join("<span>·</span>").replace(/<span>·<\/span>/g,"<span aria-hidden=true> </span>")}</div>
@@ -2181,7 +2283,7 @@ const fmtLeft = ms => { const s=Math.max(0,Math.ceil(ms/1000)), h=Math.floor(s/3
 function renderTimers(){
   const now=Date.now(), list=timers().filter(t=>now-t.end<15*60e3);
   $("timerBar").innerHTML=list.map(t=>{ const left=t.end-now, done=left<=0;
-    return `<div class="tchip ${done?"done":""}" data-tmid="${t.id}"><span class="tl">${esc(t.label||"Timer")}</span><span class="tt">${done?"Done!":fmtLeft(left)}</span><button data-tmx="${t.id}" aria-label="${done?"Dismiss":"Cancel timer"}">${done?"OK":"✕"}</button></div>` }).join("");
+    return `<div class="tchip ${done?"done":""}" data-tmid="${esc(t.id)}"><span class="tl">${esc(t.label||"Timer")}</span><span class="tt">${done?"Done!":fmtLeft(left)}</span><button data-tmx="${esc(t.id)}" aria-label="${done?"Dismiss":"Cancel timer"}">${done?"OK":"✕"}</button></div>` }).join("");
   if(list.some(t=>t.end<=now) && now-lastBeep>3500){ lastBeep=now; chime(); try{ navigator.vibrate&&navigator.vibrate([200,100,200]) }catch(e){} }
   if(!$("cook").classList.contains("open")) return; renderCkTimer();
 }
@@ -2205,7 +2307,7 @@ const ckLabel = () => `${ck.r.title.split(/\s+/).slice(0,2).join(" ")}, step ${c
 function renderCkTimer(){
   const box=$("ckTimer"); if(!box||!ck) return; const mins=stepMinutes(ck.r.steps[ck.i]); if(!mins){ box.innerHTML=""; return }
   const label=ckLabel(), run=timers().find(t=>t.label===label && t.end>Date.now());
-  box.innerHTML = run ? `<button class="cktm run" data-tmx="${run.id}">⏱ ${fmtLeft(run.end-Date.now())} left · Stop</button>` : `<button class="cktm" data-cktm="${mins}">⏱ Start ${niceNum(mins,"")} min timer</button>`;
+  box.innerHTML = run ? `<button class="cktm run" data-tmx="${esc(run.id)}">⏱ ${fmtLeft(run.end-Date.now())} left · Stop</button>` : `<button class="cktm" data-cktm="${mins}">⏱ Start ${niceNum(mins,"")} min timer</button>`;
 }
 $("ckTimer").addEventListener("click",e=>{ const s=e.target.closest("[data-cktm]"), x=e.target.closest("[data-tmx]");
   if(s) startTimer(+s.dataset.cktm,ckLabel()); if(x) saveTimers(timers().filter(t=>t.id!==x.dataset.tmx)) });
@@ -2354,16 +2456,16 @@ let hpTab="today";
 const isHelper = () => me && me.role==="helper";
 function helperHTML(){
   const t=today(), name=(me&&me.name)||"";
-  const meals=MEALS.map(([m,ml])=>{ const r=plannedFor(t,m); return r?`<div class="meal"><span class="ml">${{breakfast:"Sarapan",lunch:"Makan siang",dinner:"Makan malam"}[m]}</span><b>${esc(r.title)}</b><button data-hprec="${r.id}">Lihat resep</button></div>`:"" }).join("");
+  const meals=MEALS.map(([m,ml])=>{ const r=plannedFor(t,m); return r?`<div class="meal"><span class="ml">${{breakfast:"Sarapan",lunch:"Makan siang",dinner:"Makan malam"}[m]}</span><b>${esc(r.title)}</b><button data-hprec="${esc(r.id)}">Lihat resep</button></div>`:"" }).join("");
   const kidToday=occOn(t).map(x=>`<div class="meal"><span class="ml">${x.t?fmtT(x.t):"Seharian"}</span><b>${rIcon(x)} ${esc(x.title)}</b></div>`).join("");
-  const bags=bagNow().map(b=>`<div style="margin-top:8px"><div class="hpnote">${b.tomorrow?"Siapkan malam ini untuk besok":"Bawa untuk"}: <b>${esc(RK[b.kind][1])}</b></div><div class="bag-c" style="margin-top:6px">${b.items.map((it,i)=>`<button class="${b.done.has(i)?"on":""}" data-bag="${b.key}" data-bagi="${i}">${esc(it)}</button>`).join("")}</div></div>`).join("");
+  const bags=bagNow().map(b=>`<div style="margin-top:8px"><div class="hpnote">${b.tomorrow?"Siapkan malam ini untuk besok":"Bawa untuk"}: <b>${esc(RK[b.kind][1])}</b></div><div class="bag-c" style="margin-top:6px">${b.items.map((it,i)=>`<button class="${b.done.has(i)?"on":""}" data-bag="${esc(b.key)}" data-bagi="${i}">${esc(it)}</button>`).join("")}</div></div>`).join("");
   const tab=(k,l)=>`<button class="${hpTab===k?"on":""}" data-hptab="${k}">${l}</button>`;
   let body="";
   if(hpTab==="today") body=`<div class="card"><h3>Masak hari ini</h3>${meals||`<p class="hpnote">Belum ada menu untuk hari ini.</p>`}</div>
     <div class="card"><h3>Jadwal ${esc(KID)} hari ini</h3>${kidToday||`<p class="hpnote">Tidak ada jadwal.</p>`}${bags}</div>
     <div class="card"><h3>Timer</h3><div class="quick">${[5,10,15,20].map(m=>`<button data-hptm="${m}">${m} menit</button>`).join("")}</div></div>`;
   if(hpTab==="shop"){ const items=shopping.slice().sort((a,b)=>a.checked-b.checked);
-    body=`<div class="card"><h3>Daftar belanja</h3>${items.map(x=>`<button class="shrow ${x.checked?"on":""}" data-hpshop="${x.id}"><span class="box"></span><span style="flex:1">${esc(x.name)}${x.qty?` <span style="color:var(--fg3)">${esc(x.qty)}</span>`:""}</span></button>`).join("")||`<p class="hpnote">Daftar kosong.</p>`}
+    body=`<div class="card"><h3>Daftar belanja</h3>${items.map(x=>`<button class="shrow ${x.checked?"on":""}" data-hpshop="${esc(x.id)}"><span class="box"></span><span style="flex:1">${esc(x.name)}${x.qty?` <span style="color:var(--fg3)">${esc(x.qty)}</span>`:""}</span></button>`).join("")||`<p class="hpnote">Daftar kosong.</p>`}
       <form id="hpAddShop" style="display:flex;gap:8px;margin-top:12px"><input id="hpShopIn" placeholder="Tambah barang, misal: sabun cuci piring"><button class="btn">Tambah</button></form></div>` }
   if(hpTab==="log"){ const logs=((helperLog&&helperLog.items)||[]).slice(-12).reverse();
     body=`<div class="card"><h3>Catatan untuk keluarga</h3><div class="quick">${[["🍚",`${KID} makan dengan baik`],["🥄",`${KID} makan sedikit`],["😴",`${KID} sudah tidur siang`],["🛁",`${KID} sudah mandi`],["🤒",`${KID} kurang sehat`],["🛒","Belanjaan sudah dibeli"]].map(([i,t])=>`<button data-hplog="${esc(t)}">${i} ${esc(t)}</button>`).join("")}</div>
@@ -2412,7 +2514,7 @@ function renderStory(){
   $("stBody").innerHTML = s ? `<h2 class="st-t">${esc(s.title)}</h2>${esc(s.text).split(/\n\s*\n/).map((p,i)=>`<p data-sp="${i}">${p}</p>`).join("")}`
     : `<p class="st-empty">Claude writes a short, calm story with ${esc(KID)} as the hero, woven from her real day: her schedule, what she ate, and any new firsts in the journal. It takes about 20 seconds. Then read it to her yourself, or let the wall read it aloud.</p>`;
   const past=stories().slice().reverse().filter(x=>!s||x.id!==s.id).slice(0,10);
-  $("stPast").innerHTML = past.length ? `<h3>Earlier stories</h3>${past.map(x=>`<button data-stold="${x.id}">${esc(x.title)}<small>${dayShort(x.d)}${x.lang==="id"?", Bahasa":""}</small></button>`).join("")}` : "";
+  $("stPast").innerHTML = past.length ? `<h3>Earlier stories</h3>${past.map(x=>`<button data-stold="${esc(x.id)}">${esc(x.title)}<small>${dayShort(x.d)}${x.lang==="id"?", Bahasa":""}</small></button>`).join("")}` : "";
   $("stNew").textContent = s && s.d===today() ? "Write a new one" : "Write tonight's story";
   $("stRead").style.display = s ? "" : "none"; $("stRead").textContent = stSpeaking ? "Stop reading" : "Read aloud";
 }
@@ -2480,7 +2582,7 @@ function renderVax(){
     <div class="vx-sum"><span><b>${done.filter(v=>v.kind==="vax").length}</b> vaccines done</span><span><b>${soon.length}</b> due soon</span>${late.length?`<span><b>${late.length}</b> not ticked yet</span>`:""}</div>
     ${!(kidVax&&kidVax.started) && late.length ? `<div class="vx-catch"><span style="flex:1">Starting now? If ${esc(KID)} is up to date, mark everything due before today as done in one go, then fix any she missed.</span><button class="pill dark" id="vxAll" style="min-height:36px;font-size:14px">Mark past ones done</button></div>`:""}
     <div class="vx-g">${Object.entries(groups).map(([g,vs])=>`<h4>${g}</h4>${vs.map(v=>{ const st=v.done?"done":v.days<-45?"late":v.days<=30?"soon":""; const booked=(kidVax&&kidVax.booked||{})[v.id];
-      return `<div class="vx ${st}"><button class="ck" data-vxt="${v.id}" aria-label="Done">${v.done?"✓":""}</button><div><b>${v.kind==="chk"?"🩺 Checkup":"💉 "+esc(v.name)}${v.dose?` <span style="font-weight:400;color:var(--fg3)">${esc(v.dose)}</span>`:""}</b><small class="w">${v.done?`Done ${dayShort(v.done)}`:v.days<-45?`Due ${dayShort(v.due)}`:v.days<0?"Due now":v.days===0?"Due today":`Due ${dayShort(v.due)}${v.days<=60?`, in ${v.days} days`:""}`}</small></div>${!v.done&&v.days<=60?`<button class="bk" data-vxb="${v.id}">${booked?"Booked "+dayShort(booked):"Add to calendar"}</button>`:""}</div>` }).join("")}`).join("")}</div>`;
+      return `<div class="vx ${st}"><button class="ck" data-vxt="${esc(v.id)}" aria-label="Done">${v.done?"✓":""}</button><div><b>${v.kind==="chk"?"🩺 Checkup":"💉 "+esc(v.name)}${v.dose?` <span style="font-weight:400;color:var(--fg3)">${esc(v.dose)}</span>`:""}</b><small class="w">${v.done?`Done ${dayShort(v.done)}`:v.days<-45?`Due ${dayShort(v.due)}`:v.days<0?"Due now":v.days===0?"Due today":`Due ${dayShort(v.due)}${v.days<=60?`, in ${v.days} days`:""}`}</small></div>${!v.done&&v.days<=60?`<button class="bk" data-vxb="${esc(v.id)}">${booked?"Booked "+dayShort(booked):"Add to calendar"}</button>`:""}</div>` }).join("")}`).join("")}</div>`;
 }
 async function saveVax(){ renderVax(); renderWall(); try{ await api.setState("kid_vax",kidVax) }catch(e){ toast("Couldn't save. Check your connection") } }
 $("vaxBody").onclick=async e=>{
@@ -2550,7 +2652,7 @@ function nextPhoto(){
 function swap(){ back.classList.add("on"); front.classList.remove("on"); [front,back]=[back,front] }
 
 function renderPhotoGrid(){
-  $("pgrid").innerHTML = photos.length ? photos.map(p=>`<figure style="background-image:url('${photoUrl(p.path)||""}')">${p.uploaded_by_name||p.taken_at?`<figcaption>${esc([p.taken_at&&dayShort(p.taken_at)+" "+p.taken_at.slice(0,4),p.uploaded_by_name].filter(Boolean).join(", "))}</figcaption>`:""}<button data-delphoto="${p.id}">Remove</button></figure>`).join("")
+  $("pgrid").innerHTML = photos.length ? photos.map(p=>`<figure style="background-image:url('${photoUrl(p.path)||""}')">${p.uploaded_by_name||p.taken_at?`<figcaption>${esc([p.taken_at&&dayShort(p.taken_at)+" "+p.taken_at.slice(0,4),p.uploaded_by_name].filter(Boolean).join(", "))}</figcaption>`:""}<button data-delphoto="${esc(p.id)}">Remove</button></figure>`).join("")
     : `<p class="empty">No family photos yet. Add some from your phone or this iPad — they'll show on the wall right away.</p>`;
   $("who").textContent = DEMO ? "Demo mode — add your Supabase keys to share with your wife" : `Signed in as ${me.name} (${me.email})`;
 }
@@ -2572,7 +2674,7 @@ function renderBookList(){
   const q=$("q").value.trim().toLowerCase(), tn=tonightRecipe();
   let list=recipes.filter(r=>(cat==="All"||(cat==="Top rated"?score(r.id)!=null:cat==="New to try"?!isTried(r):cat==="Tried"?isTried(r):r.category===cat))&&(!q||(r.title+" "+(r.ingredients||[]).join(" ")).toLowerCase().includes(q)));
   if(cat==="Top rated") list=list.sort((a,b)=>score(b.id)-score(a.id));
-  $("items").innerHTML=list.map(r=>{ const pu=photoUrl(r.photo_path); return `<button class="item ${r.id===selId?"sel":""}" data-id="${r.id}">
+  $("items").innerHTML=list.map(r=>{ const pu=photoUrl(r.photo_path); return `<button class="item ${r.id===selId?"sel":""}" data-id="${esc(r.id)}">
     <span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</span>
     <span><b>${esc(r.title)}${!isTried(r)?`<span class="newtag">New</span>`:""}${tn&&tn.picked&&tn.r.id===r.id?` <span style="color:var(--accent);font-weight:600;font-size:13px">Tonight</span>`:""}</b><small>${esc([r.category,r.cook_time,r.source_kind==="youtube"?"Video":r.source_kind==="instagram"?"Instagram":null].filter(Boolean).join(", "))}${(r.cooked_count||0)>0?`<span class="madetag">Made ${r.cooked_count}×</span>`:""}${(()=>{const sc=score(r.id), b=(reviews[r.id]||{}).baby; return (sc!=null?`<span class="score">★ ${sc.toFixed(1)}</span>`:"")+(b?` ${BABY[b.rating][0]}`:"")})()}</small></span></button>` }).join("")
     || `<p class="empty" style="padding:16px">No recipes match.</p>`;
@@ -2639,10 +2741,10 @@ function showRecipe(id){
     ${sourceHTML(r)}
     ${triedHTML(r)}
     <div class="row" style="margin:0 0 24px">
-      <button class="pill dark" data-cook="${r.id}">Start cooking</button>
-      <button class="pill" data-tonight="${r.id}">${isT?"✓ Tonight's dinner (tap to remove)":"Cook this tonight"}</button>
+      <button class="pill dark" data-cook="${esc(r.id)}">Start cooking</button>
+      <button class="pill" data-tonight="${esc(r.id)}">${isT?"✓ Tonight's dinner (tap to remove)":"Cook this tonight"}</button>
       ${(()=>{ const sl=slotsFor(r.id); return sl.length?`<span class="hint2" style="margin:0;align-self:center">On the shopping list for ${slotLabel(...sl[0])}</span>`:"" })()}
-      <select class="pill" data-plansel="${r.id}" style="padding-right:.8em"><option value="">Plan for…</option>${[...Array(7)].map((_,i)=>{const d=addDays(today(),i);return `<optgroup label="${dayLabel(d)} ${dayShort(d)}">${MEALS.map(([m,ml])=>`<option value="${d}|${m}">${ml}, ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}${planMap[pk(d,m)]===r.id?" ✓":""}</option>`).join("")}</optgroup>`}).join("")}</select>
+      <select class="pill" data-plansel="${esc(r.id)}" style="padding-right:.8em"><option value="">Plan for…</option>${[...Array(7)].map((_,i)=>{const d=addDays(today(),i);return `<optgroup label="${dayLabel(d)} ${dayShort(d)}">${MEALS.map(([m,ml])=>`<option value="${d}|${m}">${ml}, ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}${planMap[pk(d,m)]===r.id?" ✓":""}</option>`).join("")}</optgroup>`}).join("")}</select>
     </div>
     <div class="cols">
       <div><h3>Ingredients</h3>${scaleBarHTML(r)}<ul class="ing" id="ingList">${ingItemsHTML(r)}</ul></div>
@@ -2651,7 +2753,7 @@ function showRecipe(id){
 </div>
     </div>
     ${reviewsHTML(r)}
-    <div class="row"><button class="pill" data-edit="${r.id}">Edit</button><button class="pill warn" data-del="${r.id}" data-label="Delete">Delete</button></div>`;
+    <div class="row"><button class="pill" data-edit="${esc(r.id)}">Edit</button><button class="pill warn" data-del="${esc(r.id)}" data-label="Delete">Delete</button></div>`;
   if(innerWidth>760) $("detail").querySelector("[data-back]").style.display="none";
   $("detail").scrollTop=0;
 }
@@ -2742,7 +2844,7 @@ function openPick(d,m="dinner"){ pickDay=d; pickMeal=m; $("pickTitle").textConte
 function renderPick(){
   const q=$("pickQ").value.trim().toLowerCase();
   $("pickList").innerHTML=recipes.filter(r=>!q||(r.title+" "+(r.category||"")).toLowerCase().includes(q)).map(r=>{ const pu=photoUrl(r.photo_path);
-    return `<button class="item ${planMap[pk(pickDay,pickMeal)]===r.id?"sel":""}" data-pick="${r.id}"><span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</span><span><b>${esc(r.title)}${!isTried(r)?`<span class="newtag">New</span>`:""}</b><small>${esc([r.category,r.cook_time].filter(Boolean).join(", "))}</small></span></button>` }).join("") || `<p class="empty" style="padding:16px">No recipes match.</p>`;
+    return `<button class="item ${planMap[pk(pickDay,pickMeal)]===r.id?"sel":""}" data-pick="${esc(r.id)}"><span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</span><span><b>${esc(r.title)}${!isTried(r)?`<span class="newtag">New</span>`:""}</b><small>${esc([r.category,r.cook_time].filter(Boolean).join(", "))}</small></span></button>` }).join("") || `<p class="empty" style="padding:16px">No recipes match.</p>`;
 }
 $("pickQ").oninput=renderPick;
 $("pickList").onclick=async e=>{ const b=e.target.closest("[data-pick]"); if(!b) return; close("pickOv"); try{ await api.setPlan(pickDay,b.dataset.pick,pickMeal); await refreshAll(); syncShopping({quiet:true}) }catch(err){ toast("Couldn't save the plan") } };
@@ -2826,7 +2928,7 @@ function renderShop(){
   const order=[...AISLES.map(a=>a[0]),"Other"], todo=shopping.filter(x=>!x.checked), done=shopping.filter(x=>x.checked);
   const forHTML=x=>{ const ids=(x.recipe_ids||[]).filter(id=>recipes.some(r=>r.id===id)); if(ids.length) return `<div class="sfor">For ${ids.map(id=>`<button data-openrec2="${id}">${esc(recipes.find(r=>r.id===id).title)}</button>`).join(", ")}</div>`; return x.note?`<div class="sfor">${esc(x.note)}</div>`:"" };
   const row=x=>{ const k=keyOf(x.name), have=!x.checked && k && hasKey(k);
-    return `<div><div style="display:flex;align-items:center"><button class="srow ${x.checked?"done":""}" data-shop="${x.id}"><span class="box"></span><span class="nm">${esc(x.name)}${have?`<span class="instock">In stock</span>`:""}</span>${x.qty?`<span class="q">${esc(x.qty)}</span>`:""}</button><button class="del" data-unshop="${x.id}" aria-label="Remove">✕</button></div>${forHTML(x)}</div>` };
+    return `<div><div style="display:flex;align-items:center"><button class="srow ${x.checked?"done":""}" data-shop="${esc(x.id)}"><span class="box"></span><span class="nm">${esc(x.name)}${have?`<span class="instock">In stock</span>`:""}</span>${x.qty?`<span class="q">${esc(x.qty)}</span>`:""}</button><button class="del" data-unshop="${esc(x.id)}" aria-label="Remove">✕</button></div>${forHTML(x)}</div>` };
   let h=order.map(a=>{ const g=todo.filter(x=>(x.aisle||"Other")===a); return g.length?`<div class="aisle">${a}</div>${g.map(row).join("")}`:"" }).join("");
   if(done.length) h+=`<div class="aisle" style="display:flex;justify-content:space-between;align-items:center">In the basket (${done.length})<span style="display:flex;gap:6px"><button class="pill dark" id="shopPutAway" style="min-height:34px;padding:.3em .9em;font-size:13px">Put away</button><button class="pill" id="shopClear" style="min-height:34px;padding:.3em .9em;font-size:13px">Clear</button></span></div>${done.map(row).join("")}`;
   $("shopList").innerHTML = h || `<p class="empty" style="padding:24px 4px">The list fills itself from this week's dinner plan. Plan a dinner to add its ingredients, or add something extra above.</p>`;
@@ -2965,7 +3067,7 @@ function fromImport(d, fallbackUrl){
   if(!$("bookOv").classList.contains("open")) (isPhone()?tab("recipes"):open("bookOv"));
   editRecipe({title:d.title||"",category:d.category||"",cook_time:d.cook_time||"",serves:d.serves||"",ingredients:d.ingredients||[],steps:d.steps||[],notes:d.notes||"",source_url:d.source_url||fallbackUrl||null,source_kind:d.source_kind||kindOf(d.source_url||fallbackUrl),photo_path:d.photo_path||null,_imported:true,_partial:!!d.partial,_message:d.message||null});
 }
-function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; s.onload=res; s.onerror=()=>rej(new Error("load")); document.head.appendChild(s) }) }
+function loadScript(src,integrity){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; if(integrity){ s.integrity=integrity; s.crossOrigin="anonymous" } s.onload=res; s.onerror=()=>rej(new Error("load")); document.head.appendChild(s) }) }
 $("impPics").onchange=async e=>{
   const files=[...e.target.files]; e.target.value=""; if(!files.length) return;
   const prog=$("impProg"); $("impErr").textContent="";
@@ -2976,7 +3078,7 @@ $("impPics").onchange=async e=>{
     const d=await api.readPictures(images); prog.textContent=""; fromImport(d,null); return;
   }catch(err){ if(!err.noKey){ prog.textContent=""; $("impErr").textContent=err.message||"Couldn't read those pictures. Try again."; return } }
   try{
-    if(!window.Tesseract){ prog.textContent="Getting the text reader ready…"; await loadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js") }
+    if(!window.Tesseract){ prog.textContent="Getting the text reader ready…"; await loadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js","sha384-GJqSu7vueQ9qN0E9yLPb3Wtpd7OrgK8KmYzC8T1IysG1bcvxvIO4qtYR/D3A991F") }
     let text="";
     for(let i=0;i<files.length;i++){
       const img=await shrink(files[i],2200,.92);
@@ -3034,9 +3136,9 @@ function renderPantry(){
     .filter(x=>x.total).map(x=>({...x,soon:[...recipeKeys(x.r).keys()].filter(k=>useSoon().some(s=>s.name===k||` ${k} `.includes(` ${s.name} `))).length}))
     .sort((a,b)=>(b.have/b.total)-(a.have/a.total) || b.soon-a.soon || a.miss.length-b.miss.length || (score(b.r.id)||0)-(score(a.r.id)||0)).slice(0,10);
   $("ideas").innerHTML = pantrySet.size ? ranked.map(x=>{ const pu=photoUrl(x.r.photo_path);
-    return `<div class="idea"><button class="item" data-openrec="${x.r.id}"><span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(x.r)}</span><span style="min-width:0"><b>${esc(x.r.title)}</b>
+    return `<div class="idea"><button class="item" data-openrec="${esc(x.r.id)}"><span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(x.r)}</span><span style="min-width:0"><b>${esc(x.r.title)}</b>
       <span class="have">${x.miss.length?`You have ${x.have} of ${x.total}`:"You have everything"}${x.soon?`, uses food to use soon`:""}</span>${x.miss.length?`<span class="need" style="display:block">Need ${esc(x.miss.slice(0,4).join(", "))}${x.miss.length>4?` and ${x.miss.length-4} more`:""}</span>`:""}</span></button>
-      <button class="pill" data-tonightid="${x.r.id}">Cook tonight</button></div>` }).join("")
+      <button class="pill" data-tonightid="${esc(x.r.id)}">Cook tonight</button></div>` }).join("")
     : `<p class="empty" style="padding:12px 0">Tap the ingredients you have, and the best matches appear here.</p>`;
 }
 function openPantry(){ $("ptQ").value=""; open("pantryOv"); renderPantry() }
@@ -3055,7 +3157,7 @@ $("ideas").onclick=async e=>{
 /* ======================== SETTINGS ======================== */
 let calColor=CAL_COLORS[0], rtDraft=null;
 function renderCalList(){
-  $("calList").innerHTML = calendars.length ? calendars.map(c=>`<div class="calrow"><i style="background:${esc(c.color||CAL_COLORS[0])}"></i><div class="grow"><b>${esc(c.name)}</b><small>${eventsFailed.includes(c.name)?"Couldn't load this calendar. Check the link.":`Added by ${esc(c.owner_name||"someone")}`}</small></div><button class="pill warn" data-delcal="${c.id}" data-label="Remove" style="min-height:36px;padding:.3em .9em;font-size:13px">Remove</button></div>`).join("")
+  $("calList").innerHTML = calendars.length ? calendars.map(c=>`<div class="calrow"><i style="background:${esc(c.color||CAL_COLORS[0])}"></i><div class="grow"><b>${esc(c.name)}</b><small>${eventsFailed.includes(c.name)?"Couldn't load this calendar. Check the link.":`Added by ${esc(c.owner_name||"someone")}`}</small></div><button class="pill warn" data-delcal="${esc(c.id)}" data-label="Remove" style="min-height:36px;padding:.3em .9em;font-size:13px">Remove</button></div>`).join("")
     : `<p class="hint2" style="color:var(--fg3)">No calendars yet.</p>`;
   $("calColor").innerHTML="Colour "+CAL_COLORS.map(c=>`<button type="button" class="${c===calColor?"on":""}" data-col="${c}" style="background:${c}" aria-label="Colour"></button>`).join("");
 }
@@ -3074,7 +3176,8 @@ $("wSave").onclick=async()=>{
   const note=$("mamaNote").value.trim(); wordsCfg={on:$("wOn").checked,note:note||null,note_date:note?today():null}; renderWall();
   try{ await api.setState("words",wordsCfg); toast(note?"Today's note for Mama saved":"Saved") }catch(e){ toast("Couldn't save that") }
 };
-function openSettings(){ renderHelpers(); $("icUrl").value=(icloudCfg&&icloudCfg.url)||""; renderIcStat(); $("famKid").value=(familyCfg&&familyCfg.kid)||""; $("famMom").value=(familyCfg&&familyCfg.mom)||""; renderThemes(); rtDraft=JSON.parse(JSON.stringify(routine())); $("wOn").checked=wordsOn(); $("mamaNote").value=(wordsCfg&&wordsCfg.note_date===today()&&wordsCfg.note)||""; renderCalList(); renderRoutineEditor(); $("who2").textContent = DEMO ? "Demo mode." : `Signed in as ${me.name} (${me.email}).`; }
+function renderDiag(){ const e=ERRS.slice(-3).reverse(); $("diag").innerHTML=`Version ${esc(APP_VERSION)}. ${offline?"<b>Offline right now.</b> ":""}Last synced ${lastOk?new Date(lastOk).toLocaleString(CONFIG.locale,{weekday:"short",hour:"2-digit",minute:"2-digit"}):"not yet"}.${e.length?`<br>Recent problems: ${e.map(x=>esc(new Date(x.t).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"})+" "+x.where+": "+x.m)).join("; ")}`:" No problems logged."}` }
+function openSettings(){ renderDiag(); renderHelpers(); $("icUrl").value=(icloudCfg&&icloudCfg.url)||""; renderIcStat(); $("famKid").value=(familyCfg&&familyCfg.kid)||""; $("famMom").value=(familyCfg&&familyCfg.mom)||""; renderThemes(); rtDraft=JSON.parse(JSON.stringify(routine())); $("wOn").checked=wordsOn(); $("mamaNote").value=(wordsCfg&&wordsCfg.note_date===today()&&wordsCfg.note)||""; renderCalList(); renderRoutineEditor(); $("who2").textContent = DEMO ? "Demo mode." : `Signed in as ${me.name} (${me.email}).`; }
 $("calColor").onclick=e=>{ const b=e.target.closest("[data-col]"); if(b){ calColor=b.dataset.col; renderCalList() } };
 $("calList").onclick=async e=>{ const b=e.target.closest("[data-delcal]"); if(!b) return; if(!twoTap("c"+b.dataset.delcal,b,"Tap to confirm")) return; try{ await api.deleteCalendar(b.dataset.delcal); await refreshAll() }catch(err){ toast("Couldn't remove it") } };
 $("calAdd").onsubmit=async e=>{
@@ -3234,6 +3337,7 @@ $("loginForm").onsubmit=async e=>{
 let started=false;
 async function start(){
   if(started) return; started=true;
+  await primeFromSnap(); // show the last known data straight away, then fetch fresh data
   await refreshAll(); api.subscribe(refreshAll); if(!isHelper()) syncShopping({quiet:true});
   setTimeout(autoDraftSunday, 20e3); setInterval(autoDraftSunday, 30*60e3);
   setInterval(refreshAll, 10*60e3);           // safety net + renews photo links
@@ -3244,19 +3348,23 @@ async function start(){
 (async()=>{
   if(DEMO){ const b=document.createElement("div"); b.className="demo-badge"; b.textContent="DEMO DATA"; document.body.appendChild(b) }
   renderWall(); loadWeather(); loadAir(); setInterval(loadWeather,15*60e3); setInterval(loadAir,30*60e3); setInterval(tick,1000); nextPhoto();
-  let ok=false; try{ ok=await api.session() }catch(e){ ok=false }
-  if(ok) start(); else open("login");
+  let ok=false; try{ ok=await api.session() }catch(e){ ok=false; logErr("session",e) }
+  if(ok){ if(usedSnap) setOffline(true); start() } else open("login");
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden && started){ refreshAll(); loadWeather(); loadAir() } });
-  setTimeout(()=>location.reload(), 12*3600e3); // fresh start twice a day for a long-running kiosk
+  // fresh start twice a day for a long-running kiosk, but only when the internet is up and nobody is mid-task
+  setTimeout(function again(){ if(navigator.onLine && Date.now()-lastOk<10*60e3 && !document.querySelector(".ov.open:not(#login)")) location.reload(); else setTimeout(again, 10*60e3) }, 12*3600e3);
+  addEventListener("online", ()=>{ if(started){ refreshAll(); loadWeather(); loadAir() } });
+  addEventListener("offline", ()=>{ if(started) setOffline(true) });
+  if("serviceWorker" in navigator && !DEMO && (location.protocol==="https:" || location.hostname==="localhost")) navigator.serviceWorker.register("sw.js").catch(e=>logErr("sw",e));
 })();
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.32";
+const APP_VERSION="2026-11-13.33";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
-  try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
-    const m=t.match(/APP_VERSION="([^"]+)"/); if(m && m[1]!==APP_VERSION) location.replace(location.pathname+"?v="+m[1]);
+  try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
+    const m=t.match(/APP_VERSION="([^"]+)"/); if(m && m[1]!==APP_VERSION && /<\/html>\s*$/.test(t)) location.replace(location.pathname+"?v="+m[1]);
   }catch(e){}
 }, 10*60e3);
 window.__wb={setMode:m=>{layout="C";modeOverride=m;renderWall();nextPhoto()},setLayout:l=>{layout=l;renderWall();nextPhoto()}};

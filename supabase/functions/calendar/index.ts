@@ -2,6 +2,7 @@
 // Members only. Links live in wb_calendars (row-level security: household only).
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { expand } from "./ics.ts";
+import { assertPublic } from "./net.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -10,17 +11,26 @@ const cors = {
 };
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-function blockedHost(h: string): boolean {
-  h = h.toLowerCase().replace(/^\[|\]$/g, "");
-  if (h === "localhost" || h.endsWith(".local") || h.endsWith(".internal")) return true;
-  if (/^(127\.|10\.|0\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.)/.test(h)) return true;
-  if (/^(::1?$|fc|fd|fe80:)/.test(h)) return true;
-  return false;
+// Only the wallboard's own site may call this from a browser.
+const ALLOWED_ORIGIN = /^https:\/\/bitterzee\.github\.io$|^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+function withCors(h: (req: Request) => Promise<Response>) {
+  return async (req: Request): Promise<Response> => {
+    const o = req.headers.get("Origin") ?? "";
+    let res: Response;
+    try { res = await h(req); } catch (e) { console.error(e); res = new Response(JSON.stringify({ error: "Something went wrong. Try again." }), { status: 500, headers: { "Content-Type": "application/json" } }); }
+    const r = new Response(res.body, res);
+    r.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN.test(o) ? o : "https://bitterzee.github.io");
+    r.headers.set("Access-Control-Allow-Headers", "authorization, x-client-info, apikey, content-type");
+    r.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    r.headers.set("Vary", "Origin"); r.headers.set("X-Content-Type-Options", "nosniff"); r.headers.set("Cache-Control", "no-store");
+    return r;
+  };
 }
+
 async function getIcs(raw: string): Promise<string> {
   let url = new URL(raw.replace(/^webcals?:\/\//i, "https://"));
   for (let hop = 0; hop < 5; hop++) {
-    if (!/^https?:$/.test(url.protocol) || blockedHost(url.hostname)) throw new Error("blocked");
+    await assertPublic(url);
     const res = await fetch(url, { redirect: "manual", headers: { Accept: "text/calendar,*/*", "User-Agent": "Wallboard/1.0" }, signal: AbortSignal.timeout(12000) });
     if (res.status >= 300 && res.status < 400 && res.headers.get("location")) { url = new URL(res.headers.get("location")!, url); continue; }
     if (!res.ok) throw new Error(`status ${res.status}`);
@@ -31,7 +41,7 @@ async function getIcs(raw: string): Promise<string> {
   throw new Error("too many redirects");
 }
 
-Deno.serve(async (req) => {
+Deno.serve(withCors(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   const URL_ = Deno.env.get("SUPABASE_URL")!, ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
   const sb = createClient(URL_, ANON, { global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } }, auth: { persistSession: false } });
@@ -41,7 +51,7 @@ Deno.serve(async (req) => {
   let body: { days?: number; tz?: string; test_url?: string } = {};
   try { body = await req.json(); } catch { /* defaults */ }
   const tz = body.tz || "Asia/Jakarta";
-  const days = Math.min(Math.max(body.days ?? 8, 1), 31);
+  const days = Math.min(Math.max(Number(body.days) || 8, 1), 31);
   const from = Date.now() - 12 * 36e5, to = Date.now() + days * 864e5;
 
   // "Test this link" from Settings, before saving it.
@@ -59,4 +69,4 @@ Deno.serve(async (req) => {
   const events = results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
   const failed = (cals ?? []).filter((_, i) => results[i].status === "rejected").map((c) => c.name);
   return json({ events, failed });
-});
+}));

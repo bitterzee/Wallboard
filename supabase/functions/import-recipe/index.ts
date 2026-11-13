@@ -5,6 +5,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import { parseRecipe, meta } from "./parse.ts";
 import { tracksFrom, transcript, recipeFromVideo, storyboardSpec, videoFrames } from "./video.ts";
 import { parseFreeText, cleanTitle, decodeEntities } from "./freetext.ts";
+import { assertPublic } from "./net.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -12,20 +13,29 @@ const cors = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...cors, "Content-Type": "application/json" } });
+
+// Only the wallboard's own site may call this from a browser.
+const ALLOWED_ORIGIN = /^https:\/\/bitterzee\.github\.io$|^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+function withCors(h: (req: Request) => Promise<Response>) {
+  return async (req: Request): Promise<Response> => {
+    const o = req.headers.get("Origin") ?? "";
+    let res: Response;
+    try { res = await h(req); } catch (e) { console.error(e); res = new Response(JSON.stringify({ error: "Something went wrong. Try again." }), { status: 500, headers: { "Content-Type": "application/json" } }); }
+    const r = new Response(res.body, res);
+    r.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN.test(o) ? o : "https://bitterzee.github.io");
+    r.headers.set("Access-Control-Allow-Headers", "authorization, x-client-info, apikey, content-type");
+    r.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    r.headers.set("Vary", "Origin"); r.headers.set("X-Content-Type-Options", "nosniff"); r.headers.set("Cache-Control", "no-store");
+    return r;
+  };
+}
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15";
 const dec = (b: Uint8Array) => new TextDecoder().decode(b);
 
-function blockedHost(h: string): boolean {
-  h = h.toLowerCase().replace(/^\[|\]$/g, "");
-  if (h === "localhost" || h.endsWith(".local") || h.endsWith(".internal") || (h.endsWith(".supabase.co") && h.includes("db."))) return true;
-  if (/^(127\.|10\.|0\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.)/.test(h)) return true;
-  if (/^(::1?$|fc|fd|fe80:)/.test(h)) return true;
-  return false;
-}
 async function safeFetch(raw: string, accept: string, maxBytes: number, extra: Record<string, string> = {}): Promise<{ res: Response; body: Uint8Array; url: URL }> {
   let url = new URL(raw);
   for (let hop = 0; hop < 6; hop++) {
-    if (!/^https?:$/.test(url.protocol) || blockedHost(url.hostname)) throw new Error("blocked");
+    await assertPublic(url);
     const res = await fetch(url, { redirect: "manual", headers: { "User-Agent": UA, Accept: accept, "Accept-Language": "en,id;q=0.8", ...extra }, signal: AbortSignal.timeout(12000) });
     if (res.status >= 300 && res.status < 400 && res.headers.get("location")) { url = new URL(res.headers.get("location")!, url); continue; }
     const reader = res.body?.getReader(); const chunks: Uint8Array[] = []; let n = 0;
@@ -36,6 +46,10 @@ async function safeFetch(raw: string, accept: string, maxBytes: number, extra: R
   throw new Error("too many redirects");
 }
 
+// Daily cap on Claude calls per person, so a lost phone or a bug can't run up the bill.
+const AI_CAP_MSG = "You've used Claude a lot today. It'll be available again tomorrow.";
+// deno-lint-ignore no-explicit-any
+async function aiAllowed(db: any): Promise<boolean> { const { data, error } = await db.rpc("wb_ai_tick"); return error ? true : data !== false; }
 const ytId = (u: URL): string | null => {
   const h = u.hostname.replace(/^(www|m|music)\./, "");
   if (h === "youtu.be") return u.pathname.slice(1, 12) || null;
@@ -95,7 +109,7 @@ async function fromInstagram(code: string) {
   return { caption, image, author };
 }
 
-Deno.serve(async (req) => {
+Deno.serve(withCors(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!, ANON = Deno.env.get("SUPABASE_ANON_KEY")!, SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -110,6 +124,7 @@ Deno.serve(async (req) => {
   if (Array.isArray(body.images) && body.images.length) {
     const KEY = Deno.env.get("ANTHROPIC_API_KEY");
     if (!KEY) return json({ error: "Reading pictures with Claude needs an ANTHROPIC_API_KEY secret in Supabase." }, 503);
+    if (!(await aiAllowed(userClient))) return json({ error: AI_CAP_MSG }, 429);
     const imgs = body.images.filter((i) => typeof i?.data === "string" && i.data.length > 100 && i.data.length < 3_500_000).slice(0, 6)
       .map((i) => ({ data: i.data, type: /^image\/(jpeg|png|webp)$/.test(i.media_type ?? "") ? i.media_type! : "image/jpeg" }));
     if (!imgs.length) return json({ error: "Add at least one picture." }, 400);
@@ -138,7 +153,7 @@ Deno.serve(async (req) => {
   const target = String(body.url ?? "").trim();
   if (!/^https?:\/\//i.test(target)) return json({ error: "Paste a full link that starts with https://" }, 400);
   let u: URL; try { u = new URL(target); } catch { return json({ error: "That isn't a valid link." }, 400); }
-  if (blockedHost(u.hostname)) return json({ error: "That link can't be imported." }, 400);
+  try { await assertPublic(u); } catch { return json({ error: "That link can't be imported." }, 400); }
 
   const admin = createClient(SUPABASE_URL, SERVICE, { auth: { persistSession: false } });
   async function savePhoto(urls: (string | null | undefined)[], base: URL): Promise<string | null> {
@@ -184,6 +199,7 @@ Deno.serve(async (req) => {
       const KEY = Deno.env.get("ANTHROPIC_API_KEY");
       const yt = src as Awaited<ReturnType<typeof fromYouTube>>;
       if (!KEY) aiNote = "To have Claude write the recipe from the video itself, add an ANTHROPIC_API_KEY secret in Supabase.";
+      else if (!(await aiAllowed(userClient))) aiNote = AI_CAP_MSG;
       else {
         const tr = await transcript(vid, yt.tracks);
         const fr2 = await videoFrames(vid, yt.spec);
@@ -228,4 +244,4 @@ Deno.serve(async (req) => {
   const partial = !ingredients.length || !steps.length;
   return json({ title: r.title, category: r.category, cook_time: r.cook_time, serves: r.serves, ingredients, steps, notes: r.notes,
     source_url: page.url.toString(), source_kind: "web", photo_path, partial, message: partial ? "Part of the recipe wasn't on that page. Fill in the rest." : null });
-});
+}));

@@ -9,6 +9,22 @@ const cors = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...cors, "Content-Type": "application/json" } });
+
+// Only the wallboard's own site may call this from a browser.
+const ALLOWED_ORIGIN = /^https:\/\/bitterzee\.github\.io$|^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+function withCors(h: (req: Request) => Promise<Response>) {
+  return async (req: Request): Promise<Response> => {
+    const o = req.headers.get("Origin") ?? "";
+    let res: Response;
+    try { res = await h(req); } catch (e) { console.error(e); res = new Response(JSON.stringify({ error: "Something went wrong. Try again." }), { status: 500, headers: { "Content-Type": "application/json" } }); }
+    const r = new Response(res.body, res);
+    r.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN.test(o) ? o : "https://bitterzee.github.io");
+    r.headers.set("Access-Control-Allow-Headers", "authorization, x-client-info, apikey, content-type");
+    r.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    r.headers.set("Vary", "Origin"); r.headers.set("X-Content-Type-Options", "nosniff"); r.headers.set("Cache-Control", "no-store");
+    return r;
+  };
+}
 const MODEL = Deno.env.get("SCAN_MODEL") || "claude-sonnet-5-5";
 const LOCS = ["Fridge", "Freezer", "Cupboard"];
 
@@ -37,7 +53,7 @@ const TOOL = {
   },
 };
 
-Deno.serve(async (req) => {
+Deno.serve(withCors(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
   const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } }, auth: { persistSession: false } });
@@ -46,6 +62,7 @@ Deno.serve(async (req) => {
 
   const KEY = Deno.env.get("ANTHROPIC_API_KEY");
   if (!KEY) return json({ error: "Photo scanning isn't switched on yet. Add an ANTHROPIC_API_KEY secret in Supabase." }, 503);
+  { const { data: allowed, error: capErr } = await userClient.rpc("wb_ai_tick"); if (!capErr && allowed === false) return json({ error: "You've used Claude a lot today. It'll be available again tomorrow." }, 429); }
 
   let body: { images?: { data: string; media_type?: string }[]; where?: string } = {};
   try { body = await req.json(); } catch { /* */ }
@@ -92,4 +109,4 @@ Deno.serve(async (req) => {
     .filter((x: { name: string }) => x.name && !seen.has(x.name.toLowerCase()) && seen.add(x.name.toLowerCase()))
     .slice(0, 80);
   return json({ items, note: String(raw.note ?? "").slice(0, 200) });
-});
+}));
