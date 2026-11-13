@@ -128,14 +128,14 @@ export async function recipeFromVideo(key: string, v: { title: string; author: s
     `Here is a cooking video's title, description` + (v.transcript ? ` and transcript (the transcript may be auto-generated, so expect mis-heard words)` : ` (it has no speech)`) + `.\n` +
     `Write the recipe that is cooked in it. Use English, but keep common Indonesian ingredient and dish names (with the English in brackets the first time if helpful). ` +
     `Only include what the video supports; don't add ingredients that aren't mentioned. Fix obvious mis-hearings (for example 'garlic' heard as 'gar lick').\n\n` +
-    `Only give amounts that are said or shown; otherwise list the ingredient without an amount. If you can't tell what is cooked or how, set found to false.\n\n` +
+    `Only give amounts that are said or shown; otherwise list the ingredient without an amount. If you can't tell what is cooked or how, set found to false. Answer only by calling report_recipe.\n\n` +
     `Title: ${v.title}\nChannel: ${v.author}\n${v.transcript ? `Transcript language: ${v.lang}\n` : ""}\nDescription:\n${v.description.slice(0, 4000) || "(none)"}\n\n${v.transcript ? `Transcript:\n${v.transcript}` : "(no transcript)"}`;
   const content = [...pics.map((p) => ({ type: "image", source: { type: "base64", media_type: p.type, data: p.data } })), { type: "text", text: prompt }];
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model, max_tokens: 3000, tools: [TOOL], tool_choice: { type: "tool", name: "report_recipe" }, messages: [{ role: "user", content }] }),
-    signal: AbortSignal.timeout(90000),
+    body: JSON.stringify({ model, max_tokens: 8000, tools: [TOOL], tool_choice: { type: "auto" }, messages: [{ role: "user", content }] }),
+    signal: AbortSignal.timeout(110000),
   });
   if (!r.ok) {
     const t = await r.text(); console.error("anthropic", r.status, t.slice(0, 400));

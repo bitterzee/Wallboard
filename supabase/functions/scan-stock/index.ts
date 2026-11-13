@@ -67,8 +67,8 @@ Deno.serve(async (req) => {
     res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 2000, tools: [TOOL], tool_choice: { type: "tool", name: "report_items" }, messages: [{ role: "user", content }] }),
-      signal: AbortSignal.timeout(60000),
+      body: JSON.stringify({ model: MODEL, max_tokens: 8000, tools: [TOOL], tool_choice: { type: "auto" }, messages: [{ role: "user", content }] }),
+      signal: AbortSignal.timeout(110000),
     });
   } catch { return json({ error: "The photo reader took too long. Try fewer photos." }, 504); }
   if (!res.ok) {
