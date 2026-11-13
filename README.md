@@ -47,3 +47,7 @@ She signs in with her Capcus login. If she doesn't have one, create her in Authe
 - **Morning routine**: a picture checklist on the wall from 5 to 11 am, with a celebration when it's all ticked. Edit the steps in Settings.
 - **WhatsApp**: the WhatsApp button on the shopping list sends the list as tidy text.
 - On the iPad, tap the screen and use **Menu** (top right) for everything.
+
+## Reviews and themes
+- **Family reviews**: every recipe has a review each for Mom, Dad and Baby. Mom and Dad give 1 to 5 stars, and Baby gets a face, from 😋 Loved it to 🙅 Refused. A note is optional. Averages show in the recipe list, and **Top rated** sorts by them. When you finish cooking, the app asks you to review.
+- **Themes**: in Settings, choose Jakarta rain, Bali, Shibuya, Snowboarding or Batik. The theme changes the wall and both phones.
