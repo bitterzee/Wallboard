@@ -717,6 +717,14 @@ async function start(){
 })();
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)) }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
+/* Self-update: the wall checks for a newer published version and reloads itself */
+const APP_VERSION="2026-11-13.3";
+setInterval(async()=>{
+  if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
+  try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
+    const m=t.match(/APP_VERSION="([^"]+)"/); if(m && m[1]!==APP_VERSION) location.replace(location.pathname+"?v="+m[1]);
+  }catch(e){}
+}, 10*60e3);
 window.__wb={setMode:m=>{layout="C";modeOverride=m;renderWall();nextPhoto()},setLayout:l=>{layout=l;renderWall();nextPhoto()}};
 </script>
 </body>
