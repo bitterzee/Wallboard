@@ -3,7 +3,7 @@
 // recipe page it links to). Instagram: the post caption. Household members only.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { parseRecipe, meta } from "./parse.ts";
-import { tracksFrom, transcript, recipeFromVideo } from "./video.ts";
+import { tracksFrom, transcript, recipeFromVideo, storyboardSpec, videoFrames } from "./video.ts";
 import { parseFreeText, cleanTitle, decodeEntities } from "./freetext.ts";
 
 const cors = {
@@ -49,12 +49,12 @@ const igCode = (u: URL): string | null => (/(^|\.)instagram\.com$/.test(u.hostna
 const NOT_RECIPE = /(youtube\.com|youtu\.be|instagram\.com|tiktok\.com|facebook\.com|fb\.me|fb\.watch|twitter\.com|x\.com|threads\.net|amzn\.|amazon\.|shopee\.|tokopedia\.|lazada\.|linktr\.ee|spotify\.|patreon\.|discord\.|wa\.me|whatsapp\.|t\.me|epidemicsound|music\.|soundcloud\.|paypal\.|ko-fi\.|bento\.me|beacons\.ai)/i;
 
 async function fromYouTube(id: string) {
-  let title = "", desc = "", author = ""; let tracks: ReturnType<typeof tracksFrom> = [];
+  let title = "", desc = "", author = ""; let tracks: ReturnType<typeof tracksFrom> = []; let spec: string | null = null;
   try {
     const p = await safeFetch(`https://www.youtube.com/watch?v=${id}&hl=en`, "text/html", 4_000_000, { Cookie: "CONSENT=YES+cb; SOCS=CAI" });
     const html = dec(p.body);
     const m = html.match(/ytInitialPlayerResponse\s*=\s*(\{[\s\S]+?\})\s*;\s*(?:var\s|<\/script>|const\s|let\s)/);
-    if (m) { try { const j = JSON.parse(m[1]); title = j.videoDetails?.title ?? ""; desc = j.videoDetails?.shortDescription ?? ""; author = j.videoDetails?.author ?? ""; tracks = tracksFrom(j); } catch { /* fall through */ } }
+    if (m) { try { const j = JSON.parse(m[1]); title = j.videoDetails?.title ?? ""; desc = j.videoDetails?.shortDescription ?? ""; author = j.videoDetails?.author ?? ""; tracks = tracksFrom(j); spec = storyboardSpec(j); } catch { /* fall through */ } }
     if (!desc) { const sd = html.match(/"shortDescription":"((?:[^"\\]|\\.)*)"/); if (sd) { try { desc = JSON.parse(`"${sd[1]}"`); } catch { /* */ } } }
     if (!title) title = meta(html, "og:title") ?? "";
     if (!desc) desc = meta(html, "og:description") ?? "";
@@ -62,7 +62,7 @@ async function fromYouTube(id: string) {
   if (!title || !author) {
     try { const o = await safeFetch(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent("https://www.youtube.com/watch?v=" + id)}`, "application/json", 200_000); const j = JSON.parse(dec(o.body)); title ||= j.title ?? ""; author ||= j.author_name ?? ""; } catch { /* */ }
   }
-  return { title, text: desc, author, tracks, images: [`https://i.ytimg.com/vi/${id}/maxresdefault.jpg`, `https://i.ytimg.com/vi/${id}/hqdefault.jpg`] };
+  return { title, text: desc, author, tracks, spec, images: [`https://i.ytimg.com/vi/${id}/maxresdefault.jpg`, `https://i.ytimg.com/vi/${id}/hqdefault.jpg`] };
 }
 
 async function fromInstagram(code: string) {
@@ -170,17 +170,18 @@ Deno.serve(async (req) => {
       if (!KEY) aiNote = "To have Claude write the recipe from the video itself, add an ANTHROPIC_API_KEY secret in Supabase.";
       else {
         const tr = await transcript(vid, yt.tracks);
-        if (!tr) aiNote = "This video has no captions YouTube would share, so Claude couldn't listen in. Add the recipe while you watch.";
+        const fr2 = await videoFrames(vid, yt.spec);
+        if (!tr && !fr2.images.length) aiNote = "YouTube didn't share this video's captions or pictures, so Claude couldn't read it. Add the recipe while you watch.";
         else {
           try {
-            const ai = await recipeFromVideo(KEY, { title: yt.title, author, description: text || "", transcript: tr.text, lang: tr.lang });
+            const ai = await recipeFromVideo(KEY, { title: yt.title, author, description: text || "", transcript: tr?.text ?? "", lang: tr?.lang ?? "", images: fr2.images });
             if (ai && ai.found && ai.ingredients.length + ai.steps.length > 2) {
               if (ingredients.length < 2) ingredients = ai.ingredients;
               if (steps.length < 2) steps = ai.steps;
               aiMeta = { serves: ai.serves, cook_time: ai.cook_time, category: ai.category }; aiTitle = ai.title;
               notes = [notes, ai.tips].filter(Boolean).join(" ") || null;
-              aiNote = "Claude wrote this from what's said in the video" + (tr.auto ? " (YouTube's automatic captions)" : "") + ". Check the amounts before cooking.";
-            } else aiNote = "Claude listened to the video but couldn't find a recipe in it.";
+              aiNote = (tr ? "Claude wrote this from what's said and shown in the video" + (tr.auto ? " (using YouTube's automatic captions)" : "") : "This video has no speech, so Claude wrote this from frames of the video and its on-screen text") + ". Check the ingredients and amounts before cooking.";
+            } else aiNote = tr ? "Claude went through the video but couldn't find a recipe in it." : "This video has no speech, and Claude couldn't make out the recipe from its pictures. Add it while you watch.";
           } catch (e) { aiNote = (e as Error).message; }
         }
       }
