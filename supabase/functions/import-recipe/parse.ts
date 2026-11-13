@@ -68,7 +68,7 @@ function yieldText(v: unknown): string | null {
   const m = num?.match(/\d+(?:\s*[-–]\s*\d+)?/);
   return m ? m[0].replace(/\s/g, "") : null;
 }
-function meta(html: string, prop: string): string | null {
+export function meta(html: string, prop: string): string | null {
   const re = new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]*>`, "i");
   const tag = html.match(re)?.[0];
   const c = tag?.match(/content=["']([^"']*)["']/i)?.[1];

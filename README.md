@@ -51,3 +51,9 @@ She signs in with her Capcus login. If she doesn't have one, create her in Authe
 ## Reviews and themes
 - **Family reviews**: every recipe has a review each for Mom, Dad and Baby. Mom and Dad give 1 to 5 stars, and Baby gets a face, from 😋 Loved it to 🙅 Refused. A note is optional. Averages show in the recipe list, and **Top rated** sorts by them. When you finish cooking, the app asks you to review.
 - **Themes**: in Settings, choose Jakarta rain, Bali, Shibuya, Snowboarding or Batik. The theme changes the wall and both phones.
+
+## Importing from YouTube, Instagram and pictures
+- **YouTube**: reads the video description. If the description only links to the creator's recipe page, it reads that page instead. If neither has the recipe, chapter titles become the steps. The video stays linked, and you can play it inside the recipe and in cooking mode.
+- **Instagram**: reads the post caption. Private posts can't be read.
+- **Photos and screenshots**: the text is read on your device in English and Indonesian (Tesseract.js), then sorted into ingredients and steps. Clear printed text works best.
+- **Tried or new**: recipes you haven't made yet show **New**. Finishing cooking mode, or tapping **We made this today**, counts as made. Use the **New to try** and **Tried** filters in the recipe list.
