@@ -541,13 +541,15 @@ body.phone.cooking #tabs,body.phone.signin #tabs{display:none}
 #tabs svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 #tabs button.on{color:var(--fg);background:rgba(var(--fg-rgb),.08)}
 #tabs button.on svg{stroke:var(--accent)}
-body.phone .ov{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+body.phone .ov{bottom:-60px;padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+body.phone .bg,body.phone .shade{top:-60px;bottom:-60px}
+body.phone .bar{padding-top:calc(env(safe-area-inset-top) + 18px)}
 body.phone #cook,body.phone #login,body.phone #layoutOv,body.phone .sheet{padding-bottom:0}
 body.phone .ctl,body.phone .demo-badge{display:none!important}
 body.phone .pw .rt-row .rt-l{font-size:12px}
 body.phone #bookOv [data-close],body.phone #photosOv [data-close],body.phone #planOv [data-close],body.phone #shopOv [data-close],body.phone #stockOv [data-close],body.phone #bookLayout,body.phone #bookOv [data-open]{display:none}
 body.phone .toast{bottom:calc(92px + env(safe-area-inset-bottom))}
-body.phone #wall{left:0;top:0;width:100%;height:auto;bottom:0;transform:none;padding:calc(env(safe-area-inset-top) + 18px) 20px calc(96px + env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch}
+body.phone #wall{left:0;top:0;width:100%;height:auto;bottom:-60px;transform:none;padding:calc(env(safe-area-inset-top) + 40px) 20px calc(190px + env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch}
 body.phone .bar{padding-left:20px;padding-right:14px;background:rgba(var(--shade-rgb),.86);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 body.phone .bar h1{font-size:28px}
 .pw{display:flex;flex-direction:column;gap:18px;max-width:520px;margin:0 auto}
@@ -2107,7 +2109,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.16";
+const APP_VERSION="2026-11-13.17";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
