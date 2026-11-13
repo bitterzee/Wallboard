@@ -369,10 +369,28 @@ select.pill{appearance:none;-webkit-appearance:none;background:var(--s1)}
 .w-mot b{color:var(--fg);font-weight:600}
 .pw .w-mama{font-size:21px}.pw .w-mot{font-size:15px}
 .n-words .w-mama{font-size:19px}.n-words .w-mot{font-size:14px}
-.riedit{display:grid;grid-template-columns:110px 64px 1fr 40px;gap:8px;margin-bottom:8px}
-.riedit input{padding:.7em .8em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--s1);font-size:16px;color:var(--fg);min-width:0}
-.riedit input.emo{text-align:center;font-size:24px;padding:.3em}
-body.phone .riedit{grid-template-columns:96px 54px 1fr 34px}
+.rie{cursor:pointer;text-align:left;width:100%;color:var(--fg)}
+.rie-r{display:grid;grid-template-columns:30px 64px 1fr;align-items:center;gap:8px;font-size:17px;padding:5px 2px}
+.rie-r .e{font-size:22px;text-align:center}.rie-r .t{color:var(--fg2);font-variant-numeric:tabular-nums;font-size:.9em}
+.rie-r .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.rie-none{color:var(--fg3);font-size:16px;padding:4px 2px}
+.rie-up{font-size:15px;color:var(--fg2);padding:2px}.rie-up b{color:var(--fg);font-weight:600}
+.rie-row .rie-r{font-size:15px;padding:3px 2px}
+.mnav{display:flex;align-items:center;justify-content:space-between;margin:2px 0 10px}
+.mnav h2{font-size:24px;font-weight:300;letter-spacing:-.02em;font-family:var(--fd)}
+.mnav button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);font-size:20px;color:var(--fg)}
+.mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.mgrid .wd{font-size:12px;color:var(--fg3);text-align:center;padding:4px 0;font-weight:600}
+.mday{min-height:74px;border-radius:12px;background:var(--s1);border:1.5px solid transparent;padding:6px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;color:var(--fg)}
+.mday .dn{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.mday .ic{font-size:16px;line-height:1.1;letter-spacing:1px}
+.mday.out{opacity:.35}
+.mday.today .dn{color:var(--accent)}
+.mday.sel{border-color:var(--accent)}
+body.phone .mday{min-height:54px;padding:4px}body.phone .mday .ic{font-size:12px}
+.dlist .calrow .e{font-size:26px;width:34px;text-align:center}
+.kinds{display:flex;flex-wrap:wrap;gap:6px}
+.wdays{display:flex;flex-wrap:wrap;gap:6px}
 #mamaNote{width:100%;min-height:84px;padding:.8em 1em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--s1);font-size:16px;color:var(--fg);font-family:inherit;resize:vertical}
 .rtrow{display:grid;grid-template-columns:64px 1fr 40px;gap:8px;margin-bottom:8px}
 .rtrow input{padding:.7em .8em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--s1);font-size:16px;color:var(--fg)}
@@ -576,6 +594,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
       <button id="bShop">Shopping list</button>
       <button id="bStock">In stock</button>
       <button id="bPantry2">What can I cook?</button>
+      <button id="bRie">Rie's calendar</button>
       <button id="bPhotos">Photos</button>
       <button id="bSettings">Settings</button>
       <button id="bLayout">Layout</button>
@@ -655,11 +674,9 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <div class="f" style="margin-bottom:12px"><label>Title<input id="rtTitle" placeholder="Morning routine"></label></div>
     <div id="rtList"></div>
     <div class="row" style="margin-top:6px"><button class="pill" id="rtAddItem">Add a step</button><button class="pill dark" id="rtSave">Save routine</button></div>
-    <h2 class="sh">Rie's day</h2>
-    <p class="hint2">Shows what Rie is doing now and what's next on the wall and both phones. Times are in 24-hour format.</p>
-    <label class="toggle"><input type="checkbox" id="rieOn"> Show on the wall</label>
-    <div id="rieList"></div>
-    <div class="row" style="margin-top:6px"><button class="pill" id="rieAdd">Add a time</button><button class="pill dark" id="rieSave">Save Rie's day</button></div>
+    <h2 class="sh">Rie's calendar</h2>
+    <p class="hint2">Daycare, swimming, doctor visits and anything else for Rie. Today's plans show on the wall and both phones.</p>
+    <div class="row"><button class="pill dark" data-open="rieOv">Open Rie's calendar</button></div>
     <h2 class="sh">Daily words</h2>
     <p class="hint2">A thank-you note for Mama and a short line for the day. Both change every morning.</p>
     <label class="toggle"><input type="checkbox" id="wOn"> Show on the wall</label>
@@ -694,6 +711,37 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <p class="hint2" style="margin-top:6px">Tick items off in the shopping list, then tap <b>Put away</b> to move them here. Recipes and the shopping list check this page, so you don't buy what you already have.</p>
     <div id="stockList"></div>
   </div></div>
+</section>
+
+<!-- Rie's calendar -->
+<section class="ov" id="rieOv">
+  <div class="bar"><h1 class="serif">Rie's calendar</h1><button class="pill dark" id="rieNew">Add</button><button class="pill" data-close>Close</button></div>
+  <div class="scroll"><div class="wrapc">
+    <div class="mnav"><button id="rmPrev" aria-label="Previous month">‹</button><h2 id="rmTitle"></h2><button id="rmNext" aria-label="Next month">›</button></div>
+    <div class="mgrid" id="rmGrid"></div>
+    <h2 class="sh" id="rdTitle" style="margin-top:22px"></h2>
+    <div class="dlist" id="rdList"></div>
+  </div></div>
+</section>
+<section class="ov sheet" id="rieEdOv">
+  <div class="sheetbox" style="width:min(600px,94vw);max-height:92vh">
+    <h2 class="serif" id="reTitle">Add for Rie</h2>
+    <div class="scroll" style="display:grid;gap:14px">
+      <div class="kinds" id="reKinds"></div>
+      <div class="f" style="gap:12px">
+        <label>What<input id="reName" placeholder="Swimming lesson" maxlength="60"></label>
+        <div class="r3"><label>Date<input type="date" id="reDate"></label><label>From<input type="time" id="reT"></label><label>To <span>(optional)</span><input type="time" id="reEnd"></label></div>
+      </div>
+      <label class="toggle" style="margin:0"><input type="checkbox" id="reRep"> Repeats every week</label>
+      <div id="reRepBox" style="display:grid;gap:10px">
+        <div class="wdays" id="reDays"></div>
+        <div class="f"><label>Until <span>(optional)</span><input type="date" id="reUntil"></label></div>
+      </div>
+      <div class="f"><label>Note <span>(optional)</span><input id="reNote" placeholder="Bring the vaccination book" maxlength="120"></label></div>
+      <div class="err" id="reErr" style="color:var(--warn);font-size:14px;min-height:1.2em"></div>
+    </div>
+    <div class="row" id="reBtns"></div>
+  </div>
 </section>
 
 <!-- scan photos → in stock -->
@@ -898,7 +946,7 @@ const SEED = [
 ].map((r,i)=>({id:uuid(),photo_path:null,source_url:i===3?"https://www.youtube.com/watch?v=M7lc1UVf-VE":null,source_kind:i===3?"youtube":null,cooked_count:i===0?3:i===1?1:0,last_cooked:i<2?addDays(today(),-4):null,created_at:new Date().toISOString(),...r}));
 
 const api = DEMO ? (() => {
-  const mem = { stock:[{name:'rice',label:'Rice',qty:'5 kg',location:'Cupboard'},{name:'egg',label:'Eggs',qty:'10',location:'Fridge',expires:addDays(today(),9)},{name:'shallot',label:'Shallots',qty:'1 bag',location:'Cupboard'},{name:'garlic',label:'Garlic',location:'Cupboard'},{name:'kecap mani',label:'Kecap manis',location:'Cupboard'},{name:'chicken thighs or leg',label:'Chicken thighs',qty:'500 g',location:'Fridge',expires:addDays(today(),1)},{name:'lime',label:'Limes',qty:'4',location:'Fridge'},{name:'spinach',label:'Spinach',qty:'1 bunch',location:'Fridge',expires:addDays(today(),2)},{name:'frozen peas',label:'Frozen peas',location:'Freezer'}], rv:[{recipe_id:SEED[1].id,reviewer:"mom",rating:5,note:"Rich broth, make it again"},{recipe_id:SEED[1].id,reviewer:"dad",rating:4,note:""},{recipe_id:SEED[1].id,reviewer:"baby",rating:5,note:"Finished the whole bowl"},{recipe_id:SEED[0].id,reviewer:"dad",rating:5,note:""},{recipe_id:SEED[0].id,reviewer:"baby",rating:2,note:"Too spicy for her"}], pantry:new Set(['rice','egg','shallot','garlic','kecap mani','chicken thighs or leg','lime','spinach']), state:{}, cals:[{id:'c1',name:'Renaldo',color:'#86C6D9'},{id:'c2',name:'Christie',color:'#F08C78'}], recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()]:SEED[1].id,[addDays(today(),1)]:SEED[0].id,[addDays(today(),3)]:SEED[2].id}, shop:[] };
+  const mem = { stock:[{name:'rice',label:'Rice',qty:'5 kg',location:'Cupboard'},{name:'egg',label:'Eggs',qty:'10',location:'Fridge',expires:addDays(today(),9)},{name:'shallot',label:'Shallots',qty:'1 bag',location:'Cupboard'},{name:'garlic',label:'Garlic',location:'Cupboard'},{name:'kecap mani',label:'Kecap manis',location:'Cupboard'},{name:'chicken thighs or leg',label:'Chicken thighs',qty:'500 g',location:'Fridge',expires:addDays(today(),1)},{name:'lime',label:'Limes',qty:'4',location:'Fridge'},{name:'spinach',label:'Spinach',qty:'1 bunch',location:'Fridge',expires:addDays(today(),2)},{name:'frozen peas',label:'Frozen peas',location:'Freezer'}], rv:[{recipe_id:SEED[1].id,reviewer:"mom",rating:5,note:"Rich broth, make it again"},{recipe_id:SEED[1].id,reviewer:"dad",rating:4,note:""},{recipe_id:SEED[1].id,reviewer:"baby",rating:5,note:"Finished the whole bowl"},{recipe_id:SEED[0].id,reviewer:"dad",rating:5,note:""},{recipe_id:SEED[0].id,reviewer:"baby",rating:2,note:"Too spicy for her"}], pantry:new Set(['rice','egg','shallot','garlic','kecap mani','chicken thighs or leg','lime','spinach']), state:{rie_cal:{items:[{id:"d1",kind:"daycare",title:"Daycare",t:"07:30",end:"16:00",days:[1,2,3,4,5],from:addDays(today(),-60),until:"",skip:[],note:""},{id:"d2",kind:"swim",title:"Swimming lesson",t:"09:00",end:"09:45",days:[6],from:addDays(today(),-30),until:"",skip:[],note:"Pack the swim nappy"},{id:"d3",kind:"doctor",title:"Check-up and vaccine",date:addDays(today(),4),t:"10:00",end:"",days:[],note:"Bring the vaccination book"}]}}, cals:[{id:'c1',name:'Renaldo',color:'#86C6D9'},{id:'c2',name:'Christie',color:'#F08C78'}], recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()]:SEED[1].id,[addDays(today(),1)]:SEED[0].id,[addDays(today(),3)]:SEED[2].id}, shop:[] };
   const listeners=[]; const ping=()=>listeners.forEach(f=>f());
   return {
     async session(){ me={name:"Demo",email:"demo",role:"dad"}; return true },
@@ -1032,7 +1080,7 @@ const api = DEMO ? (() => {
 
 /* ======================== STATE ======================== */
 let reviews={}, rvEdit=null, stockRows=[], stEdit=null, tsRecipe=null, tsSel=[];
-let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, rieCfg=null, wordsCfg=null, calendars=[], events=[], eventsFailed=[], calIds=null;
+let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, rieCal=null, wordsCfg=null, calendars=[], events=[], eventsFailed=[], calIds=null;
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
 const MODES=["auto","morning","day","dinner","night"];
@@ -1056,7 +1104,7 @@ async function refreshAll(){
   try{
     let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
     planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[p.day,p.recipe_id]));
-    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, rieCfg, wordsCfg] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("rie"), api.state("words")]);
+    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, rieCal, wordsCfg] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("rie_cal"), api.state("words")]);
     reviews={}; (rvs||[]).forEach(x=>{ (reviews[x.recipe_id] ||= {})[x.reviewer]=x });
     if(th && th.theme && th.theme!==theme) applyTheme(th.theme);
     stockRows = pan||[]; pantrySet = new Set(stockRows.map(x=>x.name));
@@ -1124,7 +1172,7 @@ function renderWall(){
   const tChip = tn ? `<span class="chip">${tn.picked?"Tonight":"Idea"}: ${esc(tn.r.title)}</span>` : "";
   let h="";
   if(m==="morning"){
-    const rt=routineHTML("wall"), rie=rieHTML("card", rt?1:2), ag=agendaHTML(rt?2:(rie?3:6));
+    const rt=routineHTML("wall"), rie=rieHTML("card", rt?1:3), ag=agendaHTML(rt?(rie?1:2):(rie?3:6));
     h=`<div class="m2">
       <div class="m2-l"><div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}</div></div>
         ${wordsHTML()}
@@ -1160,15 +1208,15 @@ function renderWall(){
         ${rainHTML(14)}
         ${wordsHTML()}
         ${routineHTML("row")}
-        ${rieHTML("row",2)}
+        ${rieHTML("row",4)}
         ${agendaHTML(6)}
         ${useSoonHTML()}
         <div class="fc">${fcHTML()}</div>
         ${card}
-        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span><span style="display:flex;gap:6px"><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
+        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span><span style="display:flex;gap:6px"><button data-open="rieOv">Rie's calendar</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
       </div>`;
     }
-    const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : rieHTML("row",1);
+    const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : rieHTML("row",2);
     if(m!=="phone") h=`<div class="n-wrap"><div class="n-left"><div><div class="t-big n-time js-time">${timeStr()}</div><div class="n-date">${dateStr()}</div></div>
       <div class="n-mid">${nrt}${nrt?rieLine():""}${nrie}${agendaHTML(nrt?1:(nrie?2:4))}${wordsHTML("n-words")}</div>
       <div style="display:flex;flex-direction:column;gap:15px"><div class="n-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${rainHTML(16)}${fc3}
@@ -1269,28 +1317,100 @@ function celebrate(){
   document.body.appendChild(c); setTimeout(()=>c.remove(),4500);
 }
 
-/* ======================== RIE'S DAY ======================== */
-const DEFAULT_RIE={on:true,items:[{t:"06:30",icon:"🍼",label:"Wake up and milk"},{t:"07:30",icon:"🥣",label:"Breakfast"},{t:"09:30",icon:"🍎",label:"Snack"},{t:"10:00",icon:"🛝",label:"Play time"},{t:"11:30",icon:"🍚",label:"Lunch"},{t:"12:30",icon:"😴",label:"Nap"},{t:"15:00",icon:"🍌",label:"Snack"},{t:"16:00",icon:"🛁",label:"Bath"},{t:"17:30",icon:"🍲",label:"Dinner"},{t:"19:00",icon:"📖",label:"Bedtime story"},{t:"19:30",icon:"🌙",label:"Sleep"}]};
-const rieDay = () => rieCfg || DEFAULT_RIE;
+/* ======================== RIE'S CALENDAR ======================== */
+const RK={daycare:["🏫","Daycare"],swim:["🏊","Swimming"],doctor:["🩺","Doctor"],other:["⭐","Other"]};
+const WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], WD_ORDER=[1,2,3,4,5,6,0];
+const rieItems = () => (rieCal && rieCal.items) || [];
 const toMin = t => { const m=String(t||"").match(/^(\d{1,2}):(\d{2})/); return m ? (+m[1])*60+(+m[2]) : -1 };
 const minNow = () => { const [h,m]=new Intl.DateTimeFormat("en-GB",{timeZone:CONFIG.tz,hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(new Date()).split(":"); return (+h)*60+(+m) };
-const fmtT = t => { const n=toMin(t); return new Intl.DateTimeFormat(CONFIG.locale,{hour:"numeric",minute:"2-digit",timeZone:"UTC"}).format(new Date(Date.UTC(2020,0,1,Math.floor(n/60),n%60))) };
-function rieNow(){
-  const r=rieDay(); if(r.on===false) return null;
-  const it=(r.items||[]).filter(x=>toMin(x.t)>=0).sort((a,b)=>toMin(a.t)-toMin(b.t)); if(!it.length) return null;
-  const n=minNow(); let i=-1; it.forEach((x,j)=>{ if(toMin(x.t)<=n) i=j });
-  // before the first item of the day, she is still in last night's last step (sleeping)
-  const cur = i<0 ? it[it.length-1] : it[i];
-  const next = i<0 ? it.slice(0,2) : it.slice(i+1,i+3);
-  return {cur, next, since:i<0?null:cur.t};
+const fmtT = t => { const n=toMin(t); if(n<0) return ""; return new Intl.DateTimeFormat(CONFIG.locale,{hour:"numeric",minute:"2-digit",timeZone:"UTC"}).format(new Date(Date.UTC(2020,0,1,Math.floor(n/60),n%60))) };
+const wdOf = d => new Date(d+"T12:00:00Z").getUTCDay();
+const rIcon = x => (RK[x.kind]||RK.other)[0];
+function occOn(d){
+  return rieItems().filter(x=> (x.days&&x.days.length) ? (x.days.includes(wdOf(d)) && (!x.from||d>=x.from) && (!x.until||d<=x.until) && !(x.skip||[]).includes(d)) : x.date===d)
+    .sort((a,b)=>(toMin(a.t)<0?-1:toMin(a.t))-(toMin(b.t)<0?-1:toMin(b.t)));
 }
-function rieHTML(variant, n=2){
-  const x=rieNow(); if(!x) return "";
-  return `<div class="rie ${variant==="row"?"rie-row":""}"><div class="rie-h"><span>Rie's day</span>${x.next[0]?`<small>Next at ${fmtT(x.next[0].t)}</small>`:""}</div>
-    <div class="rie-now"><span class="e">${esc(x.cur.icon||"⭐")}</span><div><b>${esc(x.cur.label)}</b><small>${x.since?`Now, since ${fmtT(x.since)}`:"Now"}</small></div></div>
-    ${x.next.slice(0,n).map(y=>`<div class="rie-nx"><span class="t">${fmtT(y.t)}</span><span class="e">${esc(y.icon||"⭐")}</span><span>${esc(y.label)}</span></div>`).join("")}</div>`;
+function nextSpecial(){ // the next one-off (doctor visit and so on) after today, within 60 days
+  const t=today(); return rieItems().filter(x=>!(x.days&&x.days.length) && x.date>t && daysTo(x.date)<=60).sort((a,b)=>(a.date+a.t).localeCompare(b.date+b.t))[0] || null;
 }
-const rieLine = () => { const x=rieNow(); return x ? `<div class="d-next"><span>Rie:</span> ${esc(x.cur.icon||"")} ${esc(x.cur.label)}${x.next[0]?`<span>, then ${esc(x.next[0].label.toLowerCase())} at ${fmtT(x.next[0].t)}</span>`:""}</div>` : "" };
+const timeRange = x => x.t ? (x.end ? `${fmtT(x.t)}–${fmtT(x.end)}` : fmtT(x.t)) : "All day";
+const whenLabel = d => { const n=daysTo(d); return n===1?"Tomorrow":new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(d+"T12:00:00Z")) };
+function rieHTML(variant, n=3){
+  if(!rieItems().length) return "";
+  const list=occOn(today()), now=minNow(), left=list.filter(x=>toMin(x.end||x.t)<0 || toMin(x.end||x.t)>=now-30), sp=nextSpecial();
+  const rows=left.slice(0,n).map(x=>`<div class="rie-r"><span class="e">${rIcon(x)}</span><span class="t">${x.t?fmtT(x.t):"All day"}</span><span class="n">${esc(x.title)}</span></div>`).join("");
+  return `<button class="rie ${variant==="row"?"rie-row":""}" data-open="rieOv"><div class="rie-h"><span>Rie today</span>${left.length>n?`<small>${left.length-n} more</small>`:""}</div>
+    ${rows || `<div class="rie-none">${list.length?"All done for today":"Nothing planned today"}</div>`}
+    ${sp?`<div class="rie-up">Coming up: ${rIcon(sp)} <b>${esc(sp.title)}</b>, ${whenLabel(sp.date)}${sp.t?" at "+fmtT(sp.t):""}</div>`:""}</button>`;
+}
+const rieLine = () => { const now=minNow(), x=occOn(today()).find(x=>toMin(x.t)>=now || (toMin(x.end)>=now)); if(x) return `<div class="d-next"><span>Rie:</span> ${rIcon(x)} ${esc(x.title)}${x.t?` <span>at</span> ${fmtT(x.t)}`:""}</div>`;
+  const sp=nextSpecial(); return sp && daysTo(sp.date)<=7 ? `<div class="d-next"><span>Rie:</span> ${rIcon(sp)} ${esc(sp.title)} <span>${whenLabel(sp.date).toLowerCase()==="tomorrow"?"tomorrow":"on "+whenLabel(sp.date)}</span></div>` : "" };
+
+let rm=null, rSel=null, reDraft=null;
+function openRie(){ const t=today(); rm=t.slice(0,7); rSel=t; renderRieCal() }
+function renderRieCal(){
+  const [y,mo]=rm.split("-").map(Number), first=`${rm}-01`, lead=(wdOf(first)+6)%7, start=addDays(first,-lead), t=today();
+  $("rmTitle").textContent=new Intl.DateTimeFormat(CONFIG.locale,{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(y,mo-1,15)));
+  let h=WD_ORDER.map(i=>`<div class="wd">${WD[i]}</div>`).join("");
+  const weeks = Math.ceil((lead + new Date(Date.UTC(y,mo,0)).getUTCDate())/7);
+  for(let i=0;i<weeks*7;i++){ const d=addDays(start,i), o=occOn(d);
+    h+=`<button class="mday ${d.slice(0,7)!==rm?"out":""} ${d===t?"today":""} ${d===rSel?"sel":""}" data-rday="${d}" aria-label="${d}${o.length?", "+o.map(x=>x.title).join(", "):""}"><span class="dn">${+d.slice(8)}</span><span class="ic">${o.slice(0,4).map(rIcon).join("")}</span></button>` }
+  $("rmGrid").innerHTML=h;
+  $("rdTitle").textContent=new Intl.DateTimeFormat(CONFIG.locale,{weekday:"long",day:"numeric",month:"long",timeZone:"UTC"}).format(new Date(rSel+"T12:00:00Z"));
+  const o=occOn(rSel);
+  $("rdList").innerHTML=(o.length?o.map(x=>`<div class="calrow"><span class="e">${rIcon(x)}</span><div class="grow"><b>${esc(x.title)}</b><small>${timeRange(x)}${x.days&&x.days.length?`, every ${x.days.length===5&&!x.days.includes(0)&&!x.days.includes(6)?"weekday":WD_ORDER.filter(i=>x.days.includes(i)).map(i=>WD[i]).join(", ")}`:""}${x.note?` · ${esc(x.note)}`:""}</small></div><button class="pill" data-redit="${x.id}" style="min-height:36px;padding:.3em .9em;font-size:13px">Edit</button></div>`).join("")
+    : `<p class="hint2" style="color:var(--fg3)">Nothing on this day.</p>`) + `<div class="row" style="margin-top:12px"><button class="pill" data-readd>Add on this day</button></div>`;
+}
+$("rmPrev").onclick=()=>{ const [y,m]=rm.split("-").map(Number), d=new Date(Date.UTC(y,m-2,1)); rm=d.toISOString().slice(0,7); renderRieCal() };
+$("rmNext").onclick=()=>{ const [y,m]=rm.split("-").map(Number), d=new Date(Date.UTC(y,m,1)); rm=d.toISOString().slice(0,7); renderRieCal() };
+$("rmGrid").onclick=e=>{ const b=e.target.closest("[data-rday]"); if(!b) return; rSel=b.dataset.rday; if(rSel.slice(0,7)!==rm) rm=rSel.slice(0,7); renderRieCal() };
+$("rdList").onclick=e=>{ const ed=e.target.closest("[data-redit]"); if(ed) return editRie(rieItems().find(x=>x.id===ed.dataset.redit)); if(e.target.closest("[data-readd]")) editRie(null) };
+$("rieNew").onclick=()=>editRie(null);
+$("bRie").onclick=()=>{ close("menuOv"); open("rieOv") };
+
+function editRie(x){
+  reDraft = x ? JSON.parse(JSON.stringify(x)) : {id:null,kind:"other",title:"",date:rSel||today(),t:"",end:"",days:[],until:"",note:""};
+  if(!reDraft.date) reDraft.date=reDraft.from||rSel||today();
+  $("reTitle").textContent = x ? "Edit" : "Add for Rie"; $("reErr").textContent="";
+  $("reName").value=reDraft.title; $("reDate").value=reDraft.date; $("reT").value=reDraft.t||""; $("reEnd").value=reDraft.end||"";
+  $("reRep").checked=!!(reDraft.days&&reDraft.days.length); $("reUntil").value=reDraft.until||""; $("reNote").value=reDraft.note||"";
+  renderReForm(); open("rieEdOv"); if(!x) setTimeout(()=>$("reName").focus(),50);
+}
+function renderReForm(){
+  $("reKinds").innerHTML=Object.entries(RK).map(([k,[ic,l]])=>`<button type="button" class="chip2 ${reDraft.kind===k?"on":""}" data-rek="${k}" aria-pressed="${reDraft.kind===k}">${ic} ${l}</button>`).join("");
+  const rep=$("reRep").checked; $("reRepBox").style.display=rep?"grid":"none";
+  if(rep && !(reDraft.days||[]).length) reDraft.days=[wdOf($("reDate").value||today())];
+  $("reDays").innerHTML=WD_ORDER.map(i=>`<button type="button" class="chip2 ${(reDraft.days||[]).includes(i)?"on":""}" data-red="${i}">${WD[i]}</button>`).join("");
+  const isRep=!!(reDraft.id && rieItems().find(x=>x.id===reDraft.id)?.days?.length);
+  $("reBtns").innerHTML=`<button class="pill dark" id="reSave">Save</button>${reDraft.id?(isRep?`<button class="pill" id="reSkip">Skip ${dayShort(rSel)} only</button>`:"")+`<button class="pill warn" id="reDel">${isRep?"Delete every week":"Delete"}</button>`:""}<button class="pill" data-close>Cancel</button>`;
+}
+const KIND_NAME={daycare:"Daycare",swim:"Swimming lesson",doctor:"Doctor"};
+$("reKinds").onclick=e=>{ const b=e.target.closest("[data-rek]"); if(!b) return; const old=KIND_NAME[reDraft.kind]; reDraft.kind=b.dataset.rek;
+  const v=$("reName").value.trim(); if(!v || v===old) $("reName").value=KIND_NAME[reDraft.kind]||"";
+  if(reDraft.kind==="daycare" && !$("reRep").checked && !reDraft.id){ $("reRep").checked=true; reDraft.days=[1,2,3,4,5] }
+  renderReForm() };
+$("reRep").onchange=()=>renderReForm();
+$("reDays").onclick=e=>{ const b=e.target.closest("[data-red]"); if(!b) return; const i=+b.dataset.red, s=new Set(reDraft.days||[]); s.has(i)?s.delete(i):s.add(i); reDraft.days=[...s]; renderReForm() };
+async function saveRie(items, msg){
+  rieCal={items}; renderWall(); if($("rieOv").classList.contains("open")) renderRieCal();
+  try{ await api.setState("rie_cal",rieCal); if(msg) toast(msg) }catch(e){ toast("Couldn't save. Check your connection") }
+}
+$("reBtns").onclick=async e=>{
+  const id=e.target.id; if(!id) return; const items=rieItems().slice();
+  if(id==="reSave"){
+    const title=$("reName").value.trim(), date=$("reDate").value, rep=$("reRep").checked, days=rep?(reDraft.days||[]):[];
+    if(!title){ $("reErr").textContent="Give it a name, like Swimming lesson."; return }
+    if(!date){ $("reErr").textContent="Pick a date."+(rep?" It's the first week it happens.":""); return }
+    if(rep && !days.length){ $("reErr").textContent="Pick at least one day of the week."; return }
+    const old=items.find(x=>x.id===reDraft.id);
+    const it={id:reDraft.id||uuid(),kind:reDraft.kind,title,t:$("reT").value||"",end:$("reEnd").value||"",note:$("reNote").value.trim(),
+      ...(rep?{days:days.sort(),from:date,until:$("reUntil").value||"",skip:old?.skip||[],date:null}:{date,days:[]})};
+    const i=items.findIndex(x=>x.id===it.id); i>=0?items[i]=it:items.push(it);
+    close("rieEdOv"); rSel = rep ? rSel : date; if(rSel.slice(0,7)!==rm) rm=rSel.slice(0,7);
+    await saveRie(items, `${old?"Saved":"Added"} ${title}`); return }
+  if(id==="reSkip"){ const x=items.find(x=>x.id===reDraft.id); if(x){ x.skip=[...(x.skip||[]),rSel] } close("rieEdOv"); await saveRie(items,`Skipped on ${dayShort(rSel)}`); return }
+  if(id==="reDel"){ if(!twoTap("re"+reDraft.id,e.target,"Tap to confirm")) return; close("rieEdOv"); await saveRie(items.filter(x=>x.id!==reDraft.id),"Deleted"); return }
+};
 
 /* ======================== DAILY WORDS ======================== */
 const MAMA_NOTES=["Thank you for the hundred small things you do before anyone else wakes up.","Rie is lucky to have you. So am I.","You make our house feel like home.","Thank you for your patience, even on the long days.","Every hug you give Rie is shaping who she'll be.","You're doing a wonderful job, even when it doesn't feel like it.","Thank you for the good food, the good talks and the good mornings.","Rie learned that smile from you.","Today, let us take care of you for a change.","Your kindness is the best thing in this house.","Thank you for always knowing where everything is.","You turn ordinary days into good memories.","We notice everything you do. Thank you.","Rie's favourite place is wherever you are.","You're a great mom and an even better friend.","Thank you for the bedtime songs and the early wake-ups.","The way you love us is the way Rie will love the world.","Take a slow coffee today. You've earned it.","Thank you for making our home so beautiful, inside and out.","You make hard things look easy. We know they aren't.","Thank you for staying calm when we're not.","From Rie: Mama, I love you. (She'd write it herself if she could.)","Thank you for every meal, every bath and every story.","You are enough, exactly as you are today.","Thank you for choosing us every day.","The best part of our mornings is you.","Thank you for teaching Rie to be curious and kind.","Whatever today brings, we've got your back.","Thank you for the love you put into everything.","Thank you, Christie. For everything, always."];
@@ -1789,24 +1909,11 @@ function renderThemes(){
   $("thmGrid").innerHTML=THEMES.map(t=>`<button class="thm ${t.k===theme?"on":""}" data-theme="${t.k}" data-pick-theme="${t.k}" aria-pressed="${t.k===theme}"><div class="tp"><span class="tt">${timeStr()}</span><span class="sw"><i style="background:var(--accent)"></i><i style="background:var(--rain)"></i><i style="background:var(--s3)"></i></span></div><div class="tn"><b>${t.name}</b><span>${t.note}</span></div></button>`).join("");
 }
 $("thmGrid").onclick=async e=>{ const b=e.target.closest("[data-pick-theme]"); if(!b) return; applyTheme(b.dataset.pickTheme); renderThemes(); renderWall(); toast(`Theme: ${THEMES.find(t=>t.k===theme).name}`); try{ await api.setState("theme",{theme}) }catch(err){ toast("Saved on this screen only") } };
-let rieDraft=null;
-function renderRieEditor(){
-  $("rieOn").checked=rieDraft.on!==false;
-  $("rieList").innerHTML=rieDraft.items.map((it,i)=>`<div class="riedit"><input type="time" data-rii="${i}" data-f="t" value="${esc(it.t)}" aria-label="Time"><input class="emo" data-rii="${i}" data-f="icon" value="${esc(it.icon)}" maxlength="4" aria-label="Picture"><input data-rii="${i}" data-f="label" value="${esc(it.label)}" placeholder="Nap" aria-label="What Rie does"><button data-riedel="${i}" aria-label="Remove">✕</button></div>`).join("");
-}
-$("rieList").oninput=e=>{ const i=e.target.dataset.rii; if(i!==undefined) rieDraft.items[+i][e.target.dataset.f]=e.target.value };
-$("rieList").onclick=e=>{ const d=e.target.closest("[data-riedel]"); if(d){ rieDraft.items.splice(+d.dataset.riedel,1); renderRieEditor() } };
-$("rieAdd").onclick=()=>{ rieDraft.items.push({t:"",icon:"⭐",label:""}); renderRieEditor(); const ins=$("rieList").querySelectorAll("input[type=time]"); ins[ins.length-1]?.focus() };
-$("rieSave").onclick=async()=>{
-  rieDraft.on=$("rieOn").checked; rieDraft.items=rieDraft.items.filter(x=>x.label.trim()&&toMin(x.t)>=0).map(x=>({t:x.t,label:x.label.trim(),icon:(x.icon||"⭐").trim()})).sort((a,b)=>toMin(a.t)-toMin(b.t));
-  rieCfg=JSON.parse(JSON.stringify(rieDraft)); renderWall(); renderRieEditor();
-  try{ await api.setState("rie",rieCfg); toast("Rie's day saved") }catch(e){ toast("Couldn't save Rie's day") }
-};
 $("wSave").onclick=async()=>{
   const note=$("mamaNote").value.trim(); wordsCfg={on:$("wOn").checked,note:note||null,note_date:note?today():null}; renderWall();
   try{ await api.setState("words",wordsCfg); toast(note?"Today's note for Mama saved":"Saved") }catch(e){ toast("Couldn't save that") }
 };
-function openSettings(){ renderThemes(); rtDraft=JSON.parse(JSON.stringify(routine())); rieDraft=JSON.parse(JSON.stringify(rieDay())); renderRieEditor(); $("wOn").checked=wordsOn(); $("mamaNote").value=(wordsCfg&&wordsCfg.note_date===today()&&wordsCfg.note)||""; renderCalList(); renderRoutineEditor(); $("who2").textContent = DEMO ? "Demo mode." : `Signed in as ${me.name} (${me.email}).`; }
+function openSettings(){ renderThemes(); rtDraft=JSON.parse(JSON.stringify(routine())); $("wOn").checked=wordsOn(); $("mamaNote").value=(wordsCfg&&wordsCfg.note_date===today()&&wordsCfg.note)||""; renderCalList(); renderRoutineEditor(); $("who2").textContent = DEMO ? "Demo mode." : `Signed in as ${me.name} (${me.email}).`; }
 $("calColor").onclick=e=>{ const b=e.target.closest("[data-col]"); if(b){ calColor=b.dataset.col; renderCalList() } };
 $("calList").onclick=async e=>{ const b=e.target.closest("[data-delcal]"); if(!b) return; if(!twoTap("c"+b.dataset.delcal,b,"Tap to confirm")) return; try{ await api.deleteCalendar(b.dataset.delcal); await refreshAll() }catch(err){ toast("Couldn't remove it") } };
 $("calAdd").onsubmit=async e=>{
@@ -1910,7 +2017,7 @@ function open(id){
   if(isPhone() && TAB_ALL.includes(id)){ TAB_ALL.forEach(x=>x!==id&&$(x).classList.remove("open")); markTab(tabOf(id)) }
   $(id).classList.add("open");
   if(id==="bookOv"){ renderBookList(); if(!selId && innerWidth>760) showRecipe(tonightRecipe()?.r.id) }
-  if(id==="planOv") renderPlan(); if(id==="shopOv") renderShop(); if(id==="stockOv"){ stEdit=null; renderStock() } if(id==="setOv") openSettings();
+  if(id==="planOv") renderPlan(); if(id==="shopOv") renderShop(); if(id==="stockOv"){ stEdit=null; renderStock() } if(id==="setOv") openSettings(); if(id==="rieOv") openRie();
   if(id==="cook") document.body.classList.add("cooking"); if(id==="login") document.body.classList.add("signin");
 }
 function close(id){
@@ -1982,7 +2089,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.13";
+const APP_VERSION="2026-11-13.14";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
