@@ -133,6 +133,27 @@ body[data-mode=night]{background:var(--night)}
 /* rain + on-this-day */
 .rain{max-width:100%;display:inline-flex;align-items:center;gap:.6em;color:var(--rain);font-weight:600;align-self:flex-start;background:rgba(var(--rain-rgb),.12);border-radius:99px;padding:.45em 1em .45em .8em}
 .rain svg{width:1em;height:1em;flex:none}
+.aq{max-width:100%;display:inline-flex;align-items:center;gap:.55em;font-weight:600;align-self:flex-start;border-radius:99px;padding:.45em 1em .45em .75em;background:rgba(var(--fg-rgb),.08);color:var(--fg2)}
+.aq i{width:.7em;height:.7em;border-radius:50%;flex:none;background:currentColor}
+.aq.l1{color:#8FD694}.aq.l2{color:#E9CF6A}.aq.l3{color:#F2A25C;background:rgba(242,162,92,.13)}.aq.l4{color:#F27A6A;background:rgba(242,122,106,.15)}.aq.l5,.aq.l6{color:#D58BE8;background:rgba(213,139,232,.15)}
+.wxchips{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
+.d-right .wxchips{flex-direction:column;align-items:flex-end}
+.bag{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.bag-h{font-size:14px;color:var(--fg2)}.bag-h b{color:var(--fg);font-weight:600}
+.bag-c{display:flex;flex-wrap:wrap;gap:6px}
+.bag-c button{display:inline-flex;align-items:center;gap:6px;padding:.4em .8em;border-radius:99px;border:1px solid var(--line2);font-size:14px;color:var(--fg);background:rgba(var(--s1-rgb),.6)}
+.bag-c button::before{content:"";width:14px;height:14px;border-radius:4px;border:1.5px solid var(--fg3)}
+.bag-c button.on{color:var(--fg3);text-decoration:line-through;border-color:var(--line)}
+.bag-c button.on::before{background:var(--accent);border-color:var(--accent)}
+.rie-row .bag-c button{font-size:13px;padding:.3em .7em}
+.bag-x{flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px}.bag-x .bag-c{display:contents}.bag-x .bag-h{font-size:13px}
+.bagedit{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.bagedit label{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+.bagedit textarea{min-height:120px;padding:.7em .9em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--s1);color:var(--fg);font:inherit;font-size:15px;font-weight:400;resize:vertical}
+.uprow{display:flex;align-items:center;gap:12px;padding:10px 2px;border-bottom:1px solid var(--line);width:100%;text-align:left;color:var(--fg)}
+.uprow .box{width:24px;height:24px;border:1.5px solid var(--line2);border-radius:7px;flex:none}
+.uprow.on .box{background:var(--accent);border-color:var(--accent)}
+.uprow span{flex:1}.uprow small{color:var(--fg3)}
 .rain.heavy{color:var(--warn);background:rgba(240,140,120,.14)}
 .otd{display:inline-block;background:rgba(var(--shade-rgb),.72);color:var(--fg);border-radius:99px;padding:.4em 1em;font-weight:600}
 
@@ -796,6 +817,16 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
   </div></div>
 </section>
 
+<!-- after cooking: take used ingredients out of stock -->
+<section class="ov sheet" id="usedOv">
+  <div class="sheetbox" style="width:min(560px,94vw);max-height:86vh">
+    <h2 class="serif">Used anything up?</h2>
+    <p class="hint2" id="usedHint"></p>
+    <div class="scroll" id="usedList"></div>
+    <div class="row" style="margin-top:6px"><button class="pill dark" id="usedGo">Take out of stock</button><button class="pill" data-close>Keep everything</button></div>
+  </div>
+</section>
+
 <!-- Rie's calendar -->
 <section class="ov" id="rieOv">
   <div class="bar"><h1 class="serif">Rie's calendar</h1><button class="pill dark" id="rieNew">Add</button><button class="pill" data-close>Close</button></div>
@@ -804,6 +835,10 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <div class="mgrid" id="rmGrid"></div>
     <h2 class="sh" id="rdTitle" style="margin-top:22px"></h2>
     <div class="dlist" id="rdList"></div>
+    <h2 class="sh" style="margin-top:26px">What to pack</h2>
+    <p class="hint2">One item per line. The wall shows the list on the day until the activity starts, and the evening before from 5 pm.</p>
+    <div class="bagedit" id="bagEdit"></div>
+    <div class="row" style="margin-top:10px"><button class="pill dark" id="bagSave">Save packing lists</button></div>
   </div></div>
 </section>
 <section class="ov sheet" id="rieEdOv">
@@ -1165,7 +1200,7 @@ const api = DEMO ? (() => {
 
 /* ======================== STATE ======================== */
 let reviews={}, rvEdit=null, stockRows=[], stEdit=null, tsRecipe=null, tsSel=[];
-let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, rieCal=null, wordsCfg=null, calendars=[], events=[], eventsFailed=[], calIds=null;
+let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, rieCal=null, wordsCfg=null, rieBags=null, rieBagDone=null, calendars=[], events=[], eventsFailed=[], calIds=null;
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
 const MODES=["auto","morning","day","dinner","night"];
@@ -1194,7 +1229,7 @@ async function refreshAll(){
   try{
     let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
     planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[pk(p.day,p.meal||"dinner"),p.recipe_id]));
-    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, rieCal, wordsCfg] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("rie_cal"), api.state("words")]);
+    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, rieCal, wordsCfg, rieBags, rieBagDone] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("rie_cal"), api.state("words"), api.state("rie_bags"), api.state("rie_bag_done")]);
     reviews={}; (rvs||[]).forEach(x=>{ (reviews[x.recipe_id] ||= {})[x.reviewer]=x });
     if(th && th.theme && th.theme!==theme) applyTheme(th.theme);
     stockRows = pan||[]; pantrySet = new Set(stockRows.map(x=>x.name));
@@ -1233,6 +1268,22 @@ async function loadWeather(){
   }
   renderWall();
 }
+let aq=null;
+async function loadAir(){
+  try{ const u=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&current=us_aqi,pm2_5&hourly=us_aqi&forecast_hours=12&timezone=${encodeURIComponent(CONFIG.tz)}`;
+    const r=await fetch(u); if(!r.ok) throw 0; aq=await r.json() }
+  catch(e){ if(!aq && (wxDemo||DEMO)) aq={current:{us_aqi:128,pm2_5:46},hourly:{us_aqi:[128,135,140,120,95,80,70,60,58,60,70,90]}} }
+  renderWall();
+}
+const AQB=[[50,"Good"],[100,"Moderate"],[150,"Unhealthy for kids"],[200,"Unhealthy"],[300,"Very unhealthy"],[1e9,"Hazardous"]];
+function aqInfo(){
+  const v=aq&&aq.current&&aq.current.us_aqi; if(v==null) return null;
+  const lvl=AQB.findIndex(b=>v<=b[0])+1, label=AQB[lvl-1][1];
+  const tip = lvl>=4 ? "keep Rie indoors" : lvl===3 ? "close the windows" : "";
+  return {v:Math.round(v),lvl,label,tip};
+}
+const aqHTML = (px) => { const a=aqInfo(); if(!a) return ""; return `<span class="aq l${a.lvl}" style="font-size:${px}px" title="US air quality index"><i></i>Air ${a.v}, ${a.label.toLowerCase()}${a.tip?`: ${a.tip}`:""}</span>` };
+const wxChips = (px) => { const h=rainHTML(px)+aqHTML(px); return h?`<div class="wxchips">${h}</div>`:"" };
 function rainAlert(){
   const h=wx&&wx.hourly; if(!h||!h.time) return null;
   const nowKey=`${today()}T${String(hourNow()).padStart(2,"0")}:00`;
@@ -1263,12 +1314,12 @@ function renderWall(){
   const tChip = (m=>`${m==="morning"&&bf&&hourNow()<10?`<span class="chip" style="margin-right:6px">Breakfast: ${esc(bf.title)}</span>`:""}${m==="morning"&&lu&&!(bf&&hourNow()<10)?`<span class="chip" style="margin-right:6px">Lunch: ${esc(lu.title)}</span>`:""}${tn?`<span class="chip">${tn.picked?"Tonight":"Idea"}: ${esc(tn.r.title)}</span>`:""}`)(mode());
   let h="";
   if(m==="morning"){
-    const rt=routineHTML("wall"), rie=rieHTML("card", rt?1:3), ag=agendaHTML(rt?(rie?1:2):(rie?3:6));
+    const rt=routineHTML("wall"), hasBag=bagNow().length>0, rie=rieHTML("card", rt?1:(hasBag?2:3)), ag=agendaHTML(rt?(rie?1:2):(rie?(hasBag?2:3):6));
     h=`<div class="m2">
       <div class="m2-l"><div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}</div></div>
         ${wordsHTML()}
         <div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
-        ${rainHTML(19)}</div>
+        ${wxChips(19)}</div>
       <div class="m2-r">${rt}${rie}${ag}${useSoonHTML()}</div>
       <div class="m2-b"><div class="fc">${fcHTML()}</div>
         <div class="m-foot"><span class="muted">${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span>${tChip}</div></div></div>`;
@@ -1277,7 +1328,7 @@ function renderWall(){
     const ol=otdLabel(ph);
     h=`<div class="d-credit" style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">${ol?`<span class="otd" style="font-size:20px">${ol}</span>`:""}${ph&&ph.uploaded_by_name?`<span>Added by ${esc(ph.uploaded_by_name)}</span>`:""}</div>
       <div class="d-strip"><div><div class="t-big d-time js-time">${timeStr()}</div><div class="d-date">${dateStr()}</div></div>
-      <div class="d-right">${rainHTML(18)}${rieLine()}${(()=>{const e=nextEvent();return e?`<div class="d-next"><span>Next</span> ${evTime(e)} ${esc(e.title)}</div>`:""})()}<div class="d-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${tChip}</div></div>`;
+      <div class="d-right">${wxChips(18)}${rieLine()}${(()=>{const e=nextEvent();return e?`<div class="d-next"><span>Next</span> ${evTime(e)} ${esc(e.title)}</div>`:""})()}<div class="d-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${tChip}</div></div>`;
   } else if(m==="dinner"||m==="split"||m==="phone"){
     let card; const tmr=plannedFor(addDays(today(),1));
     if(tn){ const r=tn.r, pu=photoUrl(r.photo_path), ing=r.ingredients||[], show=ing.slice(0,10);
@@ -1290,14 +1341,14 @@ function renderWall(){
           return x.length||tmr ? `<div class="tmr">${x.length?`Today: ${x.join(", ")}`:""}${x.length&&tmr?"<br>":""}${tmr?`Tomorrow: <b>${esc(tmr.title)}</b>`:""}</div>` : "" })()}
         <div class="acts"><button class="btn-cook" data-cook="${r.id}">Start cooking</button><button class="btn-ghost" data-openbook="${r.id}">${tn.picked?"Recipe":"Pick another"}</button>${r.created_by_name?`<span class="by">by ${esc(r.created_by_name)}</span>`:""}</div></div></div>`;
     } else card=`<div class="rc"><div class="b" style="justify-content:center"><div class="eyebrow">Dinner</div><h2 class="serif">Add your first recipe</h2><div class="acts"><button class="btn-cook" data-new>Add recipe</button></div></div></div>`;
-    const fc3 = m==="split" ? `<div class="fc3">${wx.daily.time.slice(1,4).map((t,j)=>{const i=j+1;return `<div><div class="d">${new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div><span class="hi">${Math.round(wx.daily.temperature_2m_max[i])}°</span> <span class="lo">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div></div>`}).join("")}</div>` : "";
+    const fc3 = m==="split" && !(bagNow().length && aqInfo() && rainAlert()) ? `<div class="fc3">${wx.daily.time.slice(1,4).map((t,j)=>{const i=j+1;return `<div><div class="d">${new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div><span class="hi">${Math.round(wx.daily.temperature_2m_max[i])}°</span> <span class="lo">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div></div>`}).join("")}</div>` : "";
     const ph = m==="split"||m==="phone" ? currentPhoto() : null, ol=otdLabel(ph);
     if(m==="phone"){
       h=`<div class="pw">
         <div><div class="t-big pw-time js-time">${timeStr()}</div><div class="pw-date">${dateStr()}</div></div>
         ${ol?`<span class="otd">${ol}</span>`:""}
         <div class="pw-wx">${w.ic}<div><div class="pw-temp">${w.t}°</div><div class="pw-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
-        ${rainHTML(14)}
+        ${wxChips(14)}
         ${wordsHTML()}
         ${routineHTML("row")}
         ${rieHTML("row",4)}
@@ -1308,10 +1359,10 @@ function renderWall(){
         <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span><span style="display:flex;gap:6px"><button data-open="rieOv">Rie's calendar</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
       </div>`;
     }
-    const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : rieHTML("row",2);
+    const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : rieHTML("row",bagNow().length?1:2);
     if(m!=="phone") h=`<div class="n-wrap"><div class="n-left"><div><div class="t-big n-time js-time">${timeStr()}</div><div class="n-date">${dateStr()}</div></div>
-      <div class="n-mid">${nrt}${nrt?rieLine():""}${nrie}${agendaHTML(nrt?1:(nrie?2:4))}${wordsHTML("n-words")}</div>
-      <div style="display:flex;flex-direction:column;gap:15px"><div class="n-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${rainHTML(16)}${fc3}
+      <div class="n-mid">${nrt}${nrt?rieLine():""}${nrie}${agendaHTML(nrt?1:(nrie?(bagNow().length?1:2):4))}${wordsHTML("n-words")}</div>
+      <div style="display:flex;flex-direction:column;gap:15px"><div class="n-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${wxChips(16)}${fc3}
       ${ol?`<span class="otd" style="font-size:15px;align-self:flex-start">${ol}</span>`:""}
       ${ph&&ph.uploaded_by_name?`<div class="muted" style="font-size:15px">Photo by ${esc(ph.uploaded_by_name)}</div>`:""}</div></div>${card}</div>`;
   } else {
@@ -1427,19 +1478,41 @@ function nextSpecial(){ // the next one-off (doctor visit and so on) after today
 }
 const timeRange = x => x.t ? (x.end ? `${fmtT(x.t)}–${fmtT(x.end)}` : fmtT(x.t)) : "All day";
 const whenLabel = d => { const n=daysTo(d); return n===1?"Tomorrow":new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(d+"T12:00:00Z")) };
-function rieHTML(variant, n=3){
-  if(!rieItems().length) return `<button class="rie ${variant==="row"?"rie-row":""}" data-open="rieOv"><div class="rie-h"><span>Rie's calendar</span></div><div class="rie-none">Tap to add daycare, swimming and doctor visits</div></button>`;
-  const list=occOn(today()), now=minNow(), left=list.filter(x=>toMin(x.end||x.t)<0 || toMin(x.end||x.t)>=now-30), sp=nextSpecial();
-  const rows=left.slice(0,n).map(x=>`<div class="rie-r"><span class="e">${rIcon(x)}</span><span class="t">${x.t?fmtT(x.t):"All day"}</span><span class="n">${esc(x.title)}</span></div>`).join("");
-  return `<button class="rie ${variant==="row"?"rie-row":""}" data-open="rieOv"><div class="rie-h"><span>Rie today</span>${left.length>n?`<small>${left.length-n} more</small>`:""}</div>
-    ${rows || `<div class="rie-none">${list.length?"All done for today":"Nothing planned today"}</div>`}
-    ${sp?`<div class="rie-up">Coming up: ${rIcon(sp)} <b>${esc(sp.title)}</b>, ${whenLabel(sp.date)}${sp.t?" at "+fmtT(sp.t):""}</div>`:""}</button>`;
+const DEFAULT_BAGS={daycare:["Spare clothes","Diapers and wipes","Water bottle","Snack box"],swim:["Swimsuit","Swim nappy","Towel","Change of clothes","Snack"],doctor:["Vaccination book","Insurance card","Favourite toy"],other:[]};
+const bags = () => ({...DEFAULT_BAGS,...(rieBags||{})});
+function bagNow(){ // what to pack: today's bags until the activity starts; after 5 pm, tomorrow's
+  const now=minNow(), evening=now>=17*60, d=evening?addDays(today(),1):today();
+  const kinds=[...new Set(occOn(d).filter(x=>evening||toMin(x.t)<0||toMin(x.t)>now).map(x=>x.kind||"other"))].filter(k=>(bags()[k]||[]).length);
+  return kinds.map(k=>({key:`${d}|${k}`,kind:k,items:bags()[k],tomorrow:evening,done:new Set(((rieBagDone||{})[`${d}|${k}`])||[])}));
 }
-const rieLine = () => { const now=minNow(), x=occOn(today()).find(x=>toMin(x.t)>=now || (toMin(x.end)>=now)); if(x) return `<div class="d-next"><span>Rie:</span> ${rIcon(x)} ${esc(x.title)}${x.t?` <span>at</span> ${fmtT(x.t)}`:""}</div>`;
+function bagHTML(compact){
+  return bagNow().map(b=>`<div class="bag ${compact?"bag-x":""}"><div class="bag-h">${b.tomorrow?"Pack tonight for tomorrow's":"Pack for"} <b>${RK[b.kind][1].toLowerCase()==="other"?"outing":RK[b.kind][1].toLowerCase()}</b>${b.done.size===b.items.length?", all packed ✓":""}</div><div class="bag-c">${b.items.map((it,i)=>`<button class="${b.done.has(i)?"on":""}" data-bag="${b.key}" data-bagi="${i}" aria-pressed="${b.done.has(i)}">${esc(it)}</button>`).join("")}</div></div>`).join("");
+}
+document.addEventListener("click", async e=>{
+  const b=e.target.closest("[data-bag]"); if(!b) return; e.stopPropagation(); e.preventDefault();
+  const key=b.dataset.bag, i=+b.dataset.bagi, keep=[today(),addDays(today(),1)];
+  const cur=Object.fromEntries(Object.entries(rieBagDone||{}).filter(([k])=>keep.includes(k.split("|")[0])));
+  const set=new Set(cur[key]||[]); set.has(i)?set.delete(i):set.add(i); cur[key]=[...set]; rieBagDone=cur; renderWall();
+  try{ await api.setState("rie_bag_done",cur) }catch(err){ toast("Couldn't save. Check your connection") }
+}, true);
+function rieHTML(variant, n=3){
+  if(!rieItems().length) return `<div class="rie ${variant==="row"?"rie-row":""}" data-open="rieOv" role="button" tabindex="0"><div class="rie-h"><span>Rie's calendar</span></div><div class="rie-none">Tap to add daycare, swimming and doctor visits</div></div>`;
+  const list=occOn(today()), now=minNow(), left0=list.filter(x=>toMin(x.end||x.t)<0 || toMin(x.end||x.t)>=now-30), sp=nextSpecial();
+  const left = left0.length>n ? [...left0.filter(x=>toMin(x.t)>now), ...left0.filter(x=>!(toMin(x.t)>now))].slice(0,n).sort((a,b)=>toMin(a.t)-toMin(b.t)) : left0, more=left0.length-left.length;
+  const rows=left.slice(0,n).map(x=>`<div class="rie-r"><span class="e">${rIcon(x)}</span><span class="t">${x.t?fmtT(x.t):"All day"}</span><span class="n">${esc(x.title)}</span></div>`).join("");
+  return `<div class="rie ${variant==="row"?"rie-row":""}" data-open="rieOv" role="button" tabindex="0"><div class="rie-h"><span>Rie today</span>${more>0?`<small>${more} more</small>`:""}</div>
+    ${rows || `<div class="rie-none">${list.length?"All done for today":"Nothing planned today"}</div>`}
+    ${sp && !(variant==="row" && bagNow().length)?`<div class="rie-up">Coming up: ${rIcon(sp)} <b>${esc(sp.title)}</b>, ${whenLabel(sp.date)}${sp.t?" at "+fmtT(sp.t):""}</div>`:""}${bagHTML(variant==="row")}</div>`;
+}
+const bagLeft = () => bagNow().reduce((n,b)=>n+b.items.length-b.done.size,0);
+const rieLine = () => { const now=minNow(), o=occOn(today()), x=o.find(x=>toMin(x.t)>=now) || o.find(x=>toMin(x.end)>=now); if(x) return `<div class="d-next"><span>Rie:</span> ${rIcon(x)} ${esc(x.title)}${x.t?` <span>at</span> ${fmtT(x.t)}`:""}${bagLeft()?`<span>, ${bagLeft()} things to pack</span>`:""}</div>`;
   const sp=nextSpecial(); return sp && daysTo(sp.date)<=7 ? `<div class="d-next"><span>Rie:</span> ${rIcon(sp)} ${esc(sp.title)} <span>${whenLabel(sp.date).toLowerCase()==="tomorrow"?"tomorrow":"on "+whenLabel(sp.date)}</span></div>` : "" };
 
 let rm=null, rSel=null, reDraft=null;
-function openRie(){ const t=today(); rm=t.slice(0,7); rSel=t; renderRieCal() }
+function openRie(){ const t=today(); rm=t.slice(0,7); rSel=t; renderRieCal(); renderBagEdit() }
+function renderBagEdit(){ const b=bags(); $("bagEdit").innerHTML=Object.entries(RK).map(([k,[ic,l]])=>`<label>${ic} ${l==="Other"?"Other outings":l}<textarea data-bagk="${k}" placeholder="Hat\nSunscreen">${esc((b[k]||[]).join("\n"))}</textarea></label>`).join("") }
+$("bagSave").onclick=async()=>{ const o={}; $("bagEdit").querySelectorAll("[data-bagk]").forEach(t=>{ o[t.dataset.bagk]=t.value.split("\n").map(x=>x.trim()).filter(Boolean).slice(0,20) }); rieBags=o; renderWall();
+  try{ await api.setState("rie_bags",o); toast("Packing lists saved") }catch(e){ toast("Couldn't save. Check your connection") } };
 function renderRieCal(){
   const [y,mo]=rm.split("-").map(Number), first=`${rm}-01`, lead=(wdOf(first)+6)%7, start=addDays(first,-lead), t=today();
   $("rmTitle").textContent=new Intl.DateTimeFormat(CONFIG.locale,{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(y,mo-1,15)));
@@ -1667,7 +1740,7 @@ $("detail").onclick=async e=>{
   if(mk){ const r=recipes.find(x=>x.id===mk.dataset.made); const undo=r.last_cooked===today(); r.cooked_count=Math.max(0,(r.cooked_count||0)+(undo?-1:1)); const prev=r.last_cooked; r.last_cooked=undo?null:today();
     showRecipe(r.id); renderBookList(); renderWall();
     try{ await api.markCooked(r.id, undo?-1:1) }catch(err){ toast("Couldn't save that") }
-    if(!undo) toast("Marked as made today"); return }
+    if(!undo){ toast("Marked as made today"); setTimeout(()=>askUsedUp(r.id),500) } return }
   const rb=e.target.closest("[data-rvedit],[data-rvset],[data-rvsave],[data-rvcancel],[data-rvdel]");
   if(rb){
     if(rb.dataset.rvedit){ const cur=(reviews[selId]||{})[rb.dataset.rvedit]; rvEdit={id:selId,who:rb.dataset.rvedit,rating:cur?cur.rating:0,note:cur?cur.note||"":""}; rerenderReviews(); return }
@@ -1957,6 +2030,22 @@ $("impForm").onsubmit=async e=>{
 /* ======================== WHAT CAN I COOK ======================== */
 const STAPLE=/^(salt|sugar|oil|water|pepper|ice|salt and a pinch of sugar|salt and pepper|cooking oil|hot water|cold water)$/;
 function recipeKeys(r){ const m=new Map(); for(const line of (r.ingredients||[])) for(const it of parseIng(line)){ const k=keyOf(it.name); if(k && !STAPLE.test(k)) m.set(k,it.name) } return m }
+const pantryMatch = k => pantrySet.has(k) ? k : [...pantrySet].find(p=> p.length>2 && (` ${k} `.includes(` ${p} `) || ` ${p} `.includes(` ${k} `))) || null;
+let usedSel=[];
+function askUsedUp(id){
+  const r=recipes.find(x=>x.id===id); if(!r) return;
+  const seen=new Set(); usedSel=[];
+  for(const line of (r.ingredients||[])) for(const it of parseIng(line)){ const k=keyOf(it.name), m=k&&pantryMatch(k); if(!m||seen.has(m)) continue; seen.add(m);
+    const row=stockRows.find(x=>x.name===m), label=row?.label||m, staple=/^(Spices & sauces|Pantry)$/.test(aisleOf(label)) || /\b(garlic|bawang|shallots?|onions?|ginger|jahe|chil+i|cabai|cabe)\b/i.test(label);
+    usedSel.push({k:m,label,qty:row?.qty||"",on:!staple}) }
+  if(!usedSel.length) return;
+  $("usedHint").textContent=`${r.title} used these from In stock. Ticked items come off the list. Staples like rice, garlic and shallots start unticked.`;
+  renderUsed(); open("usedOv");
+}
+function renderUsed(){ $("usedList").innerHTML=usedSel.map((x,i)=>`<button class="uprow ${x.on?"on":""}" data-ui="${i}" aria-pressed="${x.on}"><span class="box"></span><span>${esc(x.label)}</span>${x.qty?`<small>${esc(x.qty)}</small>`:""}</button>`).join(""); const n=usedSel.filter(x=>x.on).length; $("usedGo").disabled=!n; $("usedGo").textContent=n?`Take ${n} out of stock`:"Take out of stock" }
+$("usedList").onclick=e=>{ const b=e.target.closest("[data-ui]"); if(!b) return; const x=usedSel[+b.dataset.ui]; x.on=!x.on; renderUsed() };
+$("usedGo").onclick=async()=>{ const sel=usedSel.filter(x=>x.on); close("usedOv"); for(const x of sel){ pantrySet.delete(x.k); stockRows=stockRows.filter(s=>s.name!==x.k); try{ await api.setPantry(x.k,false) }catch(e){} }
+  if($("stockOv").classList.contains("open")) renderStock(); renderWall(); syncShopping({quiet:true}); toast(`Took ${sel.length} item${sel.length>1?"s":""} out of stock`) };
 const hasKey = k => pantrySet.has(k) || [...pantrySet].some(p=> p.length>2 && (` ${k} `.includes(` ${p} `) || ` ${p} `.includes(` ${k} `)));
 function renderPantry(){
   const universe=new Map(); recipes.forEach(r=>recipeKeys(r).forEach((n,k)=>{ if(!universe.has(k)) universe.set(k,n) }));
@@ -2098,6 +2187,7 @@ $("ckNext").onclick=()=>{ if(ck.i<ck.r.steps.length-1){ ck.i++; renderCook(); re
   if(rr && rr.last_cooked!==today()){ rr.cooked_count=(rr.cooked_count||0)+1; rr.last_cooked=today(); api.markCooked(id,1).catch(()=>{}) }
   close("cook"); open("bookOv"); showRecipe(id);
   setTimeout(()=>{ const el=$("rvSec"); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}) },200); toast("How was it? Add your reviews");
+  setTimeout(()=>askUsedUp(id),600);
 };
 $("ckBack").onclick=()=>{ if(ck.i>0){ ck.i--; renderCook() } };
 $("ckVid").onclick=()=>{ const p=$("ckVidP"), open_=!p.classList.contains("open"); p.classList.toggle("open",open_); $("ckVid").classList.toggle("on",open_);
@@ -2173,16 +2263,16 @@ async function start(){
 }
 (async()=>{
   if(DEMO){ const b=document.createElement("div"); b.className="demo-badge"; b.textContent="DEMO DATA"; document.body.appendChild(b) }
-  renderWall(); loadWeather(); setInterval(loadWeather,15*60e3); setInterval(tick,1000); nextPhoto();
+  renderWall(); loadWeather(); loadAir(); setInterval(loadWeather,15*60e3); setInterval(loadAir,30*60e3); setInterval(tick,1000); nextPhoto();
   let ok=false; try{ ok=await api.session() }catch(e){ ok=false }
   if(ok) start(); else open("login");
-  document.addEventListener("visibilitychange",()=>{ if(!document.hidden && started){ refreshAll(); loadWeather() } });
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden && started){ refreshAll(); loadWeather(); loadAir() } });
   setTimeout(()=>location.reload(), 12*3600e3); // fresh start twice a day for a long-running kiosk
 })();
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.21";
+const APP_VERSION="2026-11-13.23";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
