@@ -2397,10 +2397,11 @@ $("impForm").onsubmit=async e=>{
   if(!url){ $("impErr").textContent="Paste a link, or choose a photo below."; return }
   if(!/^https?:\/\/\S+\.\S+/.test(url)){ $("impErr").textContent="Paste a full link that starts with https://"; return }
   const b=$("impGo"); b.disabled=true; b.textContent=/youtu|instagram/i.test(url)?"Reading the description…":"Importing…";
+  const slow = /youtu/i.test(url) ? setTimeout(()=>{ b.textContent="Claude is watching the video…"; $("impErr").textContent="No recipe in the description, so Claude is reading what's said in the video. This can take up to a minute." },5000) : 0;
   try{
     const d=await api.importRecipe(url); fromImport(d,url);
   }catch(err){ $("impErr").textContent=err.message||"Couldn't import that link." }
-  finally{ b.disabled=false; b.textContent="Import link" }
+  finally{ clearTimeout(slow); b.disabled=false; b.textContent="Import link" }
 };
 
 /* ======================== WHAT CAN I COOK ======================== */
@@ -2650,7 +2651,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.27";
+const APP_VERSION="2026-11-13.28";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();

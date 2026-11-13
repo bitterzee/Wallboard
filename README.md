@@ -74,3 +74,6 @@ Menu → **Child's calendar** (on the phone: the button at the bottom of Today, 
 ## Your child: growth and development
 Menu → **(child's name)** has three tabs. **Calendar** (with packing lists), **Growth** (birthday, height and weight with WHO percentiles for girls 0–5 years, charted against the 3rd–97th percentile bands) and **Development** (what most children can do at her age and ideas to try, summarised from CDC's "Learn the Signs. Act Early." milestones). One idea a week shows on the wall.
 Growth data is stored in `wb_state` (`kid_profile`, `kid_growth`), members only like everything else.
+
+## YouTube videos without a written recipe
+When a video's description has no recipe, `import-recipe` fetches the video's captions (the uploader's or YouTube's automatic ones) and asks Claude to write the recipe from what's said. Uses the same `ANTHROPIC_API_KEY` secret as fridge scanning. Videos with no captions can't be read.
