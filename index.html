@@ -293,10 +293,11 @@ body.awake .ctl{opacity:1;pointer-events:auto}
 <section class="ov" id="login">
   <form id="loginForm">
     <h1 class="serif">Wallboard</h1>
-    <p style="color:#bdb3a6">Sign in with your Capcus login.</p>
-    <input type="email" name="email" placeholder="you@example.com" autocomplete="username" required>
-    <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
-    <button type="submit">Sign in</button>
+    <p style="color:#bdb3a6" id="loginHint">Sign in with your Capcus email. We'll email you a code.</p>
+    <input type="email" name="email" id="loginEmail" placeholder="you@example.com" autocomplete="username" required>
+    <input name="code" id="loginCode" inputmode="numeric" autocomplete="one-time-code" placeholder="Code from the email" maxlength="10" style="display:none;letter-spacing:.3em;font-size:22px;text-align:center">
+    <button type="submit" id="loginBtn">Email me a code</button>
+    <button type="button" id="loginBack" style="display:none;background:none;color:#bdb3a6;font-weight:600">Use a different email</button>
     <div class="err" id="loginErr"></div>
   </form>
 </section>
@@ -356,7 +357,7 @@ const api = DEMO ? (() => {
   const listeners=[]; const ping=()=>listeners.forEach(f=>f());
   return {
     async session(){ me={name:"Demo",email:"demo"}; return true },
-    async signIn(){ return null }, async signOut(){},
+    async sendCode(){ return null }, async verifyCode(){ return null }, async signOut(){},
     async recipes(){ return mem.recipes.slice() },
     async saveRecipe(r,file){
       if(file){ const p=`recipes/${uuid()}.jpg`; mem.blobs[p]=URL.createObjectURL(await shrink(file,1400,.82)); r.photo_path=p }
@@ -386,7 +387,8 @@ const api = DEMO ? (() => {
   }
   return {
     async session(){ const { data:{ session } } = await sb.auth.getSession(); return session ? loadMe() : false },
-    async signIn(email,password){ const { error } = await sb.auth.signInWithPassword({email,password}); if(error) return error.message; try{ await loadMe(); return null }catch(e){ await sb.auth.signOut(); return "This login isn't on the household list (wb_members)." } },
+    async sendCode(email){ const { error } = await sb.auth.signInWithOtp({ email, options:{ shouldCreateUser:false } }); return error ? (/signups? not allowed|not found/i.test(error.message) ? "No Capcus account uses that email." : error.message) : null },
+    async verifyCode(email,token){ const { error } = await sb.auth.verifyOtp({ email, token, type:"email" }); if(error) return /expired|invalid/i.test(error.message) ? "That code is wrong or has expired. Check the newest email, or send a new code." : error.message; try{ await loadMe(); return null }catch(e){ await sb.auth.signOut(); return "This email isn't on the wallboard's household list yet." } },
     async signOut(){ await sb.auth.signOut() },
     async recipes(){ return must(await sb.from("wb_recipes").select("*").order("title")) },
     async saveRecipe(r,file){
@@ -682,10 +684,19 @@ let wakeT; function wake(){ document.body.classList.add("awake"); clearTimeout(w
 $("wall").addEventListener("click",wake);
 
 /* ======================== LOGIN & START ======================== */
+let codeSent=false;
+function loginStep(sent){ codeSent=sent; $("loginCode").style.display=sent?"":"none"; $("loginBack").style.display=sent?"":"none"; $("loginEmail").readOnly=sent;
+  $("loginBtn").textContent=sent?"Sign in":"Email me a code"; $("loginHint").textContent=sent?`We sent a code to ${$("loginEmail").value}. Enter it below.`:"Sign in with your Capcus email. We'll email you a code."; if(sent) $("loginCode").focus() }
+$("loginBack").onclick=()=>{ $("loginCode").value=""; $("loginErr").textContent=""; loginStep(false) };
 $("loginForm").onsubmit=async e=>{
-  e.preventDefault(); const f=new FormData(e.target); $("loginErr").textContent="";
-  const err=await api.signIn(f.get("email"),f.get("password"));
-  if(err){ $("loginErr").textContent=err; return } close("login"); start();
+  e.preventDefault(); $("loginErr").textContent=""; const email=$("loginEmail").value.trim().toLowerCase(), btn=$("loginBtn");
+  btn.disabled=true; const label=btn.textContent; btn.textContent="One moment…";
+  try{
+    if(!codeSent){ const err=await api.sendCode(email); if(err){ $("loginErr").textContent=err; return } loginStep(true); return }
+    const code=$("loginCode").value.replace(/\s/g,""); if(!/^\d{6,10}$/.test(code)){ $("loginErr").textContent="Enter the number from the email."; return }
+    const err=await api.verifyCode(email,code); if(err){ $("loginErr").textContent=err; return }
+    close("login"); start();
+  } finally { btn.disabled=false; if(btn.textContent==="One moment…") btn.textContent=codeSent?"Sign in":label }
 };
 let started=false;
 async function start(){

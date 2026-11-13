@@ -20,7 +20,7 @@ She signs in with her Capcus login. If she doesn't have one, create her in Authe
 
 ## Set up the iPad
 1. Open the site in Safari, then tap Share → **Add to Home Screen**.
-2. Open Wallboard from the Home Screen and sign in once.
+2. Open Wallboard from the Home Screen and sign in once with your Capcus email: it emails you a code, same as Capcus.
 3. Settings → Display & Brightness → Auto-Lock → **Never**. Keep it plugged in.
 4. Settings → Accessibility → **Guided Access** → On. In Wallboard, triple-click the Home button to lock the iPad to it.
 
