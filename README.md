@@ -39,3 +39,11 @@ She signs in with her Capcus login. If she doesn't have one, create her in Authe
 - **Rain alerts**: a banner warns when rain is likely in the next 12 hours.
 - **On this day**: photos taken on today's date in past years appear in the slideshow with a label. The date comes from the photo itself.
 - **iPhone layout**: on a phone, the site has tabs for Today, Recipes, Plan, Shopping and Photos.
+
+## Also new
+- **Hands-free cooking**: in cooking mode, tap **Hands-free** and say "next", "back", "repeat" or "ingredients". Indonesian works too ("lanjut", "kembali"). **Read aloud** reads each step.
+- **What can I cook?**: tick what's in your kitchen, and recipes are ranked by how much you already have. The list is shared between you.
+- **Family calendar**: in Settings, paste each person's Google Calendar secret iCal address. Today's events show on the wall and the phone. The `calendar` function reads the links, and only the household can see them.
+- **Morning routine**: a picture checklist on the wall from 5 to 11 am, with a celebration when it's all ticked. Edit the steps in Settings.
+- **WhatsApp**: the WhatsApp button on the shopping list sends the list as tidy text.
+- On the iPad, tap the screen and use **Menu** (top right) for everything.

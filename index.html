@@ -134,10 +134,12 @@ body[data-mode=night]{background:#050A0B}
 .otd{display:inline-block;background:rgba(9,18,20,.72);color:var(--fg);border-radius:99px;padding:.4em 1em;font-weight:600}
 
 /* ---------- wall controls ---------- */
-.ctl{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:4px;padding:5px;background:rgba(9,18,20,.88);border:1px solid var(--line);border-radius:99px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:5;flex-wrap:wrap;justify-content:center;width:max-content;max-width:94vw}
+.ctl{position:fixed;right:16px;top:14px;display:flex;opacity:0;pointer-events:none;transition:opacity .3s;z-index:5}
 body.awake .ctl{opacity:1;pointer-events:auto}
-.ctl button{border-radius:99px;padding:.7em 1.15em;font-size:15px;font-weight:600;color:var(--fg);min-height:46px;white-space:nowrap}
-.ctl button:hover{background:var(--s2)}
+.ctl button{display:flex;align-items:center;gap:8px;border-radius:99px;padding:.65em 1.15em;font-size:15px;font-weight:600;color:var(--fg);min-height:46px;background:rgba(9,18,20,.86);border:1px solid var(--line2)}
+.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.menu-grid button{background:var(--s2);border-radius:16px;padding:16px 18px;font-size:17px;font-weight:600;text-align:left;min-height:64px;color:var(--fg)}
+.menu-grid button:active{background:var(--s3)}
 
 /* ---------- overlays ---------- */
 .ov{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;background:var(--bg);color:var(--fg);-webkit-user-select:text;user-select:text}
@@ -273,6 +275,86 @@ select.pill{appearance:none;-webkit-appearance:none;background:var(--s1)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .demo-badge{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;z-index:40}
 
+/* ---------- routine, agenda, party ---------- */
+.rt{display:flex;flex-direction:column;gap:12px}
+.rt-h{display:flex;justify-content:space-between;align-items:baseline;font-size:18px;font-weight:600}
+.rt-c{color:var(--fg2);font-weight:500;font-size:.85em}
+.rt-g{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.rt-row .rt-g{grid-template-columns:repeat(4,1fr)}
+.rt-i{position:relative;background:var(--panel);border:1.5px solid var(--line);border-radius:20px;padding:14px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--fg);transition:transform .15s,background .2s}
+.rt-i:active{transform:scale(.96)}
+.rt-e{font-size:46px;line-height:1}
+.rt-l{font-size:15px;font-weight:600;text-align:center;line-height:1.2}
+.rt-i.on{background:rgba(229,177,58,.16);border-color:var(--accent)}
+.rt-i.on .rt-e{opacity:.45}
+.rt-i.on::after{content:"";position:absolute;top:10px;right:10px;width:24px;height:24px;border-radius:50%;background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23231904' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/16px no-repeat}
+.rt-row .rt-e{font-size:36px}.rt-row .rt-l{font-size:13px}.rt-row .rt-i{padding:10px 4px;border-radius:16px}
+.ag{display:flex;flex-direction:column}
+.ag-h{font-size:18px;font-weight:600;margin-bottom:6px}
+.ag-r{display:grid;grid-template-columns:10px 74px 1fr;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:18px}
+.ag-r i{width:8px;height:8px;border-radius:50%}
+.ag-t{color:var(--fg2);font-variant-numeric:tabular-nums;font-size:.9em}
+.ag-n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.ag-none{grid-template-columns:1fr;color:var(--fg3)}
+.ag-more{color:var(--fg3);font-size:14px;padding-top:6px}
+.d-next{font-size:18px;color:var(--fg)}
+.d-next span{color:var(--fg2)}
+.party{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden;display:grid;place-items:center}
+.party i{position:absolute;top:-24px;width:10px;height:16px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(720deg)}}
+.party-t{font-size:clamp(44px,8vw,96px);font-weight:200;letter-spacing:-.04em;background:rgba(15,27,29,.88);padding:.25em .8em;border-radius:40px;animation:pop .5s var(--ease)}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+
+/* morning v2 */
+.m2{height:100%;display:grid;grid-template-columns:1fr 390px;grid-template-rows:1fr auto;gap:26px 40px}
+.m2-l{display:flex;flex-direction:column;gap:18px;min-width:0}
+.m2-l .m-time{font-size:150px}
+.m2-l .m-date{margin-top:8px}
+.m2-l .m-wx{margin-top:auto}
+.m2-l .m-wx svg{width:96px}
+.m2-l .m-temp{font-size:84px}
+.m2-r{display:flex;flex-direction:column;gap:24px;min-width:0}
+.m2-b{grid-column:1/-1;display:flex;flex-direction:column;gap:12px}
+.m2-b .fc{font-size:17px}
+.m2-b .fc svg{width:34px;margin:6px 0}
+.n-mid{display:flex;flex-direction:column;gap:18px;margin:22px 0}
+.n-mid .ag-r{font-size:17px}
+
+/* pantry */
+.pantry{flex:1;display:grid;grid-template-columns:1.1fr 1fr;min-height:0}
+.pt-have{border-left:1px solid var(--line)}
+.chips2{display:flex;flex-wrap:wrap;gap:6px}
+.chip2{background:var(--s1);border:1px solid var(--line);border-radius:99px;padding:.45em .95em;font-size:14px;font-weight:500;color:var(--fg2)}
+.chip2.on{background:rgba(229,177,58,.16);border-color:var(--accent);color:var(--fg)}
+.idea{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.idea .item{flex:1;min-width:0;padding:4px 0}
+.idea .need{font-size:13px;color:var(--fg3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.idea .have{font-size:13px;color:var(--accent);font-weight:600}
+.idea .pill{flex:none;min-height:38px;padding:.4em .9em;font-size:14px}
+.bar-i{display:inline-flex;align-items:center;gap:6px}
+.bar-i svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pill.on{background:rgba(229,177,58,.16);border-color:var(--accent);color:var(--fg)}
+.ck-heard{min-height:24px;color:var(--fg3);font-size:16px}
+.ck-heard.live::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--warn);margin-right:8px;animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.25}}
+
+/* settings */
+.sh{font-size:22px;font-weight:300;letter-spacing:-.02em;margin:30px 0 6px}
+.sh:first-child{margin-top:6px}
+.calrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.calrow i{width:12px;height:12px;border-radius:50%;flex:none}
+.calrow b{font-weight:600}.calrow small{display:block;color:var(--fg3);font-size:13px}
+.calrow .grow{flex:1;min-width:0}
+.swatches{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--fg2)}
+.swatches button{width:30px;height:30px;border-radius:50%;border:2px solid transparent}
+.swatches button.on{border-color:var(--fg)}
+.rtrow{display:grid;grid-template-columns:64px 1fr 40px;gap:8px;margin-bottom:8px}
+.rtrow input{padding:.7em .8em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--s1);font-size:16px;color:var(--fg)}
+.rtrow input.emo{text-align:center;font-size:24px;padding:.3em}
+.rtrow button{color:var(--fg3);font-size:18px}
+.toggle{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--fg2);margin:10px 0}
+.toggle input{width:20px;height:20px;accent-color:var(--accent)}
+
 /* ---------- iPhone ---------- */
 #tabs{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:25;display:none;grid-template-columns:repeat(5,1fr);background:rgba(22,37,40,.78);-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4);border:1px solid var(--line);border-radius:26px;padding:6px}
 body.phone #tabs{display:grid}
@@ -284,6 +366,7 @@ body.phone.cooking #tabs,body.phone.signin #tabs{display:none}
 body.phone .ov{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
 body.phone #cook,body.phone #login,body.phone #layoutOv,body.phone .sheet{padding-bottom:0}
 body.phone .ctl,body.phone .demo-badge{display:none!important}
+body.phone .pw .rt-row .rt-l{font-size:12px}
 body.phone #bookOv [data-close],body.phone #photosOv [data-close],body.phone #planOv [data-close],body.phone #shopOv [data-close],body.phone #bookLayout,body.phone #bookOv [data-open]{display:none}
 body.phone .toast{bottom:calc(92px + env(safe-area-inset-bottom))}
 body.phone #wall{left:0;top:0;width:100%;height:auto;bottom:0;transform:none;padding:calc(env(safe-area-inset-top) + 18px) 20px calc(96px + env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -302,7 +385,8 @@ body.phone .bar h1{font-size:28px}
 .pw .rc .b{padding:18px;gap:10px}
 .pw .eyebrow{font-size:13px}.pw .rc h2{font-size:30px}.pw .meta{font-size:12px}
 .pw .rc ul{font-size:14px;column-gap:16px}
-.pw .btn-cook{font-size:15px}.pw .btn-ghost{font-size:14px}.pw .by{font-size:12px}
+.pw .btn-cook{font-size:15px}.pw .btn-ghost{font-size:14px}.pw .by{display:none}
+.btn-cook,.btn-ghost{white-space:nowrap}
 .pw .tmr{font-size:13px}
 .pw .rain{font-size:14px}.pw .otd{font-size:13px;align-self:flex-start}
 .pw-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:var(--fg3)}
@@ -320,6 +404,10 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
   .cols{grid-template-columns:1fr;gap:22px}
   .f .r3{grid-template-columns:1fr 1fr}
   .bar h1{font-size:22px}
+  .pantry{display:block;overflow:auto;-webkit-overflow-scrolling:touch}
+  .pantry .scroll{overflow:visible}
+  .pt-have{border-left:0;border-top:1px solid var(--line)}
+  .bar-i span{display:none}
 }
 </style>
 </head>
@@ -327,14 +415,25 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <div class="bg" id="bgA"></div><div class="bg" id="bgB"></div><div class="shade"></div>
 <main id="wall"></main>
 
-<div class="ctl">
-  <button id="bLayout">Layout</button>
-  <button id="bMode">Mode: Auto</button>
-  <button id="bBook">Recipes</button>
-  <button id="bPlan">Plan</button>
-  <button id="bShop">Shopping</button>
-  <button id="bPhotos">Photos</button>
-</div>
+<div class="ctl"><button id="bMenu" aria-label="Open menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Menu</button></div>
+
+<!-- wall menu -->
+<section class="ov sheet" id="menuOv">
+  <div class="sheetbox">
+    <h2 class="serif">Menu</h2>
+    <div class="menu-grid">
+      <button id="bBook">Recipes</button>
+      <button id="bPlan">Dinner plan</button>
+      <button id="bShop">Shopping list</button>
+      <button id="bPantry2">What can I cook?</button>
+      <button id="bPhotos">Photos</button>
+      <button id="bSettings">Settings</button>
+      <button id="bLayout">Layout</button>
+      <button id="bMode">Mode</button>
+    </div>
+    <button class="pill" data-close style="align-self:flex-end">Close</button>
+  </div>
+</section>
 
 <!-- recipe book -->
 <section class="ov" id="bookOv">
@@ -348,6 +447,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <aside class="list">
       <div class="top">
         <input class="search" id="q" placeholder="Search recipes or ingredients">
+        <button class="pill" id="bPantry" style="width:100%;margin-top:10px">What can I cook?</button>
         <div class="cats" id="cats"></div>
       </div>
       <div class="items" id="items"></div>
@@ -367,8 +467,44 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
   <div class="pgrid" id="pgrid"></div>
   <div style="padding:10px 16px 18px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap">
     <span style="color:var(--ink2);font-size:14px;margin-right:auto" id="who"></span>
-    <button class="pill" id="bSignOut">Sign out</button>
+    <button class="pill" data-open="setOv">Settings</button><button class="pill" id="bSignOut">Sign out</button>
   </div>
+</section>
+
+<!-- what can I cook -->
+<section class="ov" id="pantryOv">
+  <div class="bar"><h1 class="serif">What can I cook?</h1><button class="pill" data-close>Close</button></div>
+  <div class="pantry">
+    <div class="scroll"><div class="wrapc"><h2 class="sh">Ideas</h2><p class="hint2">Recipes ranked by how much you already have. Salt, sugar, oil and water count as always in the kitchen.</p><div id="ideas"></div></div></div>
+    <div class="scroll pt-have"><div class="wrapc"><h2 class="sh">In your kitchen</h2><p class="hint2">Tap what you have. Your wife sees the same list.</p>
+      <input class="search" id="ptQ" placeholder="Find an ingredient" style="margin-bottom:6px"><div id="ptChips"></div>
+      <form class="shopadd" id="ptAdd" style="margin-top:16px"><input id="ptItem" placeholder="Add something else, like tempeh" autocomplete="off"><button class="pill">Add</button></form>
+    </div></div>
+  </div>
+</section>
+
+<!-- settings -->
+<section class="ov" id="setOv">
+  <div class="bar"><h1 class="serif">Settings</h1><button class="pill" data-close>Close</button></div>
+  <div class="scroll"><div class="wrapc">
+    <h2 class="sh">Family calendars</h2>
+    <p class="hint2">Today's events show on the wall and your phones. In Google Calendar on a computer, open Settings, pick your calendar, then copy <b>Secret address in iCal format</b>. From Apple Calendar, share the calendar as a public link.</p>
+    <div id="calList"></div>
+    <form class="f" id="calAdd" style="margin-top:14px">
+      <div class="r3" style="grid-template-columns:1fr 2fr"><label>Name<input name="name" placeholder="Renaldo" required></label><label>Calendar link<input name="url" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" required autocomplete="off"></label></div>
+      <div class="swatches" id="calColor">Colour</div>
+      <div class="err" id="calErr" style="color:var(--warn);font-size:14px;min-height:1.2em"></div>
+      <div><button class="pill dark" id="calSave">Add calendar</button></div>
+    </form>
+    <h2 class="sh">Morning routine</h2>
+    <p class="hint2">A picture checklist on the wall from 5 to 11 am. Tap a picture to tick it off. It resets every morning.</p>
+    <label class="toggle"><input type="checkbox" id="rtOn"> Show on the wall</label>
+    <div class="f" style="margin-bottom:12px"><label>Title<input id="rtTitle" placeholder="Morning routine"></label></div>
+    <div id="rtList"></div>
+    <div class="row" style="margin-top:6px"><button class="pill" id="rtAddItem">Add a step</button><button class="pill dark" id="rtSave">Save routine</button></div>
+    <h2 class="sh">Account</h2>
+    <p class="hint2" id="who2"></p>
+  </div></div>
 </section>
 
 <!-- meal plan -->
@@ -379,7 +515,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 
 <!-- shopping list -->
 <section class="ov" id="shopOv">
-  <div class="bar"><h1 class="serif">Shopping list</h1><button class="pill" id="shopBuild">From plan</button><button class="pill" data-close>Close</button></div>
+  <div class="bar"><h1 class="serif">Shopping list</h1><button class="pill bar-i" id="shopWA" aria-label="Send to WhatsApp"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.2-4.3A8.5 8.5 0 1 1 20.5 12z"/><path d="M9 8.6c.2-.4.5-.5.8-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.2 0 .5-.1.6l-.5.6c-.1.1-.1.3 0 .5.6 1 1.4 1.8 2.4 2.4.2.1.4.1.5 0l.6-.6c.2-.2.4-.2.6-.1l1.6.7c.3.1.4.3.4.5v.5c0 .3-.2.6-.5.8-.8.4-1.8.5-2.7.1a9.6 9.6 0 0 1-4.6-4.6c-.4-.9-.3-1.9.2-2.9z" stroke-width="1.2"/></svg><span>WhatsApp</span></button><button class="pill" id="shopBuild">From plan</button><button class="pill" data-close>Close</button></div>
   <div class="scroll"><div class="wrapc">
     <form class="shopadd" id="shopAdd"><input id="shopItem" placeholder="Add an item, like 2 kg rice" autocomplete="off"><button class="pill dark" type="submit">Add</button></form>
     <div id="shopList"></div>
@@ -411,16 +547,18 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <section class="ov" id="cook">
   <div class="bar">
     <h1 class="serif" id="ckTitle"></h1>
+    <button class="pill bar-i" id="ckSpeak" aria-label="Read steps aloud"><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg><span>Read aloud</span></button>
+    <button class="pill bar-i" id="ckVoice" aria-label="Hands-free voice control"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span>Hands-free</span></button>
     <button class="pill" id="ckIng">Ingredients</button>
     <button class="pill" data-close>Done</button>
   </div>
   <div class="ck">
-    <div class="step"><div class="n" id="ckN"></div><div class="txt" id="ckTxt"></div></div>
+    <div class="step"><div class="n" id="ckN"></div><div class="txt" id="ckTxt"></div><div class="ck-heard" id="ckHeard"></div></div>
     <div class="ingp" id="ckIngP"></div>
   </div>
   <div class="dots" id="ckDots"></div>
   <div class="ck nav" style="flex:none"><div class="nav" style="display:flex;width:100%;padding:0 4vw 4vw;gap:2vw">
-    <button id="ckBack">← Back</button><button class="next" id="ckNext">Next →</button>
+    <button id="ckBack">Back</button><button class="next" id="ckNext">Next</button>
   </div></div>
 </section>
 
@@ -493,6 +631,9 @@ const today = () => new Intl.DateTimeFormat("en-CA",{timeZone:CONFIG.tz}).format
 const addDays = (ymd,n) => { const d=new Date(ymd+"T12:00:00Z"); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10) };
 const dayLabel = (ymd) => { const t=today(); if(ymd===t) return "Today"; if(ymd===addDays(t,1)) return "Tomorrow"; return new Intl.DateTimeFormat(CONFIG.locale,{weekday:"long",timeZone:"UTC"}).format(new Date(ymd+"T12:00:00Z")) };
 const dayShort = (ymd) => new Intl.DateTimeFormat(CONFIG.locale,{day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(ymd+"T12:00:00Z"));
+const fmtDay = iso => new Intl.DateTimeFormat("en-CA",{timeZone:CONFIG.tz}).format(new Date(iso));
+const CAL_COLORS=["#86C6D9","#F08C78","#E5B13A","#9CC8A0","#B9A6E6"];
+const DEFAULT_ROUTINE={on:true,title:"Morning routine",items:[{id:"r1",icon:"🪥",label:"Brush teeth"},{id:"r2",icon:"👕",label:"Get dressed"},{id:"r3",icon:"🥣",label:"Breakfast"},{id:"r4",icon:"🧸",label:"Tidy toys"}]};
 const isPhone = () => innerWidth < 700 || innerHeight < 500;
 const hourNow = () => +new Intl.DateTimeFormat("en-GB",{timeZone:CONFIG.tz,hour:"numeric",hourCycle:"h23"}).format(new Date());
 
@@ -545,7 +686,7 @@ const SEED = [
 ].map(r=>({id:uuid(),photo_path:null,source_url:null,created_at:new Date().toISOString(),...r}));
 
 const api = DEMO ? (() => {
-  const mem = { recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()]:SEED[1].id,[addDays(today(),1)]:SEED[0].id,[addDays(today(),3)]:SEED[2].id}, shop:[] };
+  const mem = { pantry:new Set(['rice','egg','shallot','garlic','kecap mani','chicken thighs or leg','lime','spinach']), state:{}, cals:[{id:'c1',name:'Renaldo',color:'#86C6D9'},{id:'c2',name:'Christie',color:'#F08C78'}], recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()]:SEED[1].id,[addDays(today(),1)]:SEED[0].id,[addDays(today(),3)]:SEED[2].id}, shop:[] };
   const listeners=[]; const ping=()=>listeners.forEach(f=>f());
   return {
     async session(){ me={name:"Demo",email:"demo"}; return true },
@@ -569,6 +710,14 @@ const api = DEMO ? (() => {
     async addShop(items){ items.forEach(i=>mem.shop.push({id:uuid(),checked:false,source:"manual",created_at:new Date().toISOString(),added_by_name:me.name,...i})); ping() },
     async updateShop(id,patch){ const i=mem.shop.find(x=>x.id===id); if(i) Object.assign(i,patch); ping() },
     async deleteShop(ids){ mem.shop=mem.shop.filter(x=>!ids.includes(x.id)); ping() },
+    async pantry(){ return [...mem.pantry].map(name=>({name})) },
+    async setPantry(name,on){ on?mem.pantry.add(name):mem.pantry.delete(name); ping() },
+    async state(k){ return mem.state[k]??null }, async setState(k,v){ mem.state[k]=v; ping() },
+    async calendars(){ return mem.cals.slice() }, async addCalendar(c){ mem.cals.push({id:uuid(),owner_name:me.name,...c}); ping() }, async deleteCalendar(id){ mem.cals=mem.cals.filter(c=>c.id!==id); ping() },
+    async testCalendar(){ await new Promise(r=>setTimeout(r,500)); return {ok:true,count:4} },
+    async events(){ const t=today(), t1=addDays(t,1), at=(d,h)=>`${d}T${h}:00+07:00`; const c=Object.fromEntries(mem.cals.map(x=>[x.name,x]));
+      const ev=(d,h,e,title,cal)=>({title,start:at(d,h),end:at(d,e),allDay:false,cal:c[cal]?.id,color:c[cal]?.color});
+      return {events:[ev(t,"07:30","08:00","School run","Christie"),ev(t,"15:00","16:00","Swimming lesson","Christie"),ev(t,"17:30","18:30","Site call","Renaldo"),ev(t,"19:00","21:00","Dinner with Oma","Christie"),{title:"Grandma visits",start:t1,end:addDays(t1,1),allDay:true,cal:"c2",color:c.Christie?.color},ev(t1,"09:00","10:00","Dentist","Renaldo")].filter(e=>e.cal),failed:[]} },
     async importRecipe(url){ await new Promise(r=>setTimeout(r,700)); if(!/^https?:\/\//.test(url)) throw new Error("Paste a full link that starts with https://");
       return {title:"Ayam Bakar Madu",category:"Dinner",cook_time:"1 hr 10 min",serves:"4",ingredients:["1 kg chicken pieces","4 cloves garlic","5 shallots","3 tbsp honey","4 tbsp kecap manis","1 tsp coriander","2 limes"],steps:["Blend garlic, shallots and coriander into a paste.","Marinate the chicken in the paste, honey and kecap manis for 30 minutes.","Grill over medium heat, basting often, until cooked and sticky.","Serve with lime and rice."],notes:"Demo import: in the real app this comes from the page you paste.",source_url:url,photo_path:null,partial:false} },
     async urls(paths){ const o={}; paths.forEach(p=>o[p]=mem.blobs[p]); return o },
@@ -611,6 +760,15 @@ const api = DEMO ? (() => {
     async addShop(items){ if(items.length) must(await sb.from("wb_shopping").insert(items.map(i=>({source:"manual",...i,added_by_name:me.name})))) },
     async updateShop(id,patch){ must(await sb.from("wb_shopping").update(patch).eq("id",id)) },
     async deleteShop(ids){ if(ids.length) must(await sb.from("wb_shopping").delete().in("id",ids)) },
+    async pantry(){ return must(await sb.from("wb_pantry").select("name")) },
+    async setPantry(name,on){ if(on) must(await sb.from("wb_pantry").upsert({name,added_by_name:me.name,updated_at:new Date().toISOString()})); else must(await sb.from("wb_pantry").delete().eq("name",name)) },
+    async state(k){ const d=must(await sb.from("wb_state").select("value").eq("key",k).maybeSingle()); return d?.value??null },
+    async setState(k,v){ must(await sb.from("wb_state").upsert({key:k,value:v,updated_at:new Date().toISOString()})) },
+    async calendars(){ return must(await sb.from("wb_calendars").select("id,name,color,owner_name,created_at").order("created_at")) },
+    async addCalendar(c){ must(await sb.from("wb_calendars").insert({...c,owner_name:me.name})) },
+    async deleteCalendar(id){ must(await sb.from("wb_calendars").delete().eq("id",id)) },
+    async testCalendar(url){ const { data, error } = await sb.functions.invoke("calendar",{ body:{ test_url:url, tz:CONFIG.tz } }); if(error) throw error; return data },
+    async events(){ const { data, error } = await sb.functions.invoke("calendar",{ body:{ tz:CONFIG.tz, days:8 } }); if(error) throw error; return data },
     async importRecipe(url){
       const { data, error } = await sb.functions.invoke("import-recipe", { body:{ url } });
       if(error){ let msg="Couldn't import that link. Check it, or add the recipe by hand."; try{ const j=await error.context.json(); if(j?.error) msg=j.error }catch(e){} throw new Error(msg) }
@@ -630,13 +788,15 @@ const api = DEMO ? (() => {
         .on("postgres_changes",{event:"*",schema:"public",table:"wb_photos"},deb)
         .on("postgres_changes",{event:"*",schema:"public",table:"wb_state"},deb)
         .on("postgres_changes",{event:"*",schema:"public",table:"wb_meal_plan"},deb)
-        .on("postgres_changes",{event:"*",schema:"public",table:"wb_shopping"},deb).subscribe();
+        .on("postgres_changes",{event:"*",schema:"public",table:"wb_shopping"},deb)
+        .on("postgres_changes",{event:"*",schema:"public",table:"wb_pantry"},deb)
+        .on("postgres_changes",{event:"*",schema:"public",table:"wb_calendars"},deb).subscribe();
     },
   };
 })();
 
 /* ======================== STATE ======================== */
-let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[];
+let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, calendars=[], events=[], eventsFailed=[], calIds=null;
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
 const MODES=["auto","morning","day","dinner","night"];
@@ -660,11 +820,16 @@ async function refreshAll(){
   try{
     let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
     planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[p.day,p.recipe_id]));
+    let pan; [pan, routineCfg, routineDone, calendars] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars()]);
+    pantrySet = new Set((pan||[]).map(x=>x.name));
+    const ids=(calendars||[]).map(c=>c.id).join(); if(ids!==calIds){ calIds=ids; loadEvents() }
     layoutChosen = !!lay; if(lay && lay!==layout){ layout=lay; LS.set("layout",layout); nextPhoto() }
     recipes.sort((a,b)=>a.title.localeCompare(b.title));
     urlMap = await api.urls([...recipes.map(r=>r.photo_path), ...photos.map(p=>p.path)].filter(Boolean));
   }catch(e){ console.error(e); toast("Couldn't reach Supabase — showing last data") }
   buildPhotoOrder(); renderWall(); renderBookList(); renderPhotoGrid(); renderPlan(); renderShop();
+  if($("pantryOv").classList.contains("open")) renderPantry();
+  if($("setOv").classList.contains("open")) renderCalList();
   if($("bookOv").classList.contains("open") && selId && !editing) showRecipe(selId);
 }
 
@@ -715,24 +880,25 @@ let lastMode=null;
 function renderWall(){
   const m=mode(); document.body.dataset.mode=m; lastMode=m;
   if(!wx){ $("wall").innerHTML=""; return }
+  const scrollY=$("wall").scrollTop;
   const w=wxNow(), tn=tonightRecipe();
   const tChip = tn ? `<span class="chip">${tn.picked?"Tonight":"Idea"}: ${esc(tn.r.title)}</span>` : "";
   let h="";
   if(m==="morning"){
-    h=`<div class="m-wrap">
-      <div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}</div></div>
-      <div class="m-mid">
+    const rt=routineHTML("wall"), ag=agendaHTML(rt?3:6);
+    h=`<div class="m2">
+      <div class="m2-l"><div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}</div></div>
         <div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
-        ${rainHTML(21)}
-        <div class="fc">${fcHTML()}</div>
-      </div>
-      <div class="m-foot"><span class="muted">${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span>${tChip}</div></div>`;
+        ${rainHTML(19)}</div>
+      <div class="m2-r">${rt}${ag}</div>
+      <div class="m2-b"><div class="fc">${fcHTML()}</div>
+        <div class="m-foot"><span class="muted">${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span>${tChip}</div></div></div>`;
   } else if(m==="day"){
     const ph=currentPhoto();
     const ol=otdLabel(ph);
     h=`<div class="d-credit" style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">${ol?`<span class="otd" style="font-size:20px">${ol}</span>`:""}${ph&&ph.uploaded_by_name?`<span>Added by ${esc(ph.uploaded_by_name)}</span>`:""}</div>
       <div class="d-strip"><div><div class="t-big d-time js-time">${timeStr()}</div><div class="d-date">${dateStr()}</div></div>
-      <div class="d-right">${rainHTML(18)}<div class="d-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${tChip}</div></div>`;
+      <div class="d-right">${rainHTML(18)}${(()=>{const e=nextEvent();return e?`<div class="d-next"><span>Next</span> ${evTime(e)} ${esc(e.title)}</div>`:""})()}<div class="d-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${tChip}</div></div>`;
   } else if(m==="dinner"||m==="split"||m==="phone"){
     let card; const tmr=plannedFor(addDays(today(),1));
     if(tn){ const r=tn.r, pu=photoUrl(r.photo_path), ing=r.ingredients||[], show=ing.slice(0,10);
@@ -751,31 +917,79 @@ function renderWall(){
         ${ol?`<span class="otd">${ol}</span>`:""}
         <div class="pw-wx">${w.ic}<div><div class="pw-temp">${w.t}°</div><div class="pw-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
         ${rainHTML(14)}
+        ${routineHTML("row")}
+        ${agendaHTML(6)}
         <div class="fc">${fcHTML()}</div>
         ${card}
-        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span><button data-layoutpick>iPad layout ${layout}</button></div>
+        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span><span style="display:flex;gap:6px"><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
       </div>`;
-    } else
-    h=`<div class="n-wrap"><div class="n-left"><div><div class="t-big n-time js-time">${timeStr()}</div><div class="n-date">${dateStr()}</div></div>
+    }
+    const nrt = m==="split" ? routineHTML("row") : "";
+    if(m!=="phone") h=`<div class="n-wrap"><div class="n-left"><div><div class="t-big n-time js-time">${timeStr()}</div><div class="n-date">${dateStr()}</div></div>
+      <div class="n-mid">${nrt}${agendaHTML(nrt?2:4)}</div>
       <div style="display:flex;flex-direction:column;gap:15px"><div class="n-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${rainHTML(16)}${fc3}
       ${ol?`<span class="otd" style="font-size:15px;align-self:flex-start">${ol}</span>`:""}
       ${ph&&ph.uploaded_by_name?`<div class="muted" style="font-size:15px">Photo by ${esc(ph.uploaded_by_name)}</div>`:""}</div></div>${card}</div>`;
   } else {
     const d1=wx.daily; h=`<div class="ni"><div class="t-big js-time">${timeStr()}</div><div class="s">${dateStr()}</div>
-      <div class="s">Tomorrow ${Math.round(d1.temperature_2m_max[1])}° / ${Math.round(d1.temperature_2m_min[1])}° · ${wmo(d1.weather_code[1])[1]}</div></div>`;
+      <div class="s">Tomorrow ${Math.round(d1.temperature_2m_max[1])}° to ${Math.round(d1.temperature_2m_min[1])}°, ${wmo(d1.weather_code[1])[1].toLowerCase()}</div>
+      ${(()=>{const e=tomorrowFirst();return e?`<div class="s">First thing tomorrow: ${e.allDay?"":evTime(e)+" "}${esc(e.title)}</div>`:""})()}</div>`;
   }
-  $("wall").innerHTML=h;
+  $("wall").innerHTML=h; $("wall").scrollTop=scrollY;
   document.body.classList.toggle("phone", m==="phone");
-  $("bMode").textContent = modeOverride==="auto" ? `Auto: ${m}` : m[0].toUpperCase()+m.slice(1);
+  $("bMode").textContent = modeOverride==="auto" ? `Mode: auto (${m})` : `Mode: ${m}`;
   $("bMode").style.display = layout==="B" ? "none" : "";
-  $("bLayout").textContent = `Layout ${layout}`;
+  $("bLayout").textContent = `Wall layout: ${layout}`;
 }
 const mono = r => esc(((r&&r.title)||"?").trim()[0]||"?");
 const metaHTML = r => [r.category, r.cook_time, r.serves&&("Serves "+r.serves)].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("");
 
+let lastMin=-1;
 function tick(){
   document.querySelectorAll(".js-time").forEach(e=>e.textContent=timeStr());
-  if(mode()!==lastMode) renderWall();
+  const mi=new Date().getMinutes();
+  if(mode()!==lastMode || (mi!==lastMin && mi%5===0)) renderWall();   // drop past events every 5 minutes
+  lastMin=mi;
+}
+
+/* ======================== ROUTINE ======================== */
+const routine = () => routineCfg || DEFAULT_ROUTINE;
+const doneIds = () => (routineDone && routineDone.date===today()) ? routineDone.ids||[] : [];
+const showRoutine = () => { const r=routine(), h=hourNow(); return r.on!==false && (r.items||[]).length && h>=5 && h<11 };
+function routineHTML(variant){
+  if(!showRoutine()) return "";
+  const r=routine(), done=doneIds(), all=r.items.every(it=>done.includes(it.id));
+  return `<div class="rt ${variant==="row"?"rt-row":""}"><div class="rt-h"><span>${esc(r.title||"Morning routine")}</span><span class="rt-c">${all?"All done!":`${done.length} of ${r.items.length}`}</span></div>
+    <div class="rt-g">${r.items.map(it=>`<button class="rt-i ${done.includes(it.id)?"on":""}" data-rt="${esc(it.id)}" aria-pressed="${done.includes(it.id)}"><span class="rt-e">${esc(it.icon||"⭐")}</span><span class="rt-l">${esc(it.label)}</span></button>`).join("")}</div></div>`;
+}
+async function toggleRoutine(id){
+  const r=routine(), ids=new Set(doneIds()); const was=r.items.every(it=>ids.has(it.id));
+  ids.has(id)?ids.delete(id):ids.add(id);
+  routineDone={date:today(),ids:[...ids]}; renderWall();
+  if(!was && r.items.every(it=>ids.has(it.id))) celebrate();
+  try{ await api.setState("routine_done",routineDone) }catch(e){ toast("Couldn't sync the routine") }
+}
+function celebrate(){
+  const c=document.createElement("div"); c.className="party";
+  const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  c.innerHTML=`<div class="party-t">All done! 🎉</div>`+(calm?"":Array.from({length:70},(_,i)=>`<i style="left:${(Math.random()*100).toFixed(1)}%;background:${["#E5B13A","#86C6D9","#F08C78","#9CC8A0","#EDF1EC"][i%5]};animation-delay:${(Math.random()*.7).toFixed(2)}s;animation-duration:${(2.2+Math.random()*1.6).toFixed(2)}s"></i>`).join(""));
+  document.body.appendChild(c); setTimeout(()=>c.remove(),4500);
+}
+
+/* ======================== CALENDAR ======================== */
+async function loadEvents(){
+  if(!calendars.length){ events=[]; eventsFailed=[]; renderWall(); return }
+  try{ const d=await api.events(); events=(d&&d.events)||[]; eventsFailed=(d&&d.failed)||[] }catch(e){ console.error(e) }
+  renderWall(); if($("setOv").classList.contains("open")) renderCalList();
+}
+const evTime = e => e.allDay ? "All day" : fmt({hour:"2-digit",minute:"2-digit",hour12:CONFIG.hour12}, new Date(e.start));
+function todaysEvents(){ const t=today(), now=Date.now(); return events.filter(e=> e.allDay ? (e.start<=t && e.end>t) : (fmtDay(e.start)===t && new Date(e.end||e.start).getTime()>now)) }
+const nextEvent = () => todaysEvents().find(e=>!e.allDay);
+const tomorrowFirst = () => { const d=addDays(today(),1); return events.find(e=> e.allDay ? (e.start<=d && e.end>d) : fmtDay(e.start)===d) };
+function agendaHTML(max){
+  if(!calendars.length) return "";
+  const list=todaysEvents(), shown=list.slice(0,max);
+  return `<div class="ag"><div class="ag-h">Today</div>${shown.length?shown.map(e=>`<div class="ag-r"><i style="background:${esc(e.color||"#86C6D9")}"></i><span class="ag-t">${evTime(e)}</span><span class="ag-n">${esc(e.title)}</span></div>`).join(""):`<div class="ag-r ag-none">Nothing else on today</div>`}${list.length>max?`<div class="ag-more">${list.length-max} more later</div>`:""}</div>`;
 }
 
 /* ======================== PHOTOS ======================== */
@@ -1011,6 +1225,82 @@ $("impForm").onsubmit=async e=>{
   finally{ b.disabled=false; if(b.textContent==="Importing…") b.textContent="Import" }
 };
 
+/* ======================== WHAT CAN I COOK ======================== */
+const STAPLE=/^(salt|sugar|oil|water|pepper|ice|salt and a pinch of sugar|salt and pepper|cooking oil|hot water|cold water)$/;
+function recipeKeys(r){ const m=new Map(); for(const line of (r.ingredients||[])) for(const it of parseIng(line)){ const k=keyOf(it.name); if(k && !STAPLE.test(k)) m.set(k,it.name) } return m }
+const hasKey = k => pantrySet.has(k) || [...pantrySet].some(p=> p.length>2 && (` ${k} `.includes(` ${p} `) || ` ${p} `.includes(` ${k} `)));
+function renderPantry(){
+  const universe=new Map(); recipes.forEach(r=>recipeKeys(r).forEach((n,k)=>{ if(!universe.has(k)) universe.set(k,n) }));
+  pantrySet.forEach(k=>{ if(!universe.has(k)) universe.set(k, k[0].toUpperCase()+k.slice(1)) });
+  const q=$("ptQ").value.trim().toLowerCase(), order=[...AISLES.map(a=>a[0]),"Other"];
+  const items=[...universe].filter(([k,n])=>!q||n.toLowerCase().includes(q));
+  $("ptChips").innerHTML=order.map(a=>{ const g=items.filter(([k,n])=>aisleOf(n)===a).sort((x,y)=>x[1].localeCompare(y[1])); return g.length?`<div class="aisle">${a}</div><div class="chips2">${g.map(([k,n])=>`<button class="chip2 ${pantrySet.has(k)?"on":""}" data-pt="${esc(k)}" aria-pressed="${pantrySet.has(k)}">${esc(n)}</button>`).join("")}</div>`:"" }).join("") || `<p class="empty" style="padding:12px 0">No ingredients match.</p>`;
+  const ranked=recipes.map(r=>{ const ks=[...recipeKeys(r)]; const have=ks.filter(([k])=>hasKey(k)); return {r,total:ks.length,have:have.length,miss:ks.filter(([k])=>!hasKey(k)).map(([k,n])=>n)} })
+    .filter(x=>x.total).sort((a,b)=>(b.have/b.total)-(a.have/a.total) || a.miss.length-b.miss.length).slice(0,10);
+  $("ideas").innerHTML = pantrySet.size ? ranked.map(x=>{ const pu=photoUrl(x.r.photo_path);
+    return `<div class="idea"><button class="item" data-openrec="${x.r.id}"><span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(x.r)}</span><span style="min-width:0"><b>${esc(x.r.title)}</b>
+      <span class="have">${x.miss.length?`You have ${x.have} of ${x.total}`:"You have everything"}</span>${x.miss.length?`<span class="need" style="display:block">Need ${esc(x.miss.slice(0,4).join(", "))}${x.miss.length>4?` and ${x.miss.length-4} more`:""}</span>`:""}</span></button>
+      <button class="pill" data-tonightid="${x.r.id}">Cook tonight</button></div>` }).join("")
+    : `<p class="empty" style="padding:12px 0">Tap the ingredients you have, and the best matches appear here.</p>`;
+}
+function openPantry(){ $("ptQ").value=""; open("pantryOv"); renderPantry() }
+$("bPantry").onclick=openPantry;
+$("bPantry2").onclick=openPantry;
+$("bMenu").onclick=()=>open("menuOv");
+$("menuOv").addEventListener("click",e=>{ const b=e.target.closest(".menu-grid button"); if(b && b.id!=="bMode") close("menuOv") });
+$("ptQ").oninput=renderPantry;
+$("ptChips").onclick=async e=>{ const b=e.target.closest("[data-pt]"); if(!b) return; const k=b.dataset.pt, on=!pantrySet.has(k); on?pantrySet.add(k):pantrySet.delete(k); renderPantry(); try{ await api.setPantry(k,on) }catch(err){ toast("Couldn't sync — check your connection") } };
+$("ptAdd").onsubmit=async e=>{ e.preventDefault(); const v=$("ptItem").value.trim(); if(!v) return; $("ptItem").value=""; const k=keyOf((parseIng(v)[0]||{name:v}).name); if(!k) return; pantrySet.add(k); renderPantry(); try{ await api.setPantry(k,true) }catch(err){} };
+$("ideas").onclick=async e=>{
+  const t=e.target.closest("[data-tonightid]"); if(t){ try{ await api.setPlan(today(),t.dataset.tonightid); await refreshAll(); toast("On the wall for tonight") }catch(err){ toast("Couldn't save the plan") } return }
+  const o=e.target.closest("[data-openrec]"); if(o){ close("pantryOv"); open("bookOv"); showRecipe(o.dataset.openrec) }
+};
+
+/* ======================== SETTINGS ======================== */
+let calColor=CAL_COLORS[0], rtDraft=null;
+function renderCalList(){
+  $("calList").innerHTML = calendars.length ? calendars.map(c=>`<div class="calrow"><i style="background:${esc(c.color||CAL_COLORS[0])}"></i><div class="grow"><b>${esc(c.name)}</b><small>${eventsFailed.includes(c.name)?"Couldn't load this calendar. Check the link.":`Added by ${esc(c.owner_name||"someone")}`}</small></div><button class="pill warn" data-delcal="${c.id}" data-label="Remove" style="min-height:36px;padding:.3em .9em;font-size:13px">Remove</button></div>`).join("")
+    : `<p class="hint2" style="color:var(--fg3)">No calendars yet.</p>`;
+  $("calColor").innerHTML="Colour "+CAL_COLORS.map(c=>`<button type="button" class="${c===calColor?"on":""}" data-col="${c}" style="background:${c}" aria-label="Colour"></button>`).join("");
+}
+function renderRoutineEditor(){
+  const r=rtDraft; $("rtOn").checked=r.on!==false; $("rtTitle").value=r.title||"";
+  $("rtList").innerHTML=r.items.map((it,i)=>`<div class="rtrow"><input class="emo" data-rti="${i}" data-f="icon" value="${esc(it.icon)}" maxlength="4" aria-label="Picture"><input data-rti="${i}" data-f="label" value="${esc(it.label)}" placeholder="Step" aria-label="Step"><button data-rtdel="${i}" aria-label="Remove step">✕</button></div>`).join("");
+}
+function openSettings(){ rtDraft=JSON.parse(JSON.stringify(routine())); renderCalList(); renderRoutineEditor(); $("who2").textContent = DEMO ? "Demo mode." : `Signed in as ${me.name} (${me.email}).`; }
+$("calColor").onclick=e=>{ const b=e.target.closest("[data-col]"); if(b){ calColor=b.dataset.col; renderCalList() } };
+$("calList").onclick=async e=>{ const b=e.target.closest("[data-delcal]"); if(!b) return; if(!twoTap("c"+b.dataset.delcal,b,"Tap to confirm")) return; try{ await api.deleteCalendar(b.dataset.delcal); await refreshAll() }catch(err){ toast("Couldn't remove it") } };
+$("calAdd").onsubmit=async e=>{
+  e.preventDefault(); const f=new FormData(e.target), name=String(f.get("name")).trim(), url=String(f.get("url")).trim(); $("calErr").textContent="";
+  if(!/^(https?|webcals?):\/\//i.test(url)){ $("calErr").textContent="Paste the full link. It starts with https:// or webcal://"; return }
+  const b=$("calSave"); b.disabled=true; b.textContent="Checking the link…";
+  try{
+    const t=await api.testCalendar(url); if(!t||!t.ok){ $("calErr").textContent=(t&&t.error)||"Couldn't read that calendar."; return }
+    await api.addCalendar({name,ics_url:url,color:calColor}); e.target.reset(); await refreshAll(); toast(`Added ${name}'s calendar`);
+  }catch(err){ $("calErr").textContent="Couldn't add it. Check your connection and try again." }
+  finally{ b.disabled=false; b.textContent="Add calendar" }
+};
+$("rtList").oninput=e=>{ const i=e.target.dataset.rti; if(i!==undefined) rtDraft.items[+i][e.target.dataset.f]=e.target.value };
+$("rtList").onclick=e=>{ const d=e.target.closest("[data-rtdel]"); if(d){ rtDraft.items.splice(+d.dataset.rtdel,1); renderRoutineEditor() } };
+$("rtAddItem").onclick=()=>{ rtDraft.items.push({id:"r"+uuid().slice(0,8),icon:"⭐",label:""}); renderRoutineEditor(); const ins=$("rtList").querySelectorAll("input[data-f=label]"); ins[ins.length-1]?.focus() };
+$("rtSave").onclick=async()=>{
+  rtDraft.on=$("rtOn").checked; rtDraft.title=$("rtTitle").value.trim()||"Morning routine"; rtDraft.items=rtDraft.items.filter(it=>it.label.trim()).map(it=>({...it,label:it.label.trim(),icon:(it.icon||"⭐").trim()}));
+  routineCfg=JSON.parse(JSON.stringify(rtDraft)); renderWall(); renderRoutineEditor();
+  try{ await api.setState("routine",routineCfg); toast("Routine saved") }catch(e){ toast("Couldn't save the routine") }
+};
+$("bSettings").onclick=()=>open("setOv");
+
+/* ======================== WHATSAPP ======================== */
+function shopText(){
+  const todo=shopping.filter(x=>!x.checked), order=[...AISLES.map(a=>a[0]),"Other"]; let t=`*Shopping list* (${dayShort(today())})\n`;
+  for(const a of order){ const g=todo.filter(x=>(x.aisle||"Other")===a); if(g.length) t+=`\n*${a}*\n`+g.map(x=>`• ${x.name}${x.qty?` (${x.qty})`:""}`).join("\n")+"\n" }
+  return t.trim();
+}
+$("shopWA").onclick=()=>{
+  if(!shopping.some(x=>!x.checked)){ toast("Your list is empty"); return }
+  const a=document.createElement("a"); a.href="https://wa.me/?text="+encodeURIComponent(shopText()); a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove();
+};
+
 /* ======================== TABS (iPhone) ======================== */
 const TAB_OV={recipes:"bookOv",plan:"planOv",shop:"shopOv",photos:"photosOv"};
 function tab(name){
@@ -1029,11 +1319,38 @@ function openCook(id){
   renderCook(); open("cook");
   try{ navigator.wakeLock?.request("screen").then(l=>wakeLock=l).catch(()=>{}) }catch(e){}
 }
+const HF={on:false,rec:null,paused:false,speak:LS.get("speak",false)};
+function speakStep(){
+  if(!HF.speak || !window.speechSynthesis || !ck.r) return;
+  speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(`Step ${ck.i+1}. ${ck.r.steps[ck.i]}`); u.rate=.95;
+  if(HF.rec){ HF.paused=true; try{ HF.rec.abort() }catch(e){} }
+  u.onend=u.onerror=()=>{ HF.paused=false; if(HF.on && HF.rec) try{ HF.rec.start() }catch(e){} };
+  speechSynthesis.speak(u);
+}
+function heard(t,live){ const el=$("ckHeard"); el.textContent=t; el.classList.toggle("live",!!live) }
+function startVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ toast("Voice control isn't available in this browser. Try Safari."); return false }
+  const r=new SR(); r.lang="en-US"; r.continuous=true; r.interimResults=false;
+  r.onresult=e=>{ const t=e.results[e.results.length-1][0].transcript.toLowerCase().trim(); heard(`Heard "${t}"`,true);
+    if(/\b(next|lanjut|selanjutnya|done|finished|okay next)\b/.test(t)) $("ckNext").click();
+    else if(/\b(back|previous|kembali|sebelumnya)\b/.test(t)) $("ckBack").click();
+    else if(/\b(repeat|again|ulang|ulangi)\b/.test(t)){ const s=HF.speak; HF.speak=true; speakStep(); HF.speak=s }
+    else if(/\b(ingredients?|bahan)\b/.test(t)) $("ckIng").click(); };
+  r.onend=()=>{ if(HF.on && !HF.paused && $("cook").classList.contains("open")) setTimeout(()=>{ try{ r.start() }catch(e){} },250) };
+  r.onerror=e=>{ if(e.error==="not-allowed"||e.error==="service-not-allowed"){ stopVoice(); toast("Allow microphone access to use hands-free") } };
+  try{ r.start() }catch(e){ return false }
+  HF.rec=r; HF.on=true; heard('Listening. Say "next", "back", "repeat" or "ingredients".',true); return true;
+}
+function stopVoice(){ HF.on=false; try{ HF.rec&&HF.rec.abort() }catch(e){} HF.rec=null; heard(""); $("ckVoice").classList.remove("on") }
+$("ckVoice").onclick=()=>{ if(HF.on){ stopVoice() } else if(startVoice()) $("ckVoice").classList.add("on") };
+$("ckSpeak").onclick=()=>{ HF.speak=!HF.speak; LS.set("speak",HF.speak); $("ckSpeak").classList.toggle("on",HF.speak); if(HF.speak) speakStep(); else window.speechSynthesis&&speechSynthesis.cancel() };
 function renderCook(){
   const s=ck.r.steps, n=s.length;
   $("ckN").textContent=`Step ${ck.i+1} of ${n}`; $("ckTxt").textContent=s[ck.i];
   $("ckDots").innerHTML=s.map((_,i)=>`<i class="${i===ck.i?"on":""}"></i>`).join("");
-  $("ckBack").style.visibility=ck.i?"visible":"hidden"; $("ckNext").textContent=ck.i===n-1?"Finished ✓":"Next →";
+  $("ckBack").style.visibility=ck.i?"visible":"hidden"; $("ckNext").textContent=ck.i===n-1?"Finished":"Next";
+  $("ckSpeak").classList.toggle("on",HF.speak); speakStep();
 }
 $("ckNext").onclick=()=>{ if(ck.i<ck.r.steps.length-1){ ck.i++; renderCook() } else close("cook") };
 $("ckBack").onclick=()=>{ if(ck.i>0){ ck.i--; renderCook() } };
@@ -1044,12 +1361,12 @@ function open(id){
   if(isPhone() && Object.values(TAB_OV).includes(id)){ Object.values(TAB_OV).forEach(x=>x!==id&&$(x).classList.remove("open")); markTab(Object.keys(TAB_OV).find(k=>TAB_OV[k]===id)) }
   $(id).classList.add("open");
   if(id==="bookOv"){ renderBookList(); if(!selId && innerWidth>760) showRecipe(tonightRecipe()?.r.id) }
-  if(id==="planOv") renderPlan(); if(id==="shopOv") renderShop();
+  if(id==="planOv") renderPlan(); if(id==="shopOv") renderShop(); if(id==="setOv") openSettings();
   if(id==="cook") document.body.classList.add("cooking"); if(id==="login") document.body.classList.add("signin");
 }
 function close(id){
   $(id).classList.remove("open");
-  if(id==="cook"){ document.body.classList.remove("cooking"); try{ wakeLock?.release() }catch(e){} }
+  if(id==="cook"){ document.body.classList.remove("cooking"); try{ wakeLock?.release() }catch(e){} stopVoice(); window.speechSynthesis&&speechSynthesis.cancel() }
   if(id==="login") document.body.classList.remove("signin");
   if(isPhone() && Object.values(TAB_OV).includes(id) && !Object.values(TAB_OV).some(x=>$(x).classList.contains("open"))) markTab("today");
 }
@@ -1060,6 +1377,7 @@ document.addEventListener("click",e=>{
   const ob=e.target.closest("[data-openbook]"); if(ob){ open("bookOv"); showRecipe(ob.dataset.openbook); return }
   if(e.target.closest("[data-new]")){ open("bookOv"); editRecipe(); return }
   if(e.target.closest("[data-layoutpick]")){ openLayout(); return }
+  const rt=e.target.closest("[data-rt]"); if(rt){ toggleRoutine(rt.dataset.rt); return }
 });
 $("bBook").onclick=()=>open("bookOv");
 $("bPhotos").onclick=()=>open("photosOv");
@@ -1100,6 +1418,7 @@ async function start(){
   if(started) return; started=true;
   await refreshAll(); api.subscribe(refreshAll);
   setInterval(refreshAll, 10*60e3);           // safety net + renews photo links
+  setInterval(loadEvents, 15*60e3);
   setInterval(nextPhoto, Math.max(8,CONFIG.photoSeconds)*1000);
   setTimeout(()=>{ if(!layoutChosen && !isPhone()) openLayout() }, 900); // wait for the screen size to settle
 }
@@ -1114,7 +1433,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.5";
+const APP_VERSION="2026-11-13.6";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
