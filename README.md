@@ -57,3 +57,9 @@ She signs in with her Capcus login. If she doesn't have one, create her in Authe
 - **Instagram**: reads the post caption. Private posts can't be read.
 - **Photos and screenshots**: the text is read on your device in English and Indonesian (Tesseract.js), then sorted into ingredients and steps. Clear printed text works best.
 - **Tried or new**: recipes you haven't made yet show **New**. Finishing cooking mode, or tapping **We made this today**, counts as made. Use the **New to try** and **Tried** filters in the recipe list.
+
+## Shopping list and stock
+- **In stock** (next to Shopping list): what's in the fridge, freezer and cupboard, with amounts and use-by dates. Items close to their date show under **Use soon** here, on the wall and on the Today screen.
+- On a shopping list, tick items as you buy them, then tap **Put away** to move them into stock. Building the list from the dinner plan skips what's already in stock.
+- Every recipe has **Add to shopping list**, and items already in stock start unticked. Each list item shows which recipes it's for, and tapping a name opens the recipe.
+- **What can I cook?** uses the same stock, and prefers recipes that use up food to use soon.

@@ -434,6 +434,37 @@ body[data-theme=shibuya] .ov{background-image:linear-gradient(rgba(244,242,255,.
 .ckvid.open{display:flex}
 .ckvid iframe{width:100%;max-width:1100px;aspect-ratio:16/9;border:0;border-radius:16px}
 
+/* ---------- stock + shopping links ---------- */
+.seg{display:inline-flex;background:var(--s1);border:1px solid var(--line);border-radius:99px;padding:3px;margin-right:auto}
+.seg button{border-radius:99px;padding:.5em 1.05em;font-weight:600;font-size:15px;color:var(--fg2);min-height:38px}
+.seg button.on{background:var(--fg);color:var(--bg)}
+body.phone .seg button{font-size:14px;padding:.45em .9em}
+body.phone .stockadd{grid-template-columns:1fr auto}
+body.phone .stockadd input{grid-column:1/-1}
+.stockadd{display:grid;grid-template-columns:1fr auto auto;gap:8px;margin-bottom:6px}
+.stockadd input,.stockadd select,.stedit input,.stedit select{padding:.75em .9em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--s1);font-size:16px;color:var(--fg);min-width:0}
+.strow{display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--line)}
+.st-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;text-align:left;padding:12px 2px;min-height:54px}
+.st-main .nm{flex:1;min-width:0;font-size:17px}.st-main .nm small{display:block;color:var(--fg3);font-size:13px;margin-top:1px}
+.st-act{width:42px;height:42px;border-radius:50%;color:var(--fg2);display:grid;place-items:center;flex:none}
+.st-act svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.exp{font-size:12px;font-weight:600;border-radius:99px;padding:.2em .7em;white-space:nowrap;color:var(--fg2);background:var(--s1)}
+.exp.soon{color:var(--accent-ink);background:var(--accent)}
+.exp.gone{color:#fff;background:var(--warn)}
+.stedit{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 0 14px;border-bottom:1px solid var(--line)}
+.stedit .full{grid-column:1/-1}
+.stedit label{display:grid;gap:4px;font-size:13px;color:var(--fg2);font-weight:600}
+.sfor{padding:0 0 10px 38px;margin-top:-6px;font-size:12px;color:var(--fg3)}
+.sfor button{color:var(--fg2);text-decoration:underline;text-underline-offset:2px;font-size:12px;padding:0 2px}
+.instock{display:inline-block;font-size:11px;font-weight:700;color:var(--rain);border:1px solid rgba(var(--rain-rgb),.5);border-radius:99px;padding:0 .55em;margin-left:8px;vertical-align:2px;white-space:nowrap}
+.ing li .instock{margin-left:auto;align-self:center}
+.usesoon{font-size:15px;color:var(--fg2);line-height:1.5}
+.usesoon b{color:var(--accent);font-weight:600;margin-right:4px}
+.tsrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 4px;border-bottom:1px solid var(--line);font-size:16px}
+.tsrow .box{width:22px;height:22px;border:1.5px solid var(--line2);border-radius:7px;flex:none}
+.tsrow.on .box{background:var(--accent);border-color:var(--accent)}
+.tsrow .q{margin-left:auto;color:var(--fg2);font-size:14px;white-space:nowrap}
+
 /* ---------- iPhone ---------- */
 #tabs{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:25;display:none;grid-template-columns:repeat(5,1fr);background:rgba(var(--s1-rgb),.78);-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4);border:1px solid var(--line);border-radius:26px;padding:6px}
 body.phone #tabs{display:grid}
@@ -446,7 +477,7 @@ body.phone .ov{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
 body.phone #cook,body.phone #login,body.phone #layoutOv,body.phone .sheet{padding-bottom:0}
 body.phone .ctl,body.phone .demo-badge{display:none!important}
 body.phone .pw .rt-row .rt-l{font-size:12px}
-body.phone #bookOv [data-close],body.phone #photosOv [data-close],body.phone #planOv [data-close],body.phone #shopOv [data-close],body.phone #bookLayout,body.phone #bookOv [data-open]{display:none}
+body.phone #bookOv [data-close],body.phone #photosOv [data-close],body.phone #planOv [data-close],body.phone #shopOv [data-close],body.phone #stockOv [data-close],body.phone #bookLayout,body.phone #bookOv [data-open]{display:none}
 body.phone .toast{bottom:calc(92px + env(safe-area-inset-bottom))}
 body.phone #wall{left:0;top:0;width:100%;height:auto;bottom:0;transform:none;padding:calc(env(safe-area-inset-top) + 18px) 20px calc(96px + env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch}
 body.phone .bar{padding-left:20px;padding-right:14px;background:rgba(var(--shade-rgb),.86);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -505,6 +536,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
       <button id="bBook">Recipes</button>
       <button id="bPlan">Dinner plan</button>
       <button id="bShop">Shopping list</button>
+      <button id="bStock">In stock</button>
       <button id="bPantry2">What can I cook?</button>
       <button id="bPhotos">Photos</button>
       <button id="bSettings">Settings</button>
@@ -598,11 +630,31 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 
 <!-- shopping list -->
 <section class="ov" id="shopOv">
-  <div class="bar"><h1 class="serif">Shopping list</h1><button class="pill bar-i" id="shopWA" aria-label="Send to WhatsApp"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.2-4.3A8.5 8.5 0 1 1 20.5 12z"/><path d="M9 8.6c.2-.4.5-.5.8-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.2 0 .5-.1.6l-.5.6c-.1.1-.1.3 0 .5.6 1 1.4 1.8 2.4 2.4.2.1.4.1.5 0l.6-.6c.2-.2.4-.2.6-.1l1.6.7c.3.1.4.3.4.5v.5c0 .3-.2.6-.5.8-.8.4-1.8.5-2.7.1a9.6 9.6 0 0 1-4.6-4.6c-.4-.9-.3-1.9.2-2.9z" stroke-width="1.2"/></svg><span>WhatsApp</span></button><button class="pill" id="shopBuild">From plan</button><button class="pill" data-close>Close</button></div>
+  <div class="bar"><div class="seg" role="tablist"><button class="on" aria-selected="true">Shopping list</button><button data-open="stockOv" aria-selected="false">In stock</button></div><button class="pill bar-i" id="shopWA" aria-label="Send to WhatsApp"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.2-4.3A8.5 8.5 0 1 1 20.5 12z"/><path d="M9 8.6c.2-.4.5-.5.8-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.2 0 .5-.1.6l-.5.6c-.1.1-.1.3 0 .5.6 1 1.4 1.8 2.4 2.4.2.1.4.1.5 0l.6-.6c.2-.2.4-.2.6-.1l1.6.7c.3.1.4.3.4.5v.5c0 .3-.2.6-.5.8-.8.4-1.8.5-2.7.1a9.6 9.6 0 0 1-4.6-4.6c-.4-.9-.3-1.9.2-2.9z" stroke-width="1.2"/></svg><span>WhatsApp</span></button><button class="pill" id="shopBuild">From plan</button><button class="pill" data-close>Close</button></div>
   <div class="scroll"><div class="wrapc">
     <form class="shopadd" id="shopAdd"><input id="shopItem" placeholder="Add an item, like 2 kg rice" autocomplete="off"><button class="pill dark" type="submit">Add</button></form>
     <div id="shopList"></div>
   </div></div>
+</section>
+
+<!-- in stock -->
+<section class="ov" id="stockOv">
+  <div class="bar"><div class="seg" role="tablist"><button data-open="shopOv" aria-selected="false">Shopping list</button><button class="on" aria-selected="true">In stock</button></div><button class="pill" data-close>Close</button></div>
+  <div class="scroll"><div class="wrapc">
+    <form class="stockadd" id="stockAdd"><input id="stockItem" placeholder="Add something, like 1 kg rice" autocomplete="off"><select id="stockLoc" aria-label="Where it's kept"><option value="">Auto</option><option>Fridge</option><option>Freezer</option><option>Cupboard</option></select><button class="pill dark" type="submit">Add</button></form>
+    <p class="hint2" style="margin-top:6px">Tick items off in the shopping list, then tap <b>Put away</b> to move them here. Recipes and the shopping list check this page, so you don't buy what you already have.</p>
+    <div id="stockList"></div>
+  </div></div>
+</section>
+
+<!-- recipe → shopping list -->
+<section class="ov sheet" id="toShopOv">
+  <div class="sheetbox" style="height:min(680px,88vh)">
+    <h2 class="serif">Add to shopping list</h2>
+    <p id="tsFor"></p>
+    <div class="scroll" id="tsList"></div>
+    <div class="row" style="margin-top:4px"><button class="pill dark" id="tsGo">Add to list</button><button class="pill" data-close>Cancel</button></div>
+  </div>
 </section>
 
 <!-- recipe picker -->
@@ -786,7 +838,7 @@ const SEED = [
 ].map((r,i)=>({id:uuid(),photo_path:null,source_url:i===3?"https://www.youtube.com/watch?v=M7lc1UVf-VE":null,source_kind:i===3?"youtube":null,cooked_count:i===0?3:i===1?1:0,last_cooked:i<2?addDays(today(),-4):null,created_at:new Date().toISOString(),...r}));
 
 const api = DEMO ? (() => {
-  const mem = { rv:[{recipe_id:SEED[1].id,reviewer:"mom",rating:5,note:"Rich broth, make it again"},{recipe_id:SEED[1].id,reviewer:"dad",rating:4,note:""},{recipe_id:SEED[1].id,reviewer:"baby",rating:5,note:"Finished the whole bowl"},{recipe_id:SEED[0].id,reviewer:"dad",rating:5,note:""},{recipe_id:SEED[0].id,reviewer:"baby",rating:2,note:"Too spicy for her"}], pantry:new Set(['rice','egg','shallot','garlic','kecap mani','chicken thighs or leg','lime','spinach']), state:{}, cals:[{id:'c1',name:'Renaldo',color:'#86C6D9'},{id:'c2',name:'Christie',color:'#F08C78'}], recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()]:SEED[1].id,[addDays(today(),1)]:SEED[0].id,[addDays(today(),3)]:SEED[2].id}, shop:[] };
+  const mem = { stock:[{name:'rice',label:'Rice',qty:'5 kg',location:'Cupboard'},{name:'egg',label:'Eggs',qty:'10',location:'Fridge',expires:addDays(today(),9)},{name:'shallot',label:'Shallots',qty:'1 bag',location:'Cupboard'},{name:'garlic',label:'Garlic',location:'Cupboard'},{name:'kecap mani',label:'Kecap manis',location:'Cupboard'},{name:'chicken thighs or leg',label:'Chicken thighs',qty:'500 g',location:'Fridge',expires:addDays(today(),1)},{name:'lime',label:'Limes',qty:'4',location:'Fridge'},{name:'spinach',label:'Spinach',qty:'1 bunch',location:'Fridge',expires:addDays(today(),2)},{name:'frozen peas',label:'Frozen peas',location:'Freezer'}], rv:[{recipe_id:SEED[1].id,reviewer:"mom",rating:5,note:"Rich broth, make it again"},{recipe_id:SEED[1].id,reviewer:"dad",rating:4,note:""},{recipe_id:SEED[1].id,reviewer:"baby",rating:5,note:"Finished the whole bowl"},{recipe_id:SEED[0].id,reviewer:"dad",rating:5,note:""},{recipe_id:SEED[0].id,reviewer:"baby",rating:2,note:"Too spicy for her"}], pantry:new Set(['rice','egg','shallot','garlic','kecap mani','chicken thighs or leg','lime','spinach']), state:{}, cals:[{id:'c1',name:'Renaldo',color:'#86C6D9'},{id:'c2',name:'Christie',color:'#F08C78'}], recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()]:SEED[1].id,[addDays(today(),1)]:SEED[0].id,[addDays(today(),3)]:SEED[2].id}, shop:[] };
   const listeners=[]; const ping=()=>listeners.forEach(f=>f());
   return {
     async session(){ me={name:"Demo",email:"demo",role:"dad"}; return true },
@@ -810,8 +862,9 @@ const api = DEMO ? (() => {
     async addShop(items){ items.forEach(i=>mem.shop.push({id:uuid(),checked:false,source:"manual",created_at:new Date().toISOString(),added_by_name:me.name,...i})); ping() },
     async updateShop(id,patch){ const i=mem.shop.find(x=>x.id===id); if(i) Object.assign(i,patch); ping() },
     async deleteShop(ids){ mem.shop=mem.shop.filter(x=>!ids.includes(x.id)); ping() },
-    async pantry(){ return [...mem.pantry].map(name=>({name})) },
-    async setPantry(name,on){ on?mem.pantry.add(name):mem.pantry.delete(name); ping() },
+    async pantry(){ return mem.stock.map(x=>({...x})) },
+    async setPantry(name,on,extra={}){ const i=mem.stock.findIndex(x=>x.name===name);
+      if(on){ const row={...(mem.stock[i]||{name,label:capFirst(name)}),...extra,name}; i>=0?mem.stock[i]=row:mem.stock.push(row) } else if(i>=0) mem.stock.splice(i,1); ping() },
     async state(k){ return mem.state[k]??null }, async setState(k,v){ mem.state[k]=v; ping() },
     async calendars(){ return mem.cals.slice() }, async addCalendar(c){ mem.cals.push({id:uuid(),owner_name:me.name,...c}); ping() }, async deleteCalendar(id){ mem.cals=mem.cals.filter(c=>c.id!==id); ping() },
     async testCalendar(){ await new Promise(r=>setTimeout(r,500)); return {ok:true,count:4} },
@@ -865,8 +918,8 @@ const api = DEMO ? (() => {
     async addShop(items){ if(items.length) must(await sb.from("wb_shopping").insert(items.map(i=>({source:"manual",...i,added_by_name:me.name})))) },
     async updateShop(id,patch){ must(await sb.from("wb_shopping").update(patch).eq("id",id)) },
     async deleteShop(ids){ if(ids.length) must(await sb.from("wb_shopping").delete().in("id",ids)) },
-    async pantry(){ return must(await sb.from("wb_pantry").select("name")) },
-    async setPantry(name,on){ if(on) must(await sb.from("wb_pantry").upsert({name,added_by_name:me.name,updated_at:new Date().toISOString()})); else must(await sb.from("wb_pantry").delete().eq("name",name)) },
+    async pantry(){ return must(await sb.from("wb_pantry").select("name,label,qty,location,expires,added_by_name,updated_at")) },
+    async setPantry(name,on,extra={}){ if(on) must(await sb.from("wb_pantry").upsert({name,...extra,added_by_name:me.name,updated_at:new Date().toISOString()})); else must(await sb.from("wb_pantry").delete().eq("name",name)) },
     async state(k){ const d=must(await sb.from("wb_state").select("value").eq("key",k).maybeSingle()); return d?.value??null },
     async setState(k,v){ must(await sb.from("wb_state").upsert({key:k,value:v,updated_at:new Date().toISOString()})) },
     async calendars(){ return must(await sb.from("wb_calendars").select("id,name,color,owner_name,created_at").order("created_at")) },
@@ -912,7 +965,7 @@ const api = DEMO ? (() => {
 })();
 
 /* ======================== STATE ======================== */
-let reviews={}, rvEdit=null;
+let reviews={}, rvEdit=null, stockRows=[], stEdit=null, tsRecipe=null, tsSel=[];
 let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, calendars=[], events=[], eventsFailed=[], calIds=null;
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
@@ -940,7 +993,7 @@ async function refreshAll(){
     let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme")]);
     reviews={}; (rvs||[]).forEach(x=>{ (reviews[x.recipe_id] ||= {})[x.reviewer]=x });
     if(th && th.theme && th.theme!==theme) applyTheme(th.theme);
-    pantrySet = new Set((pan||[]).map(x=>x.name));
+    stockRows = pan||[]; pantrySet = new Set(stockRows.map(x=>x.name));
     const ids=(calendars||[]).map(c=>c.id).join(); if(ids!==calIds){ calIds=ids; loadEvents() }
     layoutChosen = !!lay; if(lay && lay!==layout){ layout=lay; LS.set("layout",layout); nextPhoto() }
     recipes.sort((a,b)=>a.title.localeCompare(b.title));
@@ -948,6 +1001,7 @@ async function refreshAll(){
   }catch(e){ console.error(e); toast("Couldn't reach Supabase — showing last data") }
   buildPhotoOrder(); renderWall(); renderBookList(); renderPhotoGrid(); renderPlan(); renderShop();
   if($("pantryOv").classList.contains("open")) renderPantry();
+  if($("stockOv").classList.contains("open")) renderStock();
   if($("setOv").classList.contains("open")) renderCalList();
   if($("bookOv").classList.contains("open") && selId && !editing) showRecipe(selId);
 }
@@ -1009,7 +1063,7 @@ function renderWall(){
       <div class="m2-l"><div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}</div></div>
         <div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
         ${rainHTML(19)}</div>
-      <div class="m2-r">${rt}${ag}</div>
+      <div class="m2-r">${rt}${ag}${useSoonHTML()}</div>
       <div class="m2-b"><div class="fc">${fcHTML()}</div>
         <div class="m-foot"><span class="muted">${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span>${tChip}</div></div></div>`;
   } else if(m==="day"){
@@ -1039,6 +1093,7 @@ function renderWall(){
         ${rainHTML(14)}
         ${routineHTML("row")}
         ${agendaHTML(6)}
+        ${useSoonHTML()}
         <div class="fc">${fcHTML()}</div>
         ${card}
         <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span><span style="display:flex;gap:6px"><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
@@ -1102,6 +1157,14 @@ function triedHTML(r){
   const txt = n ? `<span>Made <b>${n} time${n>1?"s":""}</b>${r.last_cooked?`, last on ${dayShort(r.last_cooked)}`:""}</span>` : reviews[r.id] ? `<span><b>Tried</b>, reviewed by the family</span>` : `<span><b>Not tried yet</b></span>`;
   return `<div class="tried">${txt}<button class="pill" data-made="${r.id}" style="min-height:36px;padding:.3em 1em;font-size:13px">${madeToday?"Made today ✓ (undo)":"We made this today"}</button></div>`;
 }
+const daysTo = d => Math.round((new Date(d+"T12:00:00Z")-new Date(today()+"T12:00:00Z"))/864e5);
+function expLabel(d){ const n=daysTo(d); return n<0?"Expired":n===0?"Use today":n===1?"Use by tomorrow":n<=3?`Use within ${n} days`:`Use by ${dayShort(d)}` }
+const expClass = d => { const n=daysTo(d); return n<0?"gone":n<=2?"soon":"" };
+const defaultLoc = n => { const a=aisleOf(n); return a==="Meat & fish"||a==="Eggs & dairy"||a==="Produce" ? "Fridge" : "Cupboard" };
+const capFirst = s => s ? s[0].toUpperCase()+s.slice(1) : s;
+const useSoon = () => stockRows.filter(x=>x.expires && daysTo(x.expires)<=2).sort((a,b)=>a.expires.localeCompare(b.expires));
+function useSoonHTML(){ const l=useSoon(); return l.length ? `<div class="usesoon"><b>Use soon</b>${l.slice(0,4).map(x=>`${esc(x.label||capFirst(x.name))} (${expLabel(x.expires).replace(/^Use (by |within )?/,"").replace(/^today$/,"today").toLowerCase()})`).join(", ")}</div>` : "" }
+const lineInStock = line => parseIng(line).some(it=>{ const k=keyOf(it.name); return k && hasKey(k) });
 const mono = r => esc(((r&&r.title)||"?").trim()[0]||"?");
 const metaHTML = r => [r.category, r.cook_time, r.serves&&("Serves "+r.serves), r.source_kind==="youtube"&&"Video", r.source_kind==="instagram"&&"Instagram", !isTried(r)&&"New"].filter(Boolean).map(x=>`<span${x==="New"?' style="color:var(--accent)"':""}>${esc(x)}</span>`).join("");
 
@@ -1224,10 +1287,11 @@ function showRecipe(id){
     <div class="row" style="margin:0 0 24px">
       <button class="pill dark" data-cook="${r.id}">Start cooking</button>
       <button class="pill" data-tonight="${r.id}">${isT?"✓ Tonight's dinner":"Cook this tonight"}</button>
+      <button class="pill" data-toshop="${r.id}">Add to shopping list</button>
       <select class="pill" data-plansel="${r.id}" style="padding-right:.8em"><option value="">Plan for…</option>${[...Array(7)].map((_,i)=>{const d=addDays(today(),i);return `<option value="${d}">${dayLabel(d)} ${dayShort(d)}${planMap[d]===r.id?" ✓":""}</option>`}).join("")}</select>
     </div>
     <div class="cols">
-      <div><h3>Ingredients</h3><ul class="ing">${(r.ingredients||[]).map(i=>`<li><span class="box"></span><span>${esc(i)}</span></li>`).join("")}</ul></div>
+      <div><h3>Ingredients</h3><ul class="ing">${(r.ingredients||[]).map(i=>`<li><span class="box"></span><span>${esc(i)}</span>${lineInStock(i)?`<span class="instock">In stock</span>`:""}</li>`).join("")}</ul></div>
       <div><h3>Method</h3><ol class="steps">${(r.steps||[]).map(s=>`<li><span>${esc(s)}</span></li>`).join("")}</ol>
       ${r.notes?`<div class="notes"><b>Notes</b><br>${esc(r.notes)}</div>`:""}
 </div>
@@ -1280,6 +1344,7 @@ $("q").oninput=renderBookList;
 $("bNew").onclick=()=>editRecipe();
 $("detail").addEventListener("input", e=>{ if(e.target.id==="rvNote" && rvEdit) rvEdit.note=e.target.value });
 $("detail").onclick=async e=>{
+  const ts=e.target.closest("[data-toshop]"); if(ts){ openToShop(ts.dataset.toshop); return }
   const pl=e.target.closest("[data-play]");
   if(pl){ $("vidBox").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(pl.dataset.play)}?autoplay=1&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="Recipe video"></iframe>`; return }
   const mk=e.target.closest("[data-made]");
@@ -1368,25 +1433,36 @@ async function buildShopping(){
   const t=today(), days=[...Array(7)].map((_,i)=>addDays(t,i)), meals=days.map(plannedFor).filter(Boolean);
   if(!meals.length){ toast("Plan some dinners first"); tab("plan"); return }
   const map=new Map();
+  let skipped=new Set();
   for(const r of meals) for(const line of (r.ingredients||[])) for(const it of parseIng(line)){
-    const k=keyOf(it.name); if(!k) continue; const e=map.get(k)||{name:it.name,qtys:[],from:new Set()}; e.qtys.push(it.qty); e.from.add(r.title); map.set(k,e);
+    const k=keyOf(it.name); if(!k) continue; if(hasKey(k)){ skipped.add(k); continue }
+    const e=map.get(k)||{name:it.name,qtys:[],from:new Set(),ids:new Set()}; e.qtys.push(it.qty); e.from.add(r.title); e.ids.add(r.id); map.set(k,e);
   }
-  const items=[...map.values()].map(e=>({name:e.name, qty:sumQty(e.qtys)||null, aisle:aisleOf(e.name), note:[...e.from].join(", "), source:"plan"}));
+  const items=[...map.values()].map(e=>({name:e.name, qty:sumQty(e.qtys)||null, aisle:aisleOf(e.name), note:[...e.from].join(", "), recipe_ids:[...e.ids], source:"plan"}));
   try{
     await api.deleteShop(shopping.filter(x=>x.source==="plan").map(x=>x.id));
     await api.addShop(items); await refreshAll();
-    toast(`${items.length} items from ${meals.length} dinner${meals.length>1?"s":""}`); tab("shop");
+    toast(`${items.length} items from ${meals.length} dinner${meals.length>1?"s":""}${skipped.size?`. ${skipped.size} already in stock`:""}`); tab("shop");
   }catch(err){ console.error(err); toast("Couldn't build the list") }
 }
 function renderShop(){
   const order=[...AISLES.map(a=>a[0]),"Other"], todo=shopping.filter(x=>!x.checked), done=shopping.filter(x=>x.checked);
-  const row=x=>`<div style="display:flex;align-items:center"><button class="srow ${x.checked?"done":""}" data-shop="${x.id}"><span class="box"></span><span class="nm">${esc(x.name)}${x.note?`<small>${esc(x.note)}</small>`:""}</span>${x.qty?`<span class="q">${esc(x.qty)}</span>`:""}</button><button class="del" data-unshop="${x.id}" aria-label="Remove">✕</button></div>`;
+  const forHTML=x=>{ const ids=(x.recipe_ids||[]).filter(id=>recipes.some(r=>r.id===id)); if(ids.length) return `<div class="sfor">For ${ids.map(id=>`<button data-openrec2="${id}">${esc(recipes.find(r=>r.id===id).title)}</button>`).join(", ")}</div>`; return x.note?`<div class="sfor">${esc(x.note)}</div>`:"" };
+  const row=x=>{ const k=keyOf(x.name), have=!x.checked && k && hasKey(k);
+    return `<div><div style="display:flex;align-items:center"><button class="srow ${x.checked?"done":""}" data-shop="${x.id}"><span class="box"></span><span class="nm">${esc(x.name)}${have?`<span class="instock">In stock</span>`:""}</span>${x.qty?`<span class="q">${esc(x.qty)}</span>`:""}</button><button class="del" data-unshop="${x.id}" aria-label="Remove">✕</button></div>${forHTML(x)}</div>` };
   let h=order.map(a=>{ const g=todo.filter(x=>(x.aisle||"Other")===a); return g.length?`<div class="aisle">${a}</div>${g.map(row).join("")}`:"" }).join("");
-  if(done.length) h+=`<div class="aisle" style="display:flex;justify-content:space-between;align-items:center">In the basket (${done.length})<button class="pill" id="shopClear" style="min-height:34px;padding:.3em .9em;font-size:13px">Clear</button></div>${done.map(row).join("")}`;
+  if(done.length) h+=`<div class="aisle" style="display:flex;justify-content:space-between;align-items:center">In the basket (${done.length})<span style="display:flex;gap:6px"><button class="pill dark" id="shopPutAway" style="min-height:34px;padding:.3em .9em;font-size:13px">Put away</button><button class="pill" id="shopClear" style="min-height:34px;padding:.3em .9em;font-size:13px">Clear</button></span></div>${done.map(row).join("")}`;
   $("shopList").innerHTML = h || `<p class="empty" style="padding:24px 4px">Your list is empty. Plan this week's dinners, then tap <b>From plan</b>, or add items above.</p>`;
 }
 $("shopList").onclick=async e=>{
   const d=e.target.closest("[data-unshop]"); if(d){ shopping=shopping.filter(x=>x.id!==d.dataset.unshop); renderShop(); try{ await api.deleteShop([d.dataset.unshop]) }catch(err){} return }
+  const orc=e.target.closest("[data-openrec2]"); if(orc){ close("shopOv"); open("bookOv"); showRecipe(orc.dataset.openrec2); return }
+  if(e.target.id==="shopPutAway"){ const done=shopping.filter(x=>x.checked); shopping=shopping.filter(x=>!x.checked); renderShop();
+    for(const x of done){ const k=keyOf(x.name); if(!k) continue; const ex=stockRows.find(s=>s.name===k); const qty=ex&&ex.qty&&x.qty?sumQty([ex.qty,x.qty]):(x.qty||ex?.qty||null);
+      const extra={label:ex?.label||x.name,qty,location:ex?.location||defaultLoc(x.name)}; if(ex) Object.assign(ex,extra); else stockRows.push({name:k,...extra}); pantrySet.add(k);
+      try{ await api.setPantry(k,true,extra) }catch(err){} }
+    try{ await api.deleteShop(done.map(x=>x.id)) }catch(err){}
+    toast(`Put ${done.length} item${done.length>1?"s":""} away`); return }
   if(e.target.id==="shopClear"){ const ids=shopping.filter(x=>x.checked).map(x=>x.id); shopping=shopping.filter(x=>!x.checked); renderShop(); try{ await api.deleteShop(ids) }catch(err){} return }
   const b=e.target.closest("[data-shop]"); if(!b) return; const it=shopping.find(x=>x.id===b.dataset.shop); if(!it) return;
   it.checked=!it.checked; renderShop(); try{ await api.updateShop(it.id,{checked:it.checked}) }catch(err){ toast("Couldn't sync — check your connection") }
@@ -1394,10 +1470,75 @@ $("shopList").onclick=async e=>{
 $("shopAdd").onsubmit=async e=>{
   e.preventDefault(); const v=$("shopItem").value.trim(); if(!v) return; $("shopItem").value="";
   const its=parseIng(v); const items=(its.length?its:[{name:v,qty:""}]).map(i=>({name:i.name,qty:i.qty||null,aisle:aisleOf(i.name),source:"manual"}));
+  const have=items.filter(i=>hasKey(keyOf(i.name))); if(have.length) toast(`Added. You already have ${have.map(i=>i.name.toLowerCase()).join(", ")} in stock`);
   try{ await api.addShop(items); await refreshAll() }catch(err){ toast("Couldn't add that") }
 };
 $("shopBuild").onclick=buildShopping;
 $("planShop").onclick=buildShopping;
+
+/* ======================== IN STOCK ======================== */
+const CART=`<svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20.5" r="1.2"/><circle cx="17" cy="20.5" r="1.2"/></svg>`;
+const DONE=`<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>`;
+function renderStock(){
+  const locs=["Fridge","Freezer","Cupboard"], rows=stockRows.slice();
+  const loc=x=>locs.includes(x.location)?x.location:defaultLoc(x.label||x.name);
+  const sorted=g=>g.sort((a,b)=>(a.expires||"9999").localeCompare(b.expires||"9999")||(a.label||a.name).localeCompare(b.label||b.name));
+  const row=x=>{ const k=x.name, nm=x.label||capFirst(x.name);
+    if(stEdit===k) return `<div class="stedit" data-stform="${esc(k)}"><label class="full">Name<input data-f="label" value="${esc(nm)}"></label><label>Amount<input data-f="qty" value="${esc(x.qty||"")}" placeholder="500 g"></label><label>Kept in<select data-f="location">${locs.map(l=>`<option ${loc(x)===l?"selected":""}>${l}</option>`).join("")}</select></label><label class="full">Use by <input type="date" data-f="expires" value="${esc(x.expires||"")}"></label><div class="row full" style="margin-top:2px"><button class="pill dark" data-stsave="${esc(k)}">Save</button><button class="pill" data-stcancel>Cancel</button><button class="pill warn" data-stuse="${esc(k)}">Used up</button></div></div>`;
+    return `<div class="strow"><button class="st-main" data-stedit="${esc(k)}"><span class="nm">${esc(nm)}<small>${esc([x.qty, x.expires?null:null].filter(Boolean).join(""))||"&nbsp;"}</small></span>${x.expires?`<span class="exp ${expClass(x.expires)}">${expLabel(x.expires)}</span>`:""}</button><button class="st-act" data-st2shop="${esc(k)}" aria-label="Add ${esc(nm)} to the shopping list">${CART}</button><button class="st-act" data-stuse="${esc(k)}" aria-label="${esc(nm)} is used up">${DONE}</button></div>` };
+  const soon=useSoon();
+  let h = soon.length ? `<div class="aisle" style="color:var(--accent)">Use soon</div>${sorted(soon.slice()).map(row).join("")}` : "";
+  h += locs.map(l=>{ const g=sorted(rows.filter(x=>loc(x)===l && !soon.includes(x))); return g.length?`<div class="aisle">${l}</div>${g.map(row).join("")}`:"" }).join("");
+  $("stockList").innerHTML = h || `<p class="empty" style="padding:24px 4px">Nothing in stock yet. Add what's in your fridge and cupboards, or tick items off in the shopping list and tap <b>Put away</b>.</p>`;
+}
+$("stockAdd").onsubmit=async e=>{
+  e.preventDefault(); const v=$("stockItem").value.trim(); if(!v) return; $("stockItem").value="";
+  for(const it of (parseIng(v).length?parseIng(v):[{name:v,qty:""}])){
+    const k=keyOf(it.name); if(!k) continue; const ex=stockRows.find(s=>s.name===k);
+    const extra={label:ex?.label||it.name,qty:ex&&ex.qty&&it.qty?sumQty([ex.qty,it.qty]):(it.qty||ex?.qty||null),location:$("stockLoc").value||ex?.location||defaultLoc(it.name)};
+    if(ex) Object.assign(ex,extra); else stockRows.push({name:k,...extra}); pantrySet.add(k);
+    try{ await api.setPantry(k,true,extra) }catch(err){ toast("Couldn't save that") }
+  }
+  renderStock();
+};
+$("stockList").onclick=async e=>{
+  const t=e.target.closest("[data-stedit],[data-stsave],[data-stcancel],[data-stuse],[data-st2shop]"); if(!t) return;
+  if(t.dataset.stedit){ stEdit=t.dataset.stedit; renderStock(); return }
+  if(t.dataset.stcancel!==undefined){ stEdit=null; renderStock(); return }
+  if(t.dataset.stsave){ const k=t.dataset.stsave, f=$("stockList").querySelector(`[data-stform="${CSS.escape(k)}"]`), v=n=>f.querySelector(`[data-f=${n}]`).value.trim();
+    const extra={label:v("label")||capFirst(k),qty:v("qty")||null,location:v("location"),expires:v("expires")||null}; Object.assign(stockRows.find(s=>s.name===k)||{},extra); stEdit=null; renderStock();
+    try{ await api.setPantry(k,true,extra) }catch(err){ toast("Couldn't save that") } return }
+  if(t.dataset.stuse){ const k=t.dataset.stuse, x=stockRows.find(s=>s.name===k); stockRows=stockRows.filter(s=>s.name!==k); pantrySet.delete(k); stEdit=null; renderStock();
+    try{ await api.setPantry(k,false) }catch(err){} toast(`${x?.label||capFirst(k)} is used up`); return }
+  if(t.dataset.st2shop){ const k=t.dataset.st2shop, x=stockRows.find(s=>s.name===k), nm=x?.label||capFirst(k);
+    if(shopping.some(s=>!s.checked && keyOf(s.name)===k)){ toast(`${nm} is already on the list`); return }
+    try{ await api.addShop([{name:nm,qty:null,aisle:aisleOf(nm),source:"stock",note:"Running low"}]); await refreshAll(); toast(`Added ${nm} to the shopping list`) }catch(err){ toast("Couldn't add that") } }
+};
+$("bStock").onclick=()=>open("stockOv");
+
+/* ======================== RECIPE → SHOPPING LIST ======================== */
+function openToShop(id){
+  const r=recipes.find(x=>x.id===id); if(!r) return; tsRecipe=r;
+  const seen=new Set(); tsSel=[];
+  for(const line of (r.ingredients||[])) for(const it of parseIng(line)){ const k=keyOf(it.name); if(!k||seen.has(k)) continue; seen.add(k); tsSel.push({k,name:it.name,qty:it.qty||"",have:hasKey(k),on:!hasKey(k)}) }
+  $("tsFor").textContent=`For ${r.title}. Items already in stock are left unticked.`; renderToShop(); open("toShopOv");
+}
+function renderToShop(){
+  $("tsList").innerHTML = tsSel.length ? tsSel.map((x,i)=>`<button class="tsrow ${x.on?"on":""}" data-tsi="${i}"><span class="box"></span><span>${esc(x.name)}${x.have?`<span class="instock">In stock</span>`:""}</span>${x.qty?`<span class="q">${esc(x.qty)}</span>`:""}</button>`).join("") : `<p class="empty" style="padding:12px 0">This recipe has no ingredients yet.</p>`;
+  const n=tsSel.filter(x=>x.on).length; $("tsGo").textContent = n ? `Add ${n} to the list` : "Add to list";
+}
+$("tsList").onclick=e=>{ const b=e.target.closest("[data-tsi]"); if(!b) return; const x=tsSel[+b.dataset.tsi]; x.on=!x.on; renderToShop() };
+$("tsGo").onclick=async()=>{
+  const r=tsRecipe, pick=tsSel.filter(x=>x.on); if(!pick.length){ close("toShopOv"); return }
+  const add=[];
+  for(const x of pick){
+    const ex=shopping.find(s=>!s.checked && keyOf(s.name)===x.k);
+    if(ex){ const ids=[...new Set([...(ex.recipe_ids||[]),r.id])]; const patch={qty:sumQty([ex.qty,x.qty].filter(Boolean))||null,recipe_ids:ids,note:[...new Set([...(ex.note?ex.note.split(", "):[]),r.title])].join(", ")};
+      Object.assign(ex,patch); try{ await api.updateShop(ex.id,patch) }catch(err){} }
+    else add.push({name:x.name,qty:x.qty||null,aisle:aisleOf(x.name),note:r.title,recipe_ids:[r.id],source:"recipe"});
+  }
+  try{ if(add.length) await api.addShop(add); close("toShopOv"); await refreshAll(); toast(`Added ${pick.length} item${pick.length>1?"s":""} to the shopping list`) }catch(err){ toast("Couldn't add them") }
+};
 
 /* ======================== IMPORT ======================== */
 function openImport(){ $("impUrl").value=""; $("impErr").textContent=""; $("impProg").textContent=""; $("impGo").textContent="Import link"; open("importOv"); if(!isPhone()) setTimeout(()=>$("impUrl").focus(),50) }
@@ -1449,10 +1590,11 @@ function renderPantry(){
   const items=[...universe].filter(([k,n])=>!q||n.toLowerCase().includes(q));
   $("ptChips").innerHTML=order.map(a=>{ const g=items.filter(([k,n])=>aisleOf(n)===a).sort((x,y)=>x[1].localeCompare(y[1])); return g.length?`<div class="aisle">${a}</div><div class="chips2">${g.map(([k,n])=>`<button class="chip2 ${pantrySet.has(k)?"on":""}" data-pt="${esc(k)}" aria-pressed="${pantrySet.has(k)}">${esc(n)}</button>`).join("")}</div>`:"" }).join("") || `<p class="empty" style="padding:12px 0">No ingredients match.</p>`;
   const ranked=recipes.map(r=>{ const ks=[...recipeKeys(r)]; const have=ks.filter(([k])=>hasKey(k)); return {r,total:ks.length,have:have.length,miss:ks.filter(([k])=>!hasKey(k)).map(([k,n])=>n)} })
-    .filter(x=>x.total).sort((a,b)=>(b.have/b.total)-(a.have/a.total) || a.miss.length-b.miss.length || (score(b.r.id)||0)-(score(a.r.id)||0)).slice(0,10);
+    .filter(x=>x.total).map(x=>({...x,soon:[...recipeKeys(x.r).keys()].filter(k=>useSoon().some(s=>s.name===k||` ${k} `.includes(` ${s.name} `))).length}))
+    .sort((a,b)=>(b.have/b.total)-(a.have/a.total) || b.soon-a.soon || a.miss.length-b.miss.length || (score(b.r.id)||0)-(score(a.r.id)||0)).slice(0,10);
   $("ideas").innerHTML = pantrySet.size ? ranked.map(x=>{ const pu=photoUrl(x.r.photo_path);
     return `<div class="idea"><button class="item" data-openrec="${x.r.id}"><span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(x.r)}</span><span style="min-width:0"><b>${esc(x.r.title)}</b>
-      <span class="have">${x.miss.length?`You have ${x.have} of ${x.total}`:"You have everything"}</span>${x.miss.length?`<span class="need" style="display:block">Need ${esc(x.miss.slice(0,4).join(", "))}${x.miss.length>4?` and ${x.miss.length-4} more`:""}</span>`:""}</span></button>
+      <span class="have">${x.miss.length?`You have ${x.have} of ${x.total}`:"You have everything"}${x.soon?`, uses food to use soon`:""}</span>${x.miss.length?`<span class="need" style="display:block">Need ${esc(x.miss.slice(0,4).join(", "))}${x.miss.length>4?` and ${x.miss.length-4} more`:""}</span>`:""}</span></button>
       <button class="pill" data-tonightid="${x.r.id}">Cook tonight</button></div>` }).join("")
     : `<p class="empty" style="padding:12px 0">Tap the ingredients you have, and the best matches appear here.</p>`;
 }
@@ -1462,8 +1604,8 @@ $("bPantry2").onclick=openPantry;
 $("bMenu").onclick=()=>open("menuOv");
 $("menuOv").addEventListener("click",e=>{ const b=e.target.closest(".menu-grid button"); if(b && b.id!=="bMode") close("menuOv") });
 $("ptQ").oninput=renderPantry;
-$("ptChips").onclick=async e=>{ const b=e.target.closest("[data-pt]"); if(!b) return; const k=b.dataset.pt, on=!pantrySet.has(k); on?pantrySet.add(k):pantrySet.delete(k); renderPantry(); try{ await api.setPantry(k,on) }catch(err){ toast("Couldn't sync — check your connection") } };
-$("ptAdd").onsubmit=async e=>{ e.preventDefault(); const v=$("ptItem").value.trim(); if(!v) return; $("ptItem").value=""; const k=keyOf((parseIng(v)[0]||{name:v}).name); if(!k) return; pantrySet.add(k); renderPantry(); try{ await api.setPantry(k,true) }catch(err){} };
+$("ptChips").onclick=async e=>{ const b=e.target.closest("[data-pt]"); if(!b) return; const k=b.dataset.pt, on=!pantrySet.has(k); on?pantrySet.add(k):pantrySet.delete(k); renderPantry(); const nm=b.textContent.trim(); if(on) stockRows.push({name:k,label:nm,location:defaultLoc(nm)}); else stockRows=stockRows.filter(x=>x.name!==k); try{ await api.setPantry(k,on,on?{label:nm,location:defaultLoc(nm)}:{}) }catch(err){ toast("Couldn't sync — check your connection") } };
+$("ptAdd").onsubmit=async e=>{ e.preventDefault(); const v=$("ptItem").value.trim(); if(!v) return; $("ptItem").value=""; const it=parseIng(v)[0]||{name:v,qty:""}, k=keyOf(it.name); if(!k) return; pantrySet.add(k); stockRows.push({name:k,label:it.name,qty:it.qty||null,location:defaultLoc(it.name)}); renderPantry(); try{ await api.setPantry(k,true,{label:it.name,qty:it.qty||null,location:defaultLoc(it.name)}) }catch(err){} };
 $("ideas").onclick=async e=>{
   const t=e.target.closest("[data-tonightid]"); if(t){ try{ await api.setPlan(today(),t.dataset.tonightid); await refreshAll(); toast("On the wall for tonight") }catch(err){ toast("Couldn't save the plan") } return }
   const o=e.target.closest("[data-openrec]"); if(o){ close("pantryOv"); open("bookOv"); showRecipe(o.dataset.openrec) }
@@ -1521,8 +1663,9 @@ $("shopWA").onclick=()=>{
 
 /* ======================== TABS (iPhone) ======================== */
 const TAB_OV={recipes:"bookOv",plan:"planOv",shop:"shopOv",photos:"photosOv"};
+const TAB_ALL=[...Object.values(TAB_OV),"stockOv"], tabOf=id=>id==="stockOv"?"shop":Object.keys(TAB_OV).find(k=>TAB_OV[k]===id);
 function tab(name){
-  Object.values(TAB_OV).forEach(id=>$(id).classList.remove("open"));
+  TAB_ALL.forEach(id=>$(id).classList.remove("open"));
   if(TAB_OV[name]) open(TAB_OV[name]); else markTab("today");
 }
 function markTab(name){ document.querySelectorAll("#tabs [data-tab]").forEach(b=>b.classList.toggle("on",b.dataset.tab===name)) }
@@ -1584,17 +1727,18 @@ $("ckIng").onclick=()=>{ const p=$("ckIngP"); p.classList.toggle("open"); $("ckI
 
 /* ======================== OVERLAYS, CONTROLS ======================== */
 function open(id){
-  if(isPhone() && Object.values(TAB_OV).includes(id)){ Object.values(TAB_OV).forEach(x=>x!==id&&$(x).classList.remove("open")); markTab(Object.keys(TAB_OV).find(k=>TAB_OV[k]===id)) }
+  if(id==="stockOv") $("shopOv").classList.remove("open"); if(id==="shopOv") $("stockOv").classList.remove("open");
+  if(isPhone() && TAB_ALL.includes(id)){ TAB_ALL.forEach(x=>x!==id&&$(x).classList.remove("open")); markTab(tabOf(id)) }
   $(id).classList.add("open");
   if(id==="bookOv"){ renderBookList(); if(!selId && innerWidth>760) showRecipe(tonightRecipe()?.r.id) }
-  if(id==="planOv") renderPlan(); if(id==="shopOv") renderShop(); if(id==="setOv") openSettings();
+  if(id==="planOv") renderPlan(); if(id==="shopOv") renderShop(); if(id==="stockOv"){ stEdit=null; renderStock() } if(id==="setOv") openSettings();
   if(id==="cook") document.body.classList.add("cooking"); if(id==="login") document.body.classList.add("signin");
 }
 function close(id){
   $(id).classList.remove("open");
   if(id==="cook"){ $("ckVidP").innerHTML=""; $("ckVidP").classList.remove("open"); document.body.classList.remove("cooking"); try{ wakeLock?.release() }catch(e){} stopVoice(); window.speechSynthesis&&speechSynthesis.cancel() }
   if(id==="login") document.body.classList.remove("signin");
-  if(isPhone() && Object.values(TAB_OV).includes(id) && !Object.values(TAB_OV).some(x=>$(x).classList.contains("open"))) markTab("today");
+  if(isPhone() && TAB_ALL.includes(id) && !TAB_ALL.some(x=>$(x).classList.contains("open"))) markTab("today");
 }
 document.addEventListener("click",e=>{
   const c=e.target.closest("[data-close]"); if(c){ close(c.closest(".ov").id); return }
@@ -1659,7 +1803,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.8";
+const APP_VERSION="2026-11-13.9";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
