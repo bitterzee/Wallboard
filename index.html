@@ -309,6 +309,8 @@ body.phone .pmeal .ml{width:70px}
 #login .err{color:var(--warn);font-size:15px;min-height:1.2em}
 
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,8px);background:var(--fg);color:var(--bg);padding:.75em 1.3em;border-radius:99px;z-index:40;opacity:0;transition:opacity .25s,transform .25s var(--ease);pointer-events:none;font-weight:600;font-size:15px}
+.toast{max-width:calc(100vw - 32px);width:max-content;text-align:center}
+html,body{overflow-x:hidden;max-width:100vw}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .demo-badge{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;z-index:40}
 
@@ -580,6 +582,10 @@ body.phone .tchip .tt{font-size:22px}body.phone .tchip{padding:6px 8px 6px 14px}
 .scalebar .lnk{font-size:13px;color:var(--fg3);text-decoration:underline}
 .scalebar .chip2{margin-left:auto}
 .rtabs{display:flex;gap:4px;background:var(--s1);border-radius:99px;padding:4px;margin:0 0 18px;width:max-content;max-width:100%}
+.rtabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.rtabs::-webkit-scrollbar{display:none}.rtabs button{flex:none;white-space:nowrap}
+#kidOv .scroll,#kidOv .wrapc{overflow-x:hidden;max-width:100%}
+.rtabs .sm{display:none}body.phone .rtabs .sm{display:inline}body.phone .rtabs .lg{display:none}
+body.phone .rtabs{width:100%;display:grid;grid-template-columns:repeat(5,auto);gap:0}body.phone .rtabs button{padding:.6em .2em;font-size:13.5px}
 .rtabs button{padding:.55em 1.2em;border-radius:99px;font-size:15px;font-weight:600;color:var(--fg2)}
 .rtabs button.on{background:var(--accent);color:var(--accent-ink)}
 .grnow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:14px 0}
@@ -1056,7 +1062,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <section class="ov" id="kidOv">
   <div class="bar"><h1 class="serif" data-kid>Kid</h1><button class="pill dark" id="kidNew">Add</button><button class="pill" data-close>Close</button></div>
   <div class="scroll"><div class="wrapc">
-    <div class="rtabs" role="tablist"><button data-rtab="cal" class="on">Calendar</button><button data-rtab="grow">Growth</button><button data-rtab="dev">Development</button><button data-rtab="log">Journal</button><button data-rtab="vax">Vaccines</button></div>
+    <div class="rtabs" role="tablist"><button data-rtab="cal" class="on">Calendar</button><button data-rtab="grow">Growth</button><button data-rtab="dev"><span class="lg">Development</span><span class="sm">Skills</span></button><button data-rtab="log">Journal</button><button data-rtab="vax">Vaccines</button></div>
     <div id="rtCal">
     <div class="mnav"><button id="rmPrev" aria-label="Previous month">‹</button><h2 id="rmTitle"></h2><button id="rmNext" aria-label="Next month">›</button></div>
     <div class="mgrid" id="rmGrid"></div>
@@ -2053,7 +2059,7 @@ $("rtDev").onclick=async e=>{ const li=e.target.closest("[data-ms]"); if(!li) re
   if(msGot(t)){ kidTab("log"); return }
   await addJournal({d:today(),text:t,area:li.dataset.msa,ref:t}, null) };
 document.querySelector(".rtabs").onclick=e=>{ const b=e.target.closest("[data-rtab]"); if(b) kidTab(b.dataset.rtab) };
-function kidTab(t){ document.querySelectorAll(".rtabs button").forEach(x=>x.classList.toggle("on",x.dataset.rtab===t)); $("rtCal").hidden=t!=="cal"; $("rtGrow").hidden=t!=="grow"; $("rtDev").hidden=t!=="dev"; $("rtLog").hidden=t!=="log"; $("rtVax").hidden=t!=="vax"; $("kidNew").style.display=t==="cal"?"":"none";
+function kidTab(t){ document.querySelectorAll(".rtabs button").forEach(x=>{ x.classList.toggle("on",x.dataset.rtab===t); if(x.dataset.rtab===t){ const r=x.parentElement; r.scrollLeft=Math.max(0,x.offsetLeft-(r.clientWidth-x.offsetWidth)/2) } }); $("rtCal").hidden=t!=="cal"; $("rtGrow").hidden=t!=="grow"; $("rtDev").hidden=t!=="dev"; $("rtLog").hidden=t!=="log"; $("rtVax").hidden=t!=="vax"; $("kidNew").style.display=t==="cal"?"":"none";
   if(t==="grow") renderGrowth(); if(t==="dev") renderDev(); if(t==="log") renderJournal(); if(t==="vax") renderVax() }
 document.addEventListener("click", e=>{ const b=e.target.closest("[data-kidto]"); if(!b) return; e.stopPropagation(); open("kidOv"); kidTab(b.dataset.kidto) }, true);
 
@@ -3246,7 +3252,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.31";
+const APP_VERSION="2026-11-13.32";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
