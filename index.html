@@ -624,15 +624,15 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 
 <!-- meal plan -->
 <section class="ov" id="planOv">
-  <div class="bar"><h1 class="serif">Dinner plan</h1><button class="pill dark" id="planShop">Make shopping list</button><button class="pill" data-close>Close</button></div>
-  <div class="scroll"><div class="wrapc"><p class="hint2">Tap a day to choose its dinner. Today's shows on the wall. Your plan is shared, so you both see the same week.</p><div id="planList"></div></div></div>
+  <div class="bar"><h1 class="serif">Dinner plan</h1><button class="pill dark" id="planShop">Shopping list</button><button class="pill" data-close>Close</button></div>
+  <div class="scroll"><div class="wrapc"><p class="hint2">Tap a day to choose its dinner. Today's shows on the wall, and every planned dinner's ingredients go on the shopping list automatically, minus what's in stock.</p><div id="planList"></div></div></div>
 </section>
 
 <!-- shopping list -->
 <section class="ov" id="shopOv">
-  <div class="bar"><div class="seg" role="tablist"><button class="on" aria-selected="true">Shopping list</button><button data-open="stockOv" aria-selected="false">In stock</button></div><button class="pill bar-i" id="shopWA" aria-label="Send to WhatsApp"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.2-4.3A8.5 8.5 0 1 1 20.5 12z"/><path d="M9 8.6c.2-.4.5-.5.8-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.2 0 .5-.1.6l-.5.6c-.1.1-.1.3 0 .5.6 1 1.4 1.8 2.4 2.4.2.1.4.1.5 0l.6-.6c.2-.2.4-.2.6-.1l1.6.7c.3.1.4.3.4.5v.5c0 .3-.2.6-.5.8-.8.4-1.8.5-2.7.1a9.6 9.6 0 0 1-4.6-4.6c-.4-.9-.3-1.9.2-2.9z" stroke-width="1.2"/></svg><span>WhatsApp</span></button><button class="pill" id="shopBuild">From plan</button><button class="pill" data-close>Close</button></div>
+  <div class="bar"><div class="seg" role="tablist"><button class="on" aria-selected="true">Shopping list</button><button data-open="stockOv" aria-selected="false">In stock</button></div><button class="pill bar-i" id="shopWA" aria-label="Send to WhatsApp"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.2-4.3A8.5 8.5 0 1 1 20.5 12z"/><path d="M9 8.6c.2-.4.5-.5.8-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.2 0 .5-.1.6l-.5.6c-.1.1-.1.3 0 .5.6 1 1.4 1.8 2.4 2.4.2.1.4.1.5 0l.6-.6c.2-.2.4-.2.6-.1l1.6.7c.3.1.4.3.4.5v.5c0 .3-.2.6-.5.8-.8.4-1.8.5-2.7.1a9.6 9.6 0 0 1-4.6-4.6c-.4-.9-.3-1.9.2-2.9z" stroke-width="1.2"/></svg><span>WhatsApp</span></button><button class="pill" id="shopBuild">Update from plan</button><button class="pill" data-close>Close</button></div>
   <div class="scroll"><div class="wrapc">
-    <form class="shopadd" id="shopAdd"><input id="shopItem" placeholder="Add an item, like 2 kg rice" autocomplete="off"><button class="pill dark" type="submit">Add</button></form>
+    <form class="shopadd" id="shopAdd"><input id="shopItem" placeholder="Add something extra, like dish soap" autocomplete="off"><button class="pill dark" type="submit">Add</button></form>
     <div id="shopList"></div>
   </div></div>
 </section>
@@ -1287,7 +1287,7 @@ function showRecipe(id){
     <div class="row" style="margin:0 0 24px">
       <button class="pill dark" data-cook="${r.id}">Start cooking</button>
       <button class="pill" data-tonight="${r.id}">${isT?"✓ Tonight's dinner":"Cook this tonight"}</button>
-      <button class="pill" data-toshop="${r.id}">Add to shopping list</button>
+      ${(()=>{ const ds=[...Array(7)].map((_,i)=>addDays(today(),i)).filter(d=>planMap[d]===r.id); return ds.length?`<span class="hint2" style="margin:0;align-self:center">On the shopping list for ${dayLabel(ds[0]).toLowerCase()==="today"?"today":dayLabel(ds[0])}</span>`:"" })()}
       <select class="pill" data-plansel="${r.id}" style="padding-right:.8em"><option value="">Plan for…</option>${[...Array(7)].map((_,i)=>{const d=addDays(today(),i);return `<option value="${d}">${dayLabel(d)} ${dayShort(d)}${planMap[d]===r.id?" ✓":""}</option>`}).join("")}</select>
     </div>
     <div class="cols">
@@ -1330,13 +1330,13 @@ function editRecipe(r){
     const rec={...base,title:String(f.get("title")).trim(),category:String(f.get("category")||"").trim()||null,cook_time:String(f.get("cook_time")||"").trim()||null,serves:String(f.get("serves")||"").trim()||null,
       ingredients:lines("ingredients"),steps:lines("steps"),notes:String(f.get("notes")||"").trim()||null,source_url:String(f.get("source_url")||"").trim()||null};
     $("rfSave").textContent="Saving…";
-    try{ const id=await api.saveRecipe(rec, file&&file.size?file:null); await refreshAll(); showRecipe(id); toast("Recipe saved") }
+    try{ const id=await api.saveRecipe(rec, file&&file.size?file:null); await refreshAll(); showRecipe(id); toast("Recipe saved"); if(Object.values(planMap).includes(id)) syncShopping({quiet:true}) }
     catch(err){ console.error(err); $("rfSave").textContent="Save recipe"; toast("Couldn't save — check your connection") }
   };
 }
 $("detail").addEventListener("change", async e=>{
   const sel=e.target.closest("[data-plansel]"); if(!sel||!sel.value) return; const d=sel.value, id=sel.dataset.plansel;
-  try{ await api.setPlan(d,id); await refreshAll(); showRecipe(id); toast(`Planned for ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}`) }catch(err){ toast("Couldn't save the plan") }
+  try{ await api.setPlan(d,id); await refreshAll(); syncShopping({quiet:true}); showRecipe(id); toast(`Planned for ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}`) }catch(err){ toast("Couldn't save the plan") }
 });
 $("items").onclick=e=>{ const b=e.target.closest(".item"); if(b) showRecipe(b.dataset.id) };
 $("cats").onclick=e=>{ if(e.target.dataset.cat){ cat=e.target.dataset.cat; renderBookList() } };
@@ -1370,7 +1370,7 @@ $("detail").onclick=async e=>{
   if(t.matches(".ing li")){ t.classList.toggle("done"); return }
   if(t.dataset.back!==undefined){ $("book").classList.remove("show-detail"); return }
   if(t.dataset.edit) editRecipe(recipes.find(r=>r.id===t.dataset.edit));
-  if(t.dataset.tonight){ await api.setPlan(today(), t.dataset.tonight); await refreshAll(); showRecipe(t.dataset.tonight); toast("On the wall for tonight") }
+  if(t.dataset.tonight){ await api.setPlan(today(), t.dataset.tonight); await refreshAll(); syncShopping({quiet:true}); showRecipe(t.dataset.tonight); toast("On the wall for tonight") }
   if(t.dataset.del){ if(!twoTap("r"+t.dataset.del,t,"Tap again to delete")) return; await api.deleteRecipe(t.dataset.del); selId=null; await refreshAll(); showRecipe(recipes[0]?.id); toast("Recipe deleted") }
 };
 
@@ -1390,11 +1390,11 @@ function renderPick(){
     return `<button class="item ${planMap[pickDay]===r.id?"sel":""}" data-pick="${r.id}"><span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</span><span><b>${esc(r.title)}${!isTried(r)?`<span class="newtag">New</span>`:""}</b><small>${esc([r.category,r.cook_time].filter(Boolean).join(", "))}</small></span></button>` }).join("") || `<p class="empty" style="padding:16px">No recipes match.</p>`;
 }
 $("pickQ").oninput=renderPick;
-$("pickList").onclick=async e=>{ const b=e.target.closest("[data-pick]"); if(!b) return; close("pickOv"); try{ await api.setPlan(pickDay,b.dataset.pick); await refreshAll() }catch(err){ toast("Couldn't save the plan") } };
-$("pickClear").onclick=async()=>{ close("pickOv"); try{ await api.setPlan(pickDay,null); await refreshAll() }catch(err){} };
+$("pickList").onclick=async e=>{ const b=e.target.closest("[data-pick]"); if(!b) return; close("pickOv"); try{ await api.setPlan(pickDay,b.dataset.pick); await refreshAll(); syncShopping({quiet:true}) }catch(err){ toast("Couldn't save the plan") } };
+$("pickClear").onclick=async()=>{ close("pickOv"); try{ await api.setPlan(pickDay,null); await refreshAll(); syncShopping({quiet:true}) }catch(err){} };
 $("planList").onclick=async e=>{
   const p=e.target.closest("[data-pickday]"); if(p) return openPick(p.dataset.pickday);
-  const c=e.target.closest("[data-clearday]"); if(c){ try{ await api.setPlan(c.dataset.clearday,null); await refreshAll() }catch(err){} }
+  const c=e.target.closest("[data-clearday]"); if(c){ try{ await api.setPlan(c.dataset.clearday,null); await refreshAll(); syncShopping({quiet:true}) }catch(err){} }
 };
 
 /* ======================== SHOPPING LIST ======================== */
@@ -1429,21 +1429,40 @@ function sumQty(qs){
     const u=m[2].trim(), k=u.toLowerCase().replace(/(?<=ch|sh|x)es$|s$/,""); const g=groups.get(k)||{n:0,u}; g.n+=parseFloat(m[1].replace(",",".")); if(u.length>g.u.length) g.u=u; groups.set(k,g) }
   return [...[...groups.values()].map(g=>`${+g.n.toFixed(2)}${g.u?" "+g.u:""}`), ...other].join(" + ");
 }
-async function buildShopping(){
-  const t=today(), days=[...Array(7)].map((_,i)=>addDays(t,i)), meals=days.map(plannedFor).filter(Boolean);
-  if(!meals.length){ toast("Plan some dinners first"); tab("plan"); return }
-  const map=new Map();
-  let skipped=new Set();
-  for(const r of meals) for(const line of (r.ingredients||[])) for(const it of parseIng(line)){
-    const k=keyOf(it.name); if(!k) continue; if(hasKey(k)){ skipped.add(k); continue }
-    const e=map.get(k)||{name:it.name,qtys:[],from:new Set(),ids:new Set()}; e.qtys.push(it.qty); e.from.add(r.title); e.ids.add(r.id); map.set(k,e);
-  }
-  const items=[...map.values()].map(e=>({name:e.name, qty:sumQty(e.qtys)||null, aisle:aisleOf(e.name), note:[...e.from].join(", "), recipe_ids:[...e.ids], source:"plan"}));
+/* The shopping list follows the dinner plan: planned dinners add their ingredients
+   (minus what's in stock); removing a dinner takes its unbought items off. */
+let syncing=false;
+async function syncShopping(opts={}){
+  if(syncing) return; syncing=true;
   try{
-    await api.deleteShop(shopping.filter(x=>x.source==="plan").map(x=>x.id));
-    await api.addShop(items); await refreshAll();
-    toast(`${items.length} items from ${meals.length} dinner${meals.length>1?"s":""}${skipped.size?`. ${skipped.size} already in stock`:""}`); tab("shop");
-  }catch(err){ console.error(err); toast("Couldn't build the list") }
+    const t=today(), meals=[...Array(7)].map((_,i)=>plannedFor(addDays(t,i))).filter(Boolean);
+    const want=new Map(); let skipped=new Set();
+    for(const r of meals) for(const line of (r.ingredients||[])) for(const it of parseIng(line)){
+      const k=keyOf(it.name); if(!k) continue; if(hasKey(k)){ skipped.add(k); continue }
+      const e=want.get(k)||{name:it.name,qtys:[],from:new Set(),ids:new Set()}; e.qtys.push(it.qty); e.from.add(r.title); e.ids.add(r.id); want.set(k,e);
+    }
+    const isAuto=x=>x.source==="plan"||x.source==="recipe", del=[], ups=[], adds=[];
+    for(const x of shopping.filter(isAuto)){
+      if(x.checked) continue; const k=keyOf(x.name), w=want.get(k);
+      if(!w){ del.push(x.id); continue }
+      const p={qty:sumQty(w.qtys)||null,note:[...w.from].join(", "),recipe_ids:[...w.ids],source:"plan"};
+      if(p.qty!==x.qty||p.note!==x.note||JSON.stringify(p.recipe_ids)!==JSON.stringify(x.recipe_ids||[])||x.source!=="plan") ups.push([x.id,p]);
+      want.delete(k);
+    }
+    for(const x of shopping){ const k=keyOf(x.name), w=want.get(k); if(!w) continue;
+      if(x.checked){ want.delete(k); continue }                                    // already in the basket
+      if(!isAuto(x)){ ups.push([x.id,{recipe_ids:[...w.ids],note:[...w.from].join(", ")}]); want.delete(k) } }  // added by hand: link it
+    for(const [k,w] of want) adds.push({name:w.name,qty:sumQty(w.qtys)||null,aisle:aisleOf(w.name),note:[...w.from].join(", "),recipe_ids:[...w.ids],source:"plan"});
+    if(del.length) await api.deleteShop(del);
+    for(const [id,p] of ups) await api.updateShop(id,p);
+    if(adds.length) await api.addShop(adds);
+    if(del.length||ups.length||adds.length) await refreshAll();
+    if(!opts.quiet){
+      if(!meals.length) toast("Plan some dinners first. Their ingredients go on the list automatically");
+      else toast(`The list matches this week's ${meals.length} dinner${meals.length>1?"s":""}${skipped.size?`. ${skipped.size} already in stock`:""}`);
+    } else if(adds.length||del.length) toast(`Shopping list updated${adds.length?`: ${adds.length} added`:""}${del.length?`${adds.length?",":":"} ${del.length} removed`:""}`);
+  }catch(err){ console.error(err); if(!opts.quiet) toast("Couldn't update the shopping list") }
+  finally{ syncing=false }
 }
 function renderShop(){
   const order=[...AISLES.map(a=>a[0]),"Other"], todo=shopping.filter(x=>!x.checked), done=shopping.filter(x=>x.checked);
@@ -1452,7 +1471,7 @@ function renderShop(){
     return `<div><div style="display:flex;align-items:center"><button class="srow ${x.checked?"done":""}" data-shop="${x.id}"><span class="box"></span><span class="nm">${esc(x.name)}${have?`<span class="instock">In stock</span>`:""}</span>${x.qty?`<span class="q">${esc(x.qty)}</span>`:""}</button><button class="del" data-unshop="${x.id}" aria-label="Remove">✕</button></div>${forHTML(x)}</div>` };
   let h=order.map(a=>{ const g=todo.filter(x=>(x.aisle||"Other")===a); return g.length?`<div class="aisle">${a}</div>${g.map(row).join("")}`:"" }).join("");
   if(done.length) h+=`<div class="aisle" style="display:flex;justify-content:space-between;align-items:center">In the basket (${done.length})<span style="display:flex;gap:6px"><button class="pill dark" id="shopPutAway" style="min-height:34px;padding:.3em .9em;font-size:13px">Put away</button><button class="pill" id="shopClear" style="min-height:34px;padding:.3em .9em;font-size:13px">Clear</button></span></div>${done.map(row).join("")}`;
-  $("shopList").innerHTML = h || `<p class="empty" style="padding:24px 4px">Your list is empty. Plan this week's dinners, then tap <b>From plan</b>, or add items above.</p>`;
+  $("shopList").innerHTML = h || `<p class="empty" style="padding:24px 4px">The list fills itself from this week's dinner plan. Plan a dinner to add its ingredients, or add something extra above.</p>`;
 }
 $("shopList").onclick=async e=>{
   const d=e.target.closest("[data-unshop]"); if(d){ shopping=shopping.filter(x=>x.id!==d.dataset.unshop); renderShop(); try{ await api.deleteShop([d.dataset.unshop]) }catch(err){} return }
@@ -1473,8 +1492,8 @@ $("shopAdd").onsubmit=async e=>{
   const have=items.filter(i=>hasKey(keyOf(i.name))); if(have.length) toast(`Added. You already have ${have.map(i=>i.name.toLowerCase()).join(", ")} in stock`);
   try{ await api.addShop(items); await refreshAll() }catch(err){ toast("Couldn't add that") }
 };
-$("shopBuild").onclick=buildShopping;
-$("planShop").onclick=buildShopping;
+$("shopBuild").onclick=()=>syncShopping();
+$("planShop").onclick=()=>{ close("planOv"); open("shopOv") };
 
 /* ======================== IN STOCK ======================== */
 const CART=`<svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20.5" r="1.2"/><circle cx="17" cy="20.5" r="1.2"/></svg>`;
@@ -1499,7 +1518,7 @@ $("stockAdd").onsubmit=async e=>{
     if(ex) Object.assign(ex,extra); else stockRows.push({name:k,...extra}); pantrySet.add(k);
     try{ await api.setPantry(k,true,extra) }catch(err){ toast("Couldn't save that") }
   }
-  renderStock();
+  renderStock(); syncShopping({quiet:true});
 };
 $("stockList").onclick=async e=>{
   const t=e.target.closest("[data-stedit],[data-stsave],[data-stcancel],[data-stuse],[data-st2shop]"); if(!t) return;
@@ -1509,7 +1528,7 @@ $("stockList").onclick=async e=>{
     const extra={label:v("label")||capFirst(k),qty:v("qty")||null,location:v("location"),expires:v("expires")||null}; Object.assign(stockRows.find(s=>s.name===k)||{},extra); stEdit=null; renderStock();
     try{ await api.setPantry(k,true,extra) }catch(err){ toast("Couldn't save that") } return }
   if(t.dataset.stuse){ const k=t.dataset.stuse, x=stockRows.find(s=>s.name===k); stockRows=stockRows.filter(s=>s.name!==k); pantrySet.delete(k); stEdit=null; renderStock();
-    try{ await api.setPantry(k,false) }catch(err){} toast(`${x?.label||capFirst(k)} is used up`); return }
+    try{ await api.setPantry(k,false) }catch(err){} toast(`${x?.label||capFirst(k)} is used up`); syncShopping({quiet:true}); return }
   if(t.dataset.st2shop){ const k=t.dataset.st2shop, x=stockRows.find(s=>s.name===k), nm=x?.label||capFirst(k);
     if(shopping.some(s=>!s.checked && keyOf(s.name)===k)){ toast(`${nm} is already on the list`); return }
     try{ await api.addShop([{name:nm,qty:null,aisle:aisleOf(nm),source:"stock",note:"Running low"}]); await refreshAll(); toast(`Added ${nm} to the shopping list`) }catch(err){ toast("Couldn't add that") } }
@@ -1604,10 +1623,10 @@ $("bPantry2").onclick=openPantry;
 $("bMenu").onclick=()=>open("menuOv");
 $("menuOv").addEventListener("click",e=>{ const b=e.target.closest(".menu-grid button"); if(b && b.id!=="bMode") close("menuOv") });
 $("ptQ").oninput=renderPantry;
-$("ptChips").onclick=async e=>{ const b=e.target.closest("[data-pt]"); if(!b) return; const k=b.dataset.pt, on=!pantrySet.has(k); on?pantrySet.add(k):pantrySet.delete(k); renderPantry(); const nm=b.textContent.trim(); if(on) stockRows.push({name:k,label:nm,location:defaultLoc(nm)}); else stockRows=stockRows.filter(x=>x.name!==k); try{ await api.setPantry(k,on,on?{label:nm,location:defaultLoc(nm)}:{}) }catch(err){ toast("Couldn't sync — check your connection") } };
+$("ptChips").onclick=async e=>{ const b=e.target.closest("[data-pt]"); if(!b) return; const k=b.dataset.pt, on=!pantrySet.has(k); on?pantrySet.add(k):pantrySet.delete(k); renderPantry(); const nm=b.textContent.trim(); if(on) stockRows.push({name:k,label:nm,location:defaultLoc(nm)}); else stockRows=stockRows.filter(x=>x.name!==k); try{ await api.setPantry(k,on,on?{label:nm,location:defaultLoc(nm)}:{}) }catch(err){ toast("Couldn't sync — check your connection") } syncShopping({quiet:true}) };
 $("ptAdd").onsubmit=async e=>{ e.preventDefault(); const v=$("ptItem").value.trim(); if(!v) return; $("ptItem").value=""; const it=parseIng(v)[0]||{name:v,qty:""}, k=keyOf(it.name); if(!k) return; pantrySet.add(k); stockRows.push({name:k,label:it.name,qty:it.qty||null,location:defaultLoc(it.name)}); renderPantry(); try{ await api.setPantry(k,true,{label:it.name,qty:it.qty||null,location:defaultLoc(it.name)}) }catch(err){} };
 $("ideas").onclick=async e=>{
-  const t=e.target.closest("[data-tonightid]"); if(t){ try{ await api.setPlan(today(),t.dataset.tonightid); await refreshAll(); toast("On the wall for tonight") }catch(err){ toast("Couldn't save the plan") } return }
+  const t=e.target.closest("[data-tonightid]"); if(t){ try{ await api.setPlan(today(),t.dataset.tonightid); await refreshAll(); syncShopping({quiet:true}); toast("On the wall for tonight") }catch(err){ toast("Couldn't save the plan") } return }
   const o=e.target.closest("[data-openrec]"); if(o){ close("pantryOv"); open("bookOv"); showRecipe(o.dataset.openrec) }
 };
 
@@ -1786,7 +1805,7 @@ $("loginForm").onsubmit=async e=>{
 let started=false;
 async function start(){
   if(started) return; started=true;
-  await refreshAll(); api.subscribe(refreshAll);
+  await refreshAll(); api.subscribe(refreshAll); syncShopping({quiet:true});
   setInterval(refreshAll, 10*60e3);           // safety net + renews photo links
   setInterval(loadEvents, 15*60e3);
   setInterval(nextPhoto, Math.max(8,CONFIG.photoSeconds)*1000);
@@ -1803,7 +1822,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.9";
+const APP_VERSION="2026-11-13.10";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
