@@ -70,3 +70,7 @@ To switch it on once: create a key at console.anthropic.com → API keys, then i
 
 ## Rie's calendar
 Menu → **Rie's calendar** (on the phone: the button at the bottom of Today, or tap the Rie card). Add daycare, swimming, doctor visits or anything else. Repeating things (daycare every weekday) can skip a single day. Today's plans and the next doctor visit show on the wall.
+
+## Rie: growth and development
+Menu → **Rie** has three tabs. **Calendar** (with packing lists), **Growth** (birthday, height and weight with WHO percentiles for girls 0–5 years, charted against the 3rd–97th percentile bands) and **Development** (what most children can do at her age and ideas to try, summarised from CDC's "Learn the Signs. Act Early." milestones). One idea a week shows on the wall.
+Growth data is stored in `wb_state` (`rie_profile`, `rie_growth`), members only like everything else.

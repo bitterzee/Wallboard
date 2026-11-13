@@ -409,6 +409,33 @@ body.phone .pmeal .ml{width:70px}
 .rie-none{color:var(--fg3);font-size:16px;padding:4px 2px}
 .rie-up{font-size:15px;color:var(--fg2);padding:2px}.rie-up b{color:var(--fg);font-weight:600}
 .rie-row .rie-r{font-size:15px;padding:3px 2px}
+.rtabs{display:flex;gap:4px;background:var(--s1);border-radius:99px;padding:4px;margin:0 0 18px;width:max-content;max-width:100%}
+.rtabs button{padding:.55em 1.2em;border-radius:99px;font-size:15px;font-weight:600;color:var(--fg2)}
+.rtabs button.on{background:var(--accent);color:var(--accent-ink)}
+.grnow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:14px 0}
+.grnow>div{background:var(--s1);border-radius:16px;padding:14px 16px}
+.grnow b{display:block;font-size:30px;font-weight:300;letter-spacing:-.02em;font-family:var(--fd)}
+.grnow small{color:var(--fg2);font-size:14px}.grnow .lbl{font-size:13px;color:var(--fg3);font-weight:600}
+.grnow .flag{color:var(--warn)}
+.grform{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end}
+.grform label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--fg2)}
+.grform input{padding:.7em .8em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--s1);color:var(--fg);font-size:16px;min-width:0}
+body.phone .grform{grid-template-columns:1fr 1fr}body.phone .grform label:first-child{grid-column:1/-1}
+.grchart{margin:18px 0 6px}.grchart h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.grchart svg{width:100%;height:auto;display:block}
+.grchart .lg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--fg3);margin-top:4px}
+.grchart .lg i{display:inline-block;width:14px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.devhead{font-size:15px;color:var(--fg2);line-height:1.5;margin-bottom:14px}.devhead b{color:var(--fg)}
+.devg{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.devc{background:var(--s1);border-radius:16px;padding:14px 16px}
+.devc h3{font-size:16px;font-weight:600;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+.devc ul{list-style:none;display:grid;gap:6px}
+.devc li{font-size:14.5px;line-height:1.4;color:var(--fg2);padding-left:14px;position:relative}
+.devc li::before{content:"";position:absolute;left:0;top:.55em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.devtips{margin-top:16px;display:grid;gap:8px}
+.devtips div{background:rgba(var(--accent-rgb),.1);border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 12px 12px 0;font-size:15px;line-height:1.45}
+.devtips div.now{background:rgba(var(--accent-rgb),.2)}
+.rie-dev{font-size:14px;color:var(--fg2);line-height:1.4;padding:2px}.rie-dev b{color:var(--fg);font-weight:600}
 .mnav{display:flex;align-items:center;justify-content:space-between;margin:2px 0 10px}
 .mnav h2{font-size:24px;font-weight:300;letter-spacing:-.02em;font-family:var(--fd)}
 .mnav button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);font-size:20px;color:var(--fg)}
@@ -698,7 +725,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
       <button id="bShop">Shopping list</button>
       <button id="bStock">In stock</button>
       <button id="bPantry2">What can I cook?</button>
-      <button id="bRie">Rie's calendar</button>
+      <button id="bRie">Rie</button>
       <button id="bPhotos">Photos</button>
       <button id="bSettings">Settings</button>
       <button id="bLayout">Layout</button>
@@ -829,8 +856,10 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 
 <!-- Rie's calendar -->
 <section class="ov" id="rieOv">
-  <div class="bar"><h1 class="serif">Rie's calendar</h1><button class="pill dark" id="rieNew">Add</button><button class="pill" data-close>Close</button></div>
+  <div class="bar"><h1 class="serif">Rie</h1><button class="pill dark" id="rieNew">Add</button><button class="pill" data-close>Close</button></div>
   <div class="scroll"><div class="wrapc">
+    <div class="rtabs" role="tablist"><button data-rtab="cal" class="on">Calendar</button><button data-rtab="grow">Growth</button><button data-rtab="dev">Development</button></div>
+    <div id="rtCal">
     <div class="mnav"><button id="rmPrev" aria-label="Previous month">‹</button><h2 id="rmTitle"></h2><button id="rmNext" aria-label="Next month">›</button></div>
     <div class="mgrid" id="rmGrid"></div>
     <h2 class="sh" id="rdTitle" style="margin-top:22px"></h2>
@@ -839,6 +868,17 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <p class="hint2">One item per line. The wall shows the list on the day until the activity starts, and the evening before from 5 pm.</p>
     <div class="bagedit" id="bagEdit"></div>
     <div class="row" style="margin-top:10px"><button class="pill dark" id="bagSave">Save packing lists</button></div>
+    </div>
+    <div id="rtGrow" hidden>
+      <div class="f" style="max-width:320px"><label>Rie's birthday<input type="date" id="rieBirth"></label></div>
+      <div id="grNow" class="grnow"></div>
+      <h2 class="sh">Add a measurement</h2>
+      <div class="grform"><label>Date<input type="date" id="grD"></label><label>Height (cm)<input id="grH" inputmode="decimal" placeholder="88.5"></label><label>Weight (kg)<input id="grW" inputmode="decimal" placeholder="12.4"></label><button class="pill dark" id="grAdd">Add</button></div>
+      <div id="grCharts"></div>
+      <div class="dlist" id="grList"></div>
+      <p class="hint2" style="margin-top:14px">Percentiles compare Rie with the WHO Child Growth Standards for girls up to 5 years. 50th means right in the middle: half of girls her age are bigger and half smaller. One reading doesn't say much; the trend over several months does. Ask her doctor about anything that worries you.</p>
+    </div>
+    <div id="rtDev" hidden></div>
   </div></div>
 </section>
 <section class="ov sheet" id="rieEdOv">
@@ -1066,7 +1106,7 @@ const SEED = [
 ].map((r,i)=>({id:uuid(),photo_path:null,source_url:i===3?"https://www.youtube.com/watch?v=M7lc1UVf-VE":null,source_kind:i===3?"youtube":null,cooked_count:i===0?3:i===1?1:0,last_cooked:i<2?addDays(today(),-4):null,created_at:new Date().toISOString(),...r}));
 
 const api = DEMO ? (() => {
-  const mem = { stock:[{name:'rice',label:'Rice',qty:'5 kg',location:'Cupboard'},{name:'egg',label:'Eggs',qty:'10',location:'Fridge',expires:addDays(today(),9)},{name:'shallot',label:'Shallots',qty:'1 bag',location:'Cupboard'},{name:'garlic',label:'Garlic',location:'Cupboard'},{name:'kecap mani',label:'Kecap manis',location:'Cupboard'},{name:'chicken thighs or leg',label:'Chicken thighs',qty:'500 g',location:'Fridge',expires:addDays(today(),1)},{name:'lime',label:'Limes',qty:'4',location:'Fridge'},{name:'spinach',label:'Spinach',qty:'1 bunch',location:'Fridge',expires:addDays(today(),2)},{name:'frozen peas',label:'Frozen peas',location:'Freezer'}], rv:[{recipe_id:SEED[1].id,reviewer:"mom",rating:5,note:"Rich broth, make it again"},{recipe_id:SEED[1].id,reviewer:"dad",rating:4,note:""},{recipe_id:SEED[1].id,reviewer:"baby",rating:5,note:"Finished the whole bowl"},{recipe_id:SEED[0].id,reviewer:"dad",rating:5,note:""},{recipe_id:SEED[0].id,reviewer:"baby",rating:2,note:"Too spicy for her"}], pantry:new Set(['rice','egg','shallot','garlic','kecap mani','chicken thighs or leg','lime','spinach']), state:{rie_cal:{items:[{id:"d1",kind:"daycare",title:"Daycare",t:"07:30",end:"16:00",days:[1,2,3,4,5],from:addDays(today(),-60),until:"",skip:[],note:""},{id:"d2",kind:"swim",title:"Swimming lesson",t:"09:00",end:"09:45",days:[6],from:addDays(today(),-30),until:"",skip:[],note:"Pack the swim nappy"},{id:"d3",kind:"doctor",title:"Check-up and vaccine",date:addDays(today(),4),t:"10:00",end:"",days:[],note:"Bring the vaccination book"}]}}, cals:[{id:'c1',name:'Renaldo',color:'#86C6D9'},{id:'c2',name:'Christie',color:'#F08C78'}], recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()+'|dinner']:SEED[1].id,[today()+'|lunch']:SEED[0].id,[addDays(today(),1)+'|dinner']:SEED[0].id,[addDays(today(),1)+'|breakfast']:SEED[3].id,[addDays(today(),3)+'|dinner']:SEED[2].id}, shop:[] };
+  const mem = { stock:[{name:'rice',label:'Rice',qty:'5 kg',location:'Cupboard'},{name:'egg',label:'Eggs',qty:'10',location:'Fridge',expires:addDays(today(),9)},{name:'shallot',label:'Shallots',qty:'1 bag',location:'Cupboard'},{name:'garlic',label:'Garlic',location:'Cupboard'},{name:'kecap mani',label:'Kecap manis',location:'Cupboard'},{name:'chicken thighs or leg',label:'Chicken thighs',qty:'500 g',location:'Fridge',expires:addDays(today(),1)},{name:'lime',label:'Limes',qty:'4',location:'Fridge'},{name:'spinach',label:'Spinach',qty:'1 bunch',location:'Fridge',expires:addDays(today(),2)},{name:'frozen peas',label:'Frozen peas',location:'Freezer'}], rv:[{recipe_id:SEED[1].id,reviewer:"mom",rating:5,note:"Rich broth, make it again"},{recipe_id:SEED[1].id,reviewer:"dad",rating:4,note:""},{recipe_id:SEED[1].id,reviewer:"baby",rating:5,note:"Finished the whole bowl"},{recipe_id:SEED[0].id,reviewer:"dad",rating:5,note:""},{recipe_id:SEED[0].id,reviewer:"baby",rating:2,note:"Too spicy for her"}], pantry:new Set(['rice','egg','shallot','garlic','kecap mani','chicken thighs or leg','lime','spinach']), state:{rie_profile:{birth:addDays(today(),-790)},rie_growth:{items:[{id:"g1",d:addDays(today(),-430),h:76.5,w:9.6},{id:"g2",d:addDays(today(),-250),h:81.2,w:10.5},{id:"g3",d:addDays(today(),-70),h:86.9,w:11.7},{id:"g4",d:addDays(today(),-5),h:88.4,w:12.1}]},rie_cal:{items:[{id:"d1",kind:"daycare",title:"Daycare",t:"07:30",end:"16:00",days:[1,2,3,4,5],from:addDays(today(),-60),until:"",skip:[],note:""},{id:"d2",kind:"swim",title:"Swimming lesson",t:"09:00",end:"09:45",days:[6],from:addDays(today(),-30),until:"",skip:[],note:"Pack the swim nappy"},{id:"d3",kind:"doctor",title:"Check-up and vaccine",date:addDays(today(),4),t:"10:00",end:"",days:[],note:"Bring the vaccination book"}]}}, cals:[{id:'c1',name:'Renaldo',color:'#86C6D9'},{id:'c2',name:'Christie',color:'#F08C78'}], recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()+'|dinner']:SEED[1].id,[today()+'|lunch']:SEED[0].id,[addDays(today(),1)+'|dinner']:SEED[0].id,[addDays(today(),1)+'|breakfast']:SEED[3].id,[addDays(today(),3)+'|dinner']:SEED[2].id}, shop:[] };
   const listeners=[]; const ping=()=>listeners.forEach(f=>f());
   return {
     async session(){ me={name:"Demo",email:"demo",role:"dad"}; return true },
@@ -1200,7 +1240,7 @@ const api = DEMO ? (() => {
 
 /* ======================== STATE ======================== */
 let reviews={}, rvEdit=null, stockRows=[], stEdit=null, tsRecipe=null, tsSel=[];
-let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, rieCal=null, wordsCfg=null, rieBags=null, rieBagDone=null, calendars=[], events=[], eventsFailed=[], calIds=null;
+let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, rieCal=null, wordsCfg=null, rieBags=null, rieBagDone=null, rieProfile=null, rieGrowth=null, calendars=[], events=[], eventsFailed=[], calIds=null;
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
 const MODES=["auto","morning","day","dinner","night"];
@@ -1229,7 +1269,7 @@ async function refreshAll(){
   try{
     let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
     planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[pk(p.day,p.meal||"dinner"),p.recipe_id]));
-    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, rieCal, wordsCfg, rieBags, rieBagDone] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("rie_cal"), api.state("words"), api.state("rie_bags"), api.state("rie_bag_done")]);
+    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, rieCal, wordsCfg, rieBags, rieBagDone, rieProfile, rieGrowth] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("rie_cal"), api.state("words"), api.state("rie_bags"), api.state("rie_bag_done"), api.state("rie_profile"), api.state("rie_growth")]);
     reviews={}; (rvs||[]).forEach(x=>{ (reviews[x.recipe_id] ||= {})[x.reviewer]=x });
     if(th && th.theme && th.theme!==theme) applyTheme(th.theme);
     stockRows = pan||[]; pantrySet = new Set(stockRows.map(x=>x.name));
@@ -1351,12 +1391,12 @@ function renderWall(){
         ${wxChips(14)}
         ${wordsHTML()}
         ${routineHTML("row")}
-        ${rieHTML("row",4)}
+        ${rieHTML("row",4)}${devTip()?`<div class="rie-dev" data-rieto="dev" style="margin-top:-8px">This week for Rie: <b>${esc(devTip())}</b></div>`:""}
         ${agendaHTML(6)}
         ${useSoonHTML()}
         <div class="fc">${fcHTML()}</div>
         ${card}
-        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span><span style="display:flex;gap:6px"><button data-open="rieOv">Rie's calendar</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
+        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span><span style="display:flex;gap:6px"><button data-open="rieOv">Rie</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
       </div>`;
     }
     const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : rieHTML("row",bagNow().length?1:2);
@@ -1502,7 +1542,7 @@ function rieHTML(variant, n=3){
   const rows=left.slice(0,n).map(x=>`<div class="rie-r"><span class="e">${rIcon(x)}</span><span class="t">${x.t?fmtT(x.t):"All day"}</span><span class="n">${esc(x.title)}</span></div>`).join("");
   return `<div class="rie ${variant==="row"?"rie-row":""}" data-open="rieOv" role="button" tabindex="0"><div class="rie-h"><span>Rie today</span>${more>0?`<small>${more} more</small>`:""}</div>
     ${rows || `<div class="rie-none">${list.length?"All done for today":"Nothing planned today"}</div>`}
-    ${sp && !(variant==="row" && bagNow().length)?`<div class="rie-up">Coming up: ${rIcon(sp)} <b>${esc(sp.title)}</b>, ${whenLabel(sp.date)}${sp.t?" at "+fmtT(sp.t):""}</div>`:""}${bagHTML(variant==="row")}</div>`;
+    ${sp && !(variant==="row" && bagNow().length)?`<div class="rie-up">Coming up: ${rIcon(sp)} <b>${esc(sp.title)}</b>, ${whenLabel(sp.date)}${sp.t?" at "+fmtT(sp.t):""}</div>`:""}${bagHTML(variant==="row")}${!bagNow().length && devTip() && variant!=="row" ? `<div class="rie-dev" data-rieto="dev">This week: <b>${esc(devTip())}</b></div>`:""}</div>`;
 }
 const bagLeft = () => bagNow().reduce((n,b)=>n+b.items.length-b.done.size,0);
 const rieLine = () => { const now=minNow(), o=occOn(today()), x=o.find(x=>toMin(x.t)>=now) || o.find(x=>toMin(x.end)>=now); if(x) return `<div class="d-next"><span>Rie:</span> ${rIcon(x)} ${esc(x.title)}${x.t?` <span>at</span> ${fmtT(x.t)}`:""}${bagLeft()?`<span>, ${bagLeft()} things to pack</span>`:""}</div>`;
@@ -1576,6 +1616,136 @@ $("reBtns").onclick=async e=>{
   if(id==="reSkip"){ const x=items.find(x=>x.id===reDraft.id); if(x){ x.skip=[...(x.skip||[]),rSel] } close("rieEdOv"); await saveRie(items,`Skipped on ${dayShort(rSel)}`); return }
   if(id==="reDel"){ if(!twoTap("re"+reDraft.id,e.target,"Tap to confirm")) return; close("rieEdOv"); await saveRie(items.filter(x=>x.id!==reDraft.id),"Deleted"); return }
 };
+
+const WHO_WFA_G=[[0.3809,3.2322,0.14171],[0.1714,4.1873,0.13724],[0.0962,5.1282,0.13],[0.0402,5.8458,0.12619],[-0.005,6.4237,0.12402],[-0.043,6.8985,0.12274],[-0.0756,7.297,0.12204],[-0.1039,7.6422,0.12178],[-0.1288,7.9487,0.12181],[-0.1507,8.2254,0.12199],[-0.17,8.48,0.12223],[-0.1872,8.7192,0.12247],[-0.2024,8.9481,0.12268],[-0.2158,9.1699,0.12283],[-0.2278,9.387,0.12294],[-0.2384,9.6008,0.12299],[-0.2478,9.8124,0.12303],[-0.2562,10.0226,0.12306],[-0.2637,10.2315,0.12309],[-0.2703,10.4393,0.12315],[-0.2762,10.6464,0.12323],[-0.2815,10.8534,0.12335],[-0.2862,11.0608,0.1235],[-0.2903,11.2688,0.12369],[-0.2941,11.4775,0.1239],[-0.2975,11.6864,0.12414],[-0.3005,11.8947,0.12441],[-0.3032,12.1015,0.12472],[-0.3057,12.3059,0.12506],[-0.308,12.5073,0.12545],[-0.3101,12.7055,0.12587],[-0.312,12.9006,0.12633],[-0.3138,13.093,0.12683],[-0.3155,13.2837,0.12737],[-0.3171,13.4731,0.12794],[-0.3186,13.6618,0.12855],[-0.3201,13.8503,0.12919],[-0.3216,14.0385,0.12988],[-0.323,14.2265,0.13059],[-0.3243,14.414,0.13135],[-0.3257,14.601,0.13213],[-0.327,14.7873,0.13293],[-0.3283,14.9727,0.13376],[-0.3296,15.1573,0.1346],[-0.3309,15.341,0.13545],[-0.3322,15.524,0.1363],[-0.3335,15.7064,0.13716],[-0.3348,15.8882,0.138],[-0.3361,16.0697,0.13884],[-0.3374,16.2511,0.13968],[-0.3387,16.4322,0.14051],[-0.34,16.6133,0.14132],[-0.3414,16.7942,0.14213],[-0.3427,16.9748,0.14293],[-0.344,17.1551,0.14371],[-0.3453,17.3347,0.14448],[-0.3466,17.5136,0.14525],[-0.3479,17.6916,0.146],[-0.3492,17.8686,0.14675],[-0.3505,18.0445,0.14748],[-0.3518,18.2193,0.14821]], WHO_HFA_G=[[1.0,49.1477,0.0379],[1.0,53.6872,0.0364],[1.0,57.0673,0.03568],[1.0,59.8029,0.0352],[1.0,62.0899,0.03486],[1.0,64.0301,0.03463],[1.0,65.7311,0.03448],[1.0,67.2873,0.03441],[1.0,68.7498,0.0344],[1.0,70.1435,0.03444],[1.0,71.4818,0.03452],[1.0,72.771,0.03464],[1.0,74.015,0.03479],[1.0,75.2176,0.03496],[1.0,76.3817,0.03514],[1.0,77.5099,0.03534],[1.0,78.6055,0.03555],[1.0,79.671,0.03576],[1.0,80.7079,0.03598],[1.0,81.7182,0.0362],[1.0,82.7036,0.03643],[1.0,83.6654,0.03666],[1.0,84.604,0.03688],[1.0,85.5202,0.03711],[1.0,85.7153,0.03764],[1.0,86.5904,0.03786],[1.0,87.4462,0.03808],[1.0,88.283,0.0383],[1.0,89.1004,0.03851],[1.0,89.8991,0.03872],[1.0,90.6797,0.03893],[1.0,91.443,0.03913],[1.0,92.1906,0.03933],[1.0,92.9239,0.03952],[1.0,93.6444,0.03971],[1.0,94.3533,0.03989],[1.0,95.0515,0.04006],[1.0,95.7399,0.04024],[1.0,96.4187,0.04041],[1.0,97.0885,0.04057],[1.0,97.7493,0.04073],[1.0,98.4015,0.04089],[1.0,99.0448,0.04105],[1.0,99.6795,0.0412],[1.0,100.3058,0.04135],[1.0,100.9238,0.0415],[1.0,101.5337,0.04164],[1.0,102.136,0.04179],[1.0,102.7312,0.04193],[1.0,103.3197,0.04206],[1.0,103.9021,0.0422],[1.0,104.4786,0.04233],[1.0,105.0494,0.04246],[1.0,105.6148,0.04259],[1.0,106.1748,0.04272],[1.0,106.7295,0.04285],[1.0,107.2788,0.04298],[1.0,107.8227,0.0431],[1.0,108.3613,0.04322],[1.0,108.8948,0.04334],[1.0,109.4233,0.04347]];
+/* ======================== RIE'S GROWTH ======================== */
+// WHO Child Growth Standards, girls 0–60 months: [L, M, S] per month. Height uses length to 24 months, then standing height.
+const ageMonths = (birth, d=today()) => (new Date(d+"T12:00:00Z") - new Date(birth+"T12:00:00Z"))/864e5/30.4375;
+function lmsAt(T, m){ if(m<0||m>60) return null; const i=Math.floor(m), f=m-i, a=T[i], b=T[Math.min(60,i+1)]; return a.map((v,k)=>v+(b[k]-v)*f) }
+const zOf = (x,[L,M,S]) => L ? (Math.pow(x/M,L)-1)/(L*S) : Math.log(x/M)/S;
+const xOf = (z,[L,M,S]) => L ? M*Math.pow(1+L*S*z,1/L) : M*Math.exp(S*z);
+function ncdf(z){ const t=1/(1+.2316419*Math.abs(z)), d=.3989423*Math.exp(-z*z/2), p=d*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274)))); return z>0?1-p:p }
+const pctl = z => { const p=ncdf(z)*100; return p<1?"below 1st":p>99?"above 99th":ordinal(Math.round(p)) };
+const ordinal = n => n + (n%100>=11&&n%100<=13 ? "th" : ({1:"st",2:"nd",3:"rd"}[n%10]||"th"));
+const growth = () => ((rieGrowth&&rieGrowth.items)||[]).slice().sort((a,b)=>a.d.localeCompare(b.d));
+const birth = () => rieProfile && rieProfile.birth || "";
+function ageLabel(b, d=today()){ const m=Math.floor(ageMonths(b,d)+1e-6); if(m<24) return `${m} month${m===1?"":"s"}`; const y=Math.floor(m/12), r=m%12; return `${y} year${y>1?"s":""}${r?` ${r} month${r>1?"s":""}`:""}` }
+function measureInfo(x){ const b=birth(); if(!b) return {}; const m=ageMonths(b,x.d), o={};
+  if(x.h){ const l=lmsAt(WHO_HFA_G,m); if(l){ o.hz=zOf(+x.h,l) } } if(x.w){ const l=lmsAt(WHO_WFA_G,m); if(l){ o.wz=zOf(+x.w,l) } } return o }
+function renderGrowth(){
+  $("rieBirth").value=birth(); if(!$("grD").value) $("grD").value=today();
+  const g=growth(), b=birth(), last=[...g].reverse();
+  const lh=last.find(x=>x.h), lw=last.find(x=>x.w);
+  const card=(lbl,x,unit,key,zk)=>{ if(!x) return `<div><span class="lbl">${lbl}</span><b>–</b><small>No ${lbl.toLowerCase()} yet</small></div>`; const z=measureInfo(x)[zk], out=z!=null&&(z<-1.881||z>1.881);
+    return `<div><span class="lbl">${lbl}</span><b>${(+x[key]).toFixed(1)} ${unit}</b><small>${z!=null?`<span class="${out?"flag":""}">${pctl(z)} percentile</span>, `:""}${dayShort(x.d)}${b?`, at ${ageLabel(b,x.d)}`:""}</small>${out?`<small class="flag" style="display:block;margin-top:4px">Outside the usual range. Worth mentioning at her next check-up.</small>`:""}</div>` };
+  $("grNow").innerHTML = (b?`<div><span class="lbl">Age</span><b>${ageLabel(b)}</b><small>Born ${new Intl.DateTimeFormat(CONFIG.locale,{day:"numeric",month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(b+"T12:00:00Z"))}</small></div>`:`<div><span class="lbl">Age</span><b>?</b><small>Add Rie's birthday above to see percentiles</small></div>`) + card("Height",lh,"cm","h","hz") + card("Weight",lw,"kg","w","wz");
+  $("grCharts").innerHTML = b && g.length ? chartSVG("Height","cm",WHO_HFA_G,g.filter(x=>x.h).map(x=>[ageMonths(b,x.d),+x.h])) + chartSVG("Weight","kg",WHO_WFA_G,g.filter(x=>x.w).map(x=>[ageMonths(b,x.d),+x.w])) : "";
+  $("grList").innerHTML = last.map(x=>{ const i=measureInfo(x); return `<div class="calrow"><div class="grow"><b>${dayShort(x.d)}${b?` <span style="color:var(--fg3);font-weight:400">, ${ageLabel(b,x.d)}</span>`:""}</b><small>${[x.h?`${(+x.h).toFixed(1)} cm${i.hz!=null?` (${pctl(i.hz)})`:""}`:"",x.w?`${(+x.w).toFixed(1)} kg${i.wz!=null?` (${pctl(i.wz)})`:""}`:""].filter(Boolean).join(", ")}</small></div><button class="pill" data-grdel="${x.id}" style="min-height:34px;padding:.3em .9em;font-size:13px">Delete</button></div>` }).join("");
+}
+function chartSVG(title, unit, T, pts){
+  if(!pts.length) return "";
+  const W=640,H=260,pl=40,pr=12,pt=10,pb=28, nowM=ageMonths(birth());
+  let a=Math.max(0,Math.floor(Math.min(...pts.map(p=>p[0]),nowM)-3)), b=Math.min(60,Math.ceil(Math.max(...pts.map(p=>p[0]),nowM)+3)); if(b-a<6) b=Math.min(60,a+6);
+  const Z=[-1.881,-1.036,0,1.036,1.881], ms=[]; for(let m=a;m<=b+1e-9;m+=.5) ms.push(m);
+  const curve=z=>ms.map(m=>[m,xOf(z,lmsAt(T,m))]);
+  const all=[...curve(Z[0]),...curve(Z[4]),...pts.map(p=>[p[0],p[1]])].map(p=>p[1]);
+  const lo=Math.floor(Math.min(...all)*.98), hi=Math.ceil(Math.max(...all)*1.02);
+  const X=m=>pl+(m-a)/(b-a)*(W-pl-pr), Y=v=>pt+(hi-v)/(hi-lo)*(H-pt-pb);
+  const path=c=>c.map((p,i)=>`${i?"L":"M"}${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join("");
+  const band=(z1,z2)=>{ const c1=curve(z1), c2=curve(z2).reverse(); return path(c1)+c2.map(p=>`L${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join("")+"Z" };
+  const step=b-a>24?6:b-a>12?3:1; let ticks=""; for(let m=Math.ceil(a/step)*step;m<=b;m+=step) ticks+=`<text x="${X(m)}" y="${H-8}" text-anchor="middle">${m<36?m+"m":(m%12?Math.floor(m/12)+"y "+m%12+"m":m/12+"y")}</text><line x1="${X(m)}" x2="${X(m)}" y1="${pt}" y2="${H-pb}" stroke="var(--line)"/>`;
+  const vs=5, vstep=Math.max(1,Math.round((hi-lo)/vs)); let vt=""; for(let v=Math.ceil(lo/vstep)*vstep; v<=hi; v+=vstep) vt+=`<text x="${pl-6}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;
+  const sorted=[...pts].sort((p,q)=>p[0]-q[0]);
+  return `<div class="grchart"><h3>${title} (${unit})</h3><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${title} chart" font-size="11" fill="var(--fg3)">${ticks}${vt}
+    <path d="${band(Z[0],Z[4])}" fill="rgba(var(--rain-rgb),.12)"/><path d="${band(Z[1],Z[3])}" fill="rgba(var(--rain-rgb),.18)"/>
+    <path d="${path(curve(0))}" fill="none" stroke="rgba(var(--rain-rgb),.7)" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <path d="${path(sorted)}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>${sorted.map(p=>`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="4.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="2"/>`).join("")}</svg>
+    <div class="lg"><span><i style="background:var(--accent)"></i>Rie</span><span><i style="background:rgba(var(--rain-rgb),.7)"></i>50th percentile</span><span><i style="background:rgba(var(--rain-rgb),.3)"></i>15th to 85th</span><span><i style="background:rgba(var(--rain-rgb),.14)"></i>3rd to 97th</span></div></div>`;
+}
+$("rieBirth").onchange=async()=>{ const v=$("rieBirth").value; rieProfile={...(rieProfile||{}),birth:v||null}; renderGrowth(); renderDev(); renderWall();
+  try{ await api.setState("rie_profile",rieProfile); toast("Birthday saved") }catch(e){ toast("Couldn't save. Check your connection") } };
+$("grAdd").onclick=async()=>{
+  const d=$("grD").value, h=parseFloat(($("grH").value||"").replace(",",".")), w=parseFloat(($("grW").value||"").replace(",","."));
+  if(!d){ toast("Pick a date"); return } if(isNaN(h)&&isNaN(w)){ toast("Add a height, a weight or both"); return }
+  if((!isNaN(h)&&(h<40||h>130))||(!isNaN(w)&&(w<2||w>35))){ toast("Check the numbers: height in cm, weight in kg"); return }
+  const items=[...((rieGrowth&&rieGrowth.items)||[]), {id:uuid(),d,h:isNaN(h)?null:h,w:isNaN(w)?null:w}]; rieGrowth={items};
+  $("grH").value=""; $("grW").value=""; renderGrowth();
+  try{ await api.setState("rie_growth",rieGrowth); toast("Measurement added") }catch(e){ toast("Couldn't save. Check your connection") } };
+$("grList").onclick=async e=>{ const b=e.target.closest("[data-grdel]"); if(!b) return; if(!twoTap("gr"+b.dataset.grdel,b,"Tap to confirm")) return;
+  rieGrowth={items:growth().filter(x=>x.id!==b.dataset.grdel)}; renderGrowth(); try{ await api.setState("rie_growth",rieGrowth) }catch(e){} };
+
+/* ======================== RIE'S DEVELOPMENT ======================== */
+// Summarised and reworded from CDC "Learn the Signs. Act Early." milestones and tips (2022 update, cdc.gov/milestones).
+// What most children can do by each age, and everyday ways to help.
+const DEV=[
+ {from:9,to:15,age:"1 year",areas:{
+   "Feelings and people":["Plays simple games like pat-a-cake","Waves bye-bye"],
+   "Talking":["Calls a parent \"mama\", \"dada\" or another special name","Understands \"no\" and pauses"],
+   "Thinking":["Puts things into a container, like a block into a cup","Looks for things she saw you hide"],
+   "Moving":["Pulls up to stand and walks holding on to furniture","Drinks from a cup you hold","Picks up small food between thumb and finger"]},
+  tips:["Name what Rie points at: \"Yes, that's a cat!\"","Read picture books together every day, even for a few minutes","Play peekaboo and hide a toy under a cloth for her to find","Describe what you're doing as you go: \"Now we wash your hands\"","Give her a safe space to cruise along the furniture","Respond to her babbles as if you're having a conversation","Show her the behaviour you want rather than only saying no"]},
+ {from:15,to:18,age:"15 months",areas:{
+   "Feelings and people":["Copies other children while playing","Shows you a toy she likes","Claps when excited and hugs a soft toy"],
+   "Talking":["Tries to say one or two words besides \"mama\" or \"dada\"","Looks at a familiar object when you name it","Points to ask for something or to get help"],
+   "Thinking":["Tries to use things the right way, like a phone, cup or book","Stacks at least two small objects"],
+   "Moving":["Takes a few steps on her own","Feeds herself with her fingers"]},
+  tips:["Help her name feelings: \"You're sad because the ball rolled away\"","Point to pictures in books and name them","Sing songs with actions, like Twinkle Twinkle or Kepala Pundak Lutut Kaki","Give her safe pots, spoons and boxes to explore","Let her practise with a spoon and an open cup","Offer two choices: \"Banana or papaya?\"","Play stacking games with blocks or cups"]},
+ {from:18,to:24,age:"18 months",areas:{
+   "Feelings and people":["Moves away from you but checks you're still near","Points to show you something interesting","Helps with dressing by pushing an arm through a sleeve"],
+   "Talking":["Tries to say three or more words besides \"mama\" or \"dada\"","Follows one-step directions without gestures, like \"Give me the toy\""],
+   "Thinking":["Copies you doing chores, like sweeping","Plays with toys in a simple way, like pushing a car"],
+   "Moving":["Walks without holding on","Scribbles","Drinks from an open cup, with some spills","Climbs on and off a sofa or chair"]},
+  tips:["Encourage pretend play, like feeding a teddy","Get down to her eye level when you talk, and name body parts","Expand on her words: if she says \"car\", say \"Yes, a red car!\"","Play back-and-forth games like rolling a ball or blowing bubbles","Offer simple either/or choices","Stay calm during tantrums and give her time to settle","Keep screens to video calls with family"]},
+ {from:24,to:30,age:"2 years",areas:{
+   "Feelings and people":["Notices when someone is hurt or upset","Looks at your face to see how to react to something new"],
+   "Talking":["Points to things in a book when you name them","Puts at least two words together, like \"more milk\"","Points to at least two body parts when asked","Uses gestures like nodding yes"],
+   "Thinking":["Holds something in one hand while using the other on it","Tries switches, knobs or buttons on toys","Plays with more than one toy at a time"],
+   "Moving":["Kicks a ball","Runs","Walks up a few stairs","Eats with a spoon"]},
+  tips:["Repeat her words back with the right pronunciation, without correcting her","Give her small jobs, like carrying napkins to the table","Offer balls, simple puzzles and dress-up clothes","Keep meals, naps and bedtime regular. She needs about 11 to 14 hours of sleep a day","Praise kind and helpful behaviour","Play outdoors: walks, parks, sand and water","Keep screen time to under an hour a day, watched together"]},
+ {from:30,to:36,age:"30 months",areas:{
+   "Feelings and people":["Plays next to other children and sometimes with them","Shows off what she can do","Follows simple routines, like tidying toys when asked"],
+   "Talking":["Says about 50 words","Uses two or more words together, including an action word","Uses words like \"I\", \"me\" and \"we\""],
+   "Thinking":["Pretend play, like using a block as food","Solves simple problems, like using a stool to reach","Follows two-step instructions","Knows at least one colour"],
+   "Moving":["Twists things with her hands, like lids and doorknobs","Takes off loose clothes by herself","Jumps with both feet","Turns book pages one at a time"]},
+  tips:["Ask simple who, what and where questions while reading","Do drawing, puzzles, and name colours, shapes and animals","Let her choose between two or three healthy options","Eat family meals together without screens","Play follow the leader and kick a ball outside","Encourage pretend cooking or building with big boxes","Arrange playdates or group play to practise sharing"]},
+ {from:36,to:48,age:"3 years",areas:{
+   "Feelings and people":["Calms down within about 10 minutes after you leave her, like at daycare","Notices other children and joins in"],
+   "Talking":["Has a back-and-forth conversation","Asks who, what, where or why questions","Says her first name when asked","Is understood by others most of the time"],
+   "Thinking":["Draws a circle when shown how","Stays away from hot things after a warning"],
+   "Moving":["Strings large beads or macaroni","Puts on some clothes by herself","Uses a fork"]},
+  tips:["Name feelings and teach a calm-down trick, like slow deep breaths","Set a few simple rules and praise her for following them","Ask what might happen next in a story","Count everyday things: stairs, spoons, cars","Give two- and three-step instructions","Play with playdough to build finger strength","Use stories and pretend play to prepare for new places"]},
+ {from:48,to:60,age:"4 years",areas:{
+   "Feelings and people":["Pretends to be something else, like a teacher or a cat","Comforts others who are hurt or sad","Likes to be a helper"],
+   "Talking":["Says sentences with four or more words","Talks about something that happened during her day","Answers simple questions, like \"What is a coat for?\""],
+   "Thinking":["Names a few colours","Tells what comes next in a story she knows","Draws a person with three or more body parts"],
+   "Moving":["Catches a large ball most of the time","Pours water or serves food with help","Unbuttons some buttons"]},
+  tips:["Let her help with simple chores, like sorting laundry","Play games with simple rules and turn-taking","Ask about her day with open questions","Help her learn her full name and your phone number","Read longer stories and talk about the characters' feelings","Give her time to try things before you help"]},
+ {from:60,to:999,age:"5 years",areas:{
+   "Feelings and people":["Follows rules and takes turns in games","Sings, dances or acts for you","Does simple chores at home"],
+   "Talking":["Tells a story with at least two events","Answers simple questions about a book","Keeps a conversation going"],
+   "Thinking":["Counts to 10","Names some numbers and letters","Pays attention for 5 to 10 minutes during activities"],
+   "Moving":["Buttons some buttons","Hops on one foot"]},
+  tips:["Let her plan part of the day, like choosing the weekend park","Practise counting and letters in everyday moments","Ask her to retell a story in her own words","Play hopping, balancing and catching games"]},
+];
+const AREA_IC={"Feelings and people":"💛","Talking":"💬","Thinking":"🧩","Moving":"🏃"};
+const devNow = () => { const b=birth(); if(!b) return null; const m=ageMonths(b); return DEV.find(d=>m>=d.from&&m<d.to) || (m<9?{early:true}:null) };
+const weekNo = () => Math.floor(dayNo()/7);
+function devTip(){ const d=devNow(); return d&&d.tips ? d.tips[weekNo()%d.tips.length] : null }
+function renderDev(){
+  const b=birth(), d=devNow();
+  if(!b){ $("rtDev").innerHTML=`<p class="hint2">Add Rie's birthday on the Growth tab to see what most children her age are learning, with ideas to try each week.</p>`; return }
+  if(!d||d.early){ $("rtDev").innerHTML=`<p class="hint2">Rie is ${ageLabel(b)}. These lists start from 9 months.</p>`; return }
+  const tip=devTip();
+  $("rtDev").innerHTML=`<p class="devhead">Rie is <b>${ageLabel(b)}</b>. By <b>${d.age}</b>, most children can do these things. Every child grows at her own pace, so use this as a guide for play, not a test.</p>
+    <div class="devg">${Object.entries(d.areas).map(([a,l])=>`<div class="devc"><h3>${AREA_IC[a]||""} ${a}</h3><ul>${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</div>
+    <h2 class="sh" style="margin-top:22px">Ideas to try</h2><p class="hint2">The highlighted one is this week's focus and shows on the wall.</p>
+    <div class="devtips">${d.tips.map(t=>`<div class="${t===tip?"now":""}">${esc(t)}</div>`).join("")}</div>
+    <p class="hint2" style="margin-top:16px">Based on the CDC's "Learn the Signs. Act Early." milestones (cdc.gov/milestones). This isn't a screening test. If Rie loses skills she had, or you have any worry, talk to her doctor at the next visit or sooner.</p>`;
+}
+document.querySelector(".rtabs").onclick=e=>{ const b=e.target.closest("[data-rtab]"); if(b) rieTab(b.dataset.rtab) };
+function rieTab(t){ document.querySelectorAll(".rtabs button").forEach(x=>x.classList.toggle("on",x.dataset.rtab===t)); $("rtCal").hidden=t!=="cal"; $("rtGrow").hidden=t!=="grow"; $("rtDev").hidden=t!=="dev"; $("rieNew").style.display=t==="cal"?"":"none";
+  if(t==="grow") renderGrowth(); if(t==="dev") renderDev() }
+document.addEventListener("click", e=>{ const b=e.target.closest("[data-rieto]"); if(!b) return; e.stopPropagation(); open("rieOv"); rieTab(b.dataset.rieto) }, true);
 
 /* ======================== DAILY WORDS ======================== */
 const MAMA_NOTES=["Thank you for the hundred small things you do before anyone else wakes up.","Rie is lucky to have you. So am I.","You make our house feel like home.","Thank you for your patience, even on the long days.","Every hug you give Rie is shaping who she'll be.","You're doing a wonderful job, even when it doesn't feel like it.","Thank you for the good food, the good talks and the good mornings.","Rie learned that smile from you.","Today, let us take care of you for a change.","Your kindness is the best thing in this house.","Thank you for always knowing where everything is.","You turn ordinary days into good memories.","We notice everything you do. Thank you.","Rie's favourite place is wherever you are.","You're a great mom and an even better friend.","Thank you for the bedtime songs and the early wake-ups.","The way you love us is the way Rie will love the world.","Take a slow coffee today. You've earned it.","Thank you for making our home so beautiful, inside and out.","You make hard things look easy. We know they aren't.","Thank you for staying calm when we're not.","From Rie: Mama, I love you. (She'd write it herself if she could.)","Thank you for every meal, every bath and every story.","You are enough, exactly as you are today.","Thank you for choosing us every day.","The best part of our mornings is you.","Thank you for teaching Rie to be curious and kind.","Whatever today brings, we've got your back.","Thank you for the love you put into everything.","Thank you, Christie. For everything, always."];
@@ -2200,7 +2370,7 @@ function open(id){
   if(isPhone() && TAB_ALL.includes(id)){ TAB_ALL.forEach(x=>x!==id&&$(x).classList.remove("open")); markTab(tabOf(id)) }
   $(id).classList.add("open");
   if(id==="bookOv"){ renderBookList(); if(!selId && innerWidth>760) showRecipe(tonightRecipe()?.r.id) }
-  if(id==="planOv") renderPlan(); if(id==="shopOv") renderShop(); if(id==="stockOv"){ stEdit=null; renderStock() } if(id==="setOv") openSettings(); if(id==="rieOv") openRie();
+  if(id==="planOv") renderPlan(); if(id==="shopOv") renderShop(); if(id==="stockOv"){ stEdit=null; renderStock() } if(id==="setOv") openSettings(); if(id==="rieOv"){ openRie(); rieTab("cal") }
   if(id==="cook") document.body.classList.add("cooking"); if(id==="login") document.body.classList.add("signin");
 }
 function close(id){
@@ -2272,7 +2442,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.23";
+const APP_VERSION="2026-11-13.24";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
