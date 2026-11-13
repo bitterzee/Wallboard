@@ -77,3 +77,11 @@ Growth data is stored in `wb_state` (`kid_profile`, `kid_growth`), members only 
 
 ## YouTube videos without a written recipe
 When a video's description has no recipe, `import-recipe` fetches the video's captions (the uploader's or YouTube's automatic ones) and asks Claude to write the recipe from what's said. Uses the same `ANTHROPIC_API_KEY` secret as fridge scanning. Videos with no captions can't be read.
+
+## Claude features (v2026-11-13.30)
+
+- **Ask the wall**: the sparkle button (top right, or floating on the phone). Type or speak. Claude can plan meals, add or tick shopping, update stock, start timers, add to the child's calendar and journal. Edge function `wall-ai`.
+- **Weekly autopilot**: Meal plan → "Plan next week with Claude". On Sunday after 17:00 the wall drafts next week by itself and shows a banner; nothing changes until you tap "Use this plan".
+- **Helper mode**: Settings → Household helper. The helper signs in with an email code and sees a simplified Bahasa Indonesia screen: today's meals with translated recipes, the child's schedule and packing list, shopping, and notes to the family. Edge function `helper-access`; RLS limits what helpers can read.
+- **iCloud shared album**: Settings → Photos from an iCloud shared album. Turn on Public Website for the album and paste the link. The wall checks hourly. Edge function `icloud-sync`.
+- **Memory book**: Menu → Memory book. Claude writes a page for the month from the journal, growth and photos. Print or save as PDF.
