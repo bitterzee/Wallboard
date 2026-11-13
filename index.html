@@ -428,6 +428,35 @@ body.phone .jform{grid-template-columns:1fr}
 .devc li.ms.got::before{content:"✓";background:none;color:var(--accent);width:auto;height:auto;top:3px;font-weight:700;font-size:13px}
 .devc li.ms small{color:var(--fg3);font-size:12px;margin-left:4px}
 .kid-new{font-size:14px;line-height:1.4;padding:2px;color:var(--fg2)}.kid-new b{color:var(--fg)}
+/* swipe cards */
+.rc{position:relative}
+.rc.swipeable{touch-action:pan-y;cursor:grab;will-change:transform}
+.stamp{position:absolute;top:22px;z-index:3;font-size:26px;font-weight:800;letter-spacing:.04em;padding:.15em .5em;border:4px solid;border-radius:10px;opacity:0;pointer-events:none;text-transform:uppercase;background:rgba(0,0,0,.25)}
+.stamp.yes{left:20px;color:#7EE08A;border-color:#7EE08A;transform:rotate(-14deg)}
+.stamp.no{right:20px;color:#FF7B7B;border-color:#FF7B7B;transform:rotate(14deg)}
+.swbtn{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:22px;font-weight:700;border:1.5px solid var(--line2);background:var(--s2);flex:none;transition:transform .12s}
+.swbtn:active{transform:scale(.9)}
+.swbtn.no{color:#FF7B7B}.swbtn.yes{color:#7EE08A}.swbtn.undo{color:var(--fg2);width:44px;height:44px;font-size:18px}
+.swbtn.big{width:68px;height:68px;font-size:28px}
+.swhint{font-size:13px;color:var(--fg3)}
+.swwrap{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:14px;padding:12px 20px 20px}
+.swfor{display:flex;flex-direction:column;gap:8px;align-items:center}
+.swdeck{position:relative;flex:1;min-height:0;width:min(440px,92vw)}
+.swc{position:absolute;inset:0;background:var(--s1);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 50px rgba(0,0,0,.35);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;will-change:transform;transition:transform .25s}
+.swc.drag{transition:none;cursor:grabbing}
+.swc .ph{flex:1;min-height:120px;background:var(--s2) center/cover;display:grid;place-items:center;font-size:90px;font-family:var(--fd);color:var(--fg3)}
+.swc .bd{padding:16px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:none}
+.swc h2{font-family:var(--fd);font-weight:var(--fdw2);font-size:26px;line-height:1.15;letter-spacing:var(--fdt2)}
+.swc .mt{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:14px;color:var(--fg2)}
+.swc .have{font-size:14px;color:var(--fg2)}.swc .have b{color:var(--accent)}
+.swc .ings{font-size:13.5px;color:var(--fg3);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.swc:nth-last-child(2){transform:scale(.95) translateY(14px)}
+.swc:nth-last-child(3){transform:scale(.9) translateY(28px)}
+.swc:not(:nth-last-child(-n+3)){opacity:0}
+.swend{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--fg2);padding:20px}
+.swctl{display:flex;gap:22px;align-items:center}
+body.phone .swc h2{font-size:22px}
+.rc .swbtn{width:46px;height:46px;font-size:19px}
 .rtabs{display:flex;gap:4px;background:var(--s1);border-radius:99px;padding:4px;margin:0 0 18px;width:max-content;max-width:100%}
 .rtabs button{padding:.55em 1.2em;border-radius:99px;font-size:15px;font-weight:600;color:var(--fg2)}
 .rtabs button.on{background:var(--accent);color:var(--accent-ink)}
@@ -745,6 +774,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
       <button id="bStock">In stock</button>
       <button id="bPantry2">What can I cook?</button>
       <button id="bKid" data-kid>Kid</button>
+      <button data-swipe="">Swipe for a meal</button>
       <button id="bPhotos">Photos</button>
       <button id="bSettings">Settings</button>
       <button id="bLayout">Layout</button>
@@ -844,7 +874,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <!-- meal plan -->
 <section class="ov" id="planOv">
   <div class="bar"><h1 class="serif">Meal plan</h1><button class="pill dark" id="planShop">Shopping list</button><button class="pill" data-close>Close</button></div>
-  <div class="scroll"><div class="wrapc"><p class="hint2">Tap breakfast, lunch or dinner to choose a recipe. Today's meals show on the wall, and every planned meal's ingredients go on the shopping list automatically, minus what's in stock.</p><div id="planList"></div></div></div>
+  <div class="scroll"><div class="wrapc"><div class="row" style="margin:0 0 10px"><button class="pill dark" data-swipe="">Swipe for ideas</button></div><p class="hint2">Tap breakfast, lunch or dinner to choose a recipe. Today's meals show on the wall, and every planned meal's ingredients go on the shopping list automatically, minus what's in stock.</p><div id="planList"></div></div></div>
 </section>
 
 <!-- shopping list -->
@@ -865,6 +895,17 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <p class="hint2" style="margin-top:6px">Tick items off in the shopping list, then tap <b>Put away</b> to move them here. Recipes and the shopping list check this page, so you don't buy what you already have.</p>
     <div id="stockList"></div>
   </div></div>
+</section>
+
+<!-- swipe for a meal -->
+<section class="ov" id="swipeOv">
+  <div class="bar"><h1 class="serif" id="swTitle">What's for dinner?</h1><button class="pill" data-close>Close</button></div>
+  <div class="swwrap">
+    <div class="swfor"><div class="kinds" id="swDays"></div><div class="kinds" id="swMeals"></div></div>
+    <div class="swdeck" id="swDeck"></div>
+    <div class="swctl"><button class="swbtn no big" id="swNo" aria-label="Not today">✕</button><button class="swbtn undo" id="swUndo" aria-label="Go back">↺</button><button class="swbtn yes big" id="swYes" aria-label="Cook it">♥</button></div>
+    <p class="swhint" style="text-align:center">Swipe right to plan it, left to skip. Tap the card for the full recipe.</p>
+  </div>
 </section>
 
 <!-- after cooking: take used ingredients out of stock -->
@@ -1293,12 +1334,23 @@ function plannedFor(day,meal="dinner"){ const id=planMap[pk(day,meal)]; return i
 const plannedIds = () => new Set(Object.values(planMap));
 function slotsFor(id){ const out=[]; for(let i=0;i<7;i++){ const d=addDays(today(),i); MEALS.forEach(([m])=>{ if(planMap[pk(d,m)]===id) out.push([d,m]) }) } return out }
 const slotLabel = (d,m) => { const dl=dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d); return m==="dinner" ? (dl==="today"?"tonight":dl+" dinner") : `${dl} ${mealName(m).toLowerCase()}` };
+let ideaSkip=[];   // ideas swiped away on the wall today (this device)
 function tonightRecipe(){
   const p=plannedFor(today()); if(p) return {r:p,picked:true};
   if(tonightState && tonightState.date===today()){ const r=recipes.find(x=>x.id===tonightState.recipe_id); if(r) return {r,picked:true} }
   if(!recipes.length) return null;
-  const mains=recipes.filter(r=>!/snack|dessert|drink/i.test(r.category||"")); const pool=mains.length?mains:recipes;
-  return { r: pool[Math.floor(Date.now()/864e5)%pool.length], picked:false };
+  let list=rankFor("dinner").filter(r=>!ideaSkip.includes(r.id)); if(!list.length){ ideaSkip=[]; list=rankFor("dinner") }
+  return { r:list[0], picked:false };
+}
+// Best first: what you can cook with what's in stock, what you rated well, and what you haven't had lately. A daily shuffle keeps it fresh.
+function coverage(r){ const ks=[...recipeKeys(r).keys()]; return {have:ks.filter(hasKey).length, all:ks.length} }
+function rankFor(meal){
+  const seed=dayNo();
+  const fits=r=>{ const c=(r.category||"").toLowerCase(); if(meal==="dinner"||meal==="lunch") return !/snack|dessert|drink|breakfast/.test(c); if(meal==="breakfast") return !/dessert|drink/.test(c); return true };
+  const pool=recipes.filter(fits).length ? recipes.filter(fits) : recipes.slice();
+  const val=r=>{ const c=coverage(r), sc=score(r.id), recent=r.last_cooked && daysTo(r.last_cooked)>-6, h=[...r.id].reduce((a,ch)=>(a*31+ch.charCodeAt(0)+seed)%9973,7)/9973;
+    return (c.all?c.have/c.all:0)*2 + (sc!=null?sc/5:.6) + (meal==="breakfast"&&/breakfast/i.test(r.category||"")?1.5:0) - (recent?1.2:0) + h*1.1 };
+  return pool.map(r=>[r,val(r)]).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
 }
 const photoUrl = p => p ? urlMap[p] : null;
 
@@ -1382,7 +1434,8 @@ const fcHTML = () => wx.daily.time.map((t,i)=>`<div><div class="d">${i===0?"Toda
 const timeStr = () => fmt({hour:"2-digit",minute:"2-digit",hour12:CONFIG.hour12});
 const dateStr = () => `${fmt({weekday:"long"})}, ${fmt({day:"numeric",month:"long"})}`;
 let lastMode=null;
-function renderWall(){
+function renderWall(){ renderWall0(); try{ hookWallSwipe() }catch(e){} }
+function renderWall0(){
   const m=mode(); document.body.dataset.mode=m; lastMode=m;
   if(!wx){ $("wall").innerHTML=""; return }
   const scrollY=$("wall").scrollTop;
@@ -1409,14 +1462,16 @@ function renderWall(){
   } else if(m==="dinner"||m==="split"||m==="phone"){
     let card; const tmr=plannedFor(addDays(today(),1));
     if(tn){ const r=tn.r, pu=photoUrl(r.photo_path), ing=r.ingredients||[], show=ing.slice(0,10);
-      card=`<div class="rc"><div class="ph" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":`<span class="mono">${mono(r)}</span>`}</div><div class="b">
+      card=`<div class="rc ${tn.picked?"":"swipeable"}" ${tn.picked?"":`data-swipe-id="${r.id}"`}><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span><div class="ph" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":`<span class="mono">${mono(r)}</span>`}</div><div class="b">
         <div class="eyebrow">${tn.picked?"Tonight's dinner":(m==="split"?"Recipe of the day":"Dinner idea")}</div><h2 class="serif">${esc(r.title)}</h2>
         <div class="meta">${metaHTML(r)}</div>
         ${rvMini(r)}
         <ul>${show.map(i=>`<li>${esc(i)}</li>`).join("")}${ing.length>show.length?`<li style="color:var(--ink2)">+ ${ing.length-show.length} more</li>`:""}</ul>
         ${(()=>{ const b=plannedFor(today(),"breakfast"), l=plannedFor(today(),"lunch"), x=[b&&`Breakfast <b>${esc(b.title)}</b>`, l&&`Lunch <b>${esc(l.title)}</b>`].filter(Boolean);
           return x.length||tmr ? `<div class="tmr">${x.length?`Today: ${x.join(", ")}`:""}${x.length&&tmr?"<br>":""}${tmr?`Tomorrow: <b>${esc(tmr.title)}</b>`:""}</div>` : "" })()}
-        <div class="acts"><button class="btn-cook" data-cook="${r.id}">Start cooking</button><button class="btn-ghost" data-openbook="${r.id}">${tn.picked?"Recipe":"Pick another"}</button>${r.created_by_name?`<span class="by">by ${esc(r.created_by_name)}</span>`:""}</div></div></div>`;
+        ${tn.picked
+          ? `<div class="acts"><button class="btn-cook" data-cook="${r.id}">Start cooking</button><button class="btn-ghost" data-openbook="${r.id}">Recipe</button><button class="btn-ghost" data-unplan>Not tonight</button></div>`
+          : `<div class="acts"><button class="swbtn no" data-ideano aria-label="Show another idea">✕</button><button class="swbtn yes" data-ideayes="${r.id}" aria-label="Cook this tonight">♥</button><button class="btn-ghost" data-swipe="dinner">See all ideas</button></div><div class="swhint">Swipe right to cook it tonight, left for another idea</div>`}</div></div>`;
     } else card=`<div class="rc"><div class="b" style="justify-content:center"><div class="eyebrow">Dinner</div><h2 class="serif">Add your first recipe</h2><div class="acts"><button class="btn-cook" data-new>Add recipe</button></div></div></div>`;
     const fc3 = m==="split" && !(bagNow().length && aqInfo() && rainAlert()) ? `<div class="fc3">${wx.daily.time.slice(1,4).map((t,j)=>{const i=j+1;return `<div><div class="d">${new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div><span class="hi">${Math.round(wx.daily.temperature_2m_max[i])}°</span> <span class="lo">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div></div>`}).join("")}</div>` : "";
     const ph = m==="split"||m==="phone" ? currentPhoto() : null, ol=otdLabel(ph);
@@ -1822,6 +1877,77 @@ function kidNudge(){
   return "";
 }
 
+/* ======================== SWIPE FOR A MEAL ======================== */
+let swDay=null, swMeal="dinner", swDeck=[], swPos=0;
+function nextMealSlot(){ const h=hourNow(); return h<9?"breakfast":h<13?"lunch":"dinner" }
+function openSwipe(meal){ if($("menuOv").classList.contains("open")) close("menuOv"); swDay=today(); swMeal=meal||nextMealSlot(); buildDeck(); open("swipeOv") }
+function buildDeck(){
+  swDeck=rankFor(swMeal); swPos=0;
+  const cur=planMap[pk(swDay,swMeal)]; if(cur) swDeck=swDeck.filter(r=>r.id!==cur);
+  renderSwipeHead(); renderDeck();
+}
+function renderSwipeHead(){
+  const days=[0,1,2].map(i=>addDays(today(),i));
+  $("swDays").innerHTML=days.map(d=>`<button class="chip2 ${d===swDay?"on":""}" data-swday="${d}">${dayLabel(d)}</button>`).join("");
+  $("swMeals").innerHTML=MEALS.map(([m,ml])=>`<button class="chip2 ${m===swMeal?"on":""}" data-swmeal="${m}">${ml}</button>`).join("");
+  const slot=slotLabel(swDay,swMeal), cur=plannedFor(swDay,swMeal);
+  $("swTitle").textContent = swMeal==="dinner" ? (swDay===today()?"What's for dinner?":`Dinner for ${dayLabel(swDay)}?`) : `${mealName(swMeal)} for ${swDay===today()?"today":dayLabel(swDay)}?`;
+  $("swTitle").title = cur ? `Planned now: ${cur.title}` : "";
+}
+function cardHTML(r){
+  const pu=photoUrl(r.photo_path), c=coverage(r), sc=score(r.id);
+  return `<div class="swc" data-swid="${r.id}"><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span>
+    <div class="ph" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</div>
+    <div class="bd"><h2>${esc(r.title)}</h2>
+      <div class="mt">${[r.cook_time,r.category,sc!=null?`★ ${sc.toFixed(1)}`:null,isTried(r)?`Made ${r.cooked_count||1}×`:"New to us"].filter(Boolean).map(esc).join("<span>·</span>").replace(/<span>·<\/span>/g,"<span aria-hidden=true> </span>")}</div>
+      ${c.all?`<div class="have">You have <b>${c.have} of ${c.all}</b> ingredients in stock</div>`:""}
+      <div class="ings">${esc((r.ingredients||[]).slice(0,8).join(", "))}</div></div></div>`;
+}
+function renderDeck(){
+  const rest=swDeck.slice(swPos, swPos+3).reverse();
+  $("swDeck").innerHTML = rest.length ? rest.map(cardHTML).join("") : `<div class="swend"><div><p style="font-size:18px;margin-bottom:12px">That's every recipe.</p><button class="pill dark" id="swAgain">Start again</button></div></div>`;
+  $("swUndo").disabled = swPos===0;
+  const top=$("swDeck").querySelector(".swc:last-child"); if(top) attachSwipe(top, ()=>swipeNo(), ()=>swipeYes(), ()=>{ open("bookOv"); showRecipe(top.dataset.swid) });
+}
+function flyOut(el, dir, done){ el.style.transition="transform .32s ease-in, opacity .32s"; el.style.transform=`translate(${dir*140}%, -6%) rotate(${dir*24}deg)`; el.style.opacity="0"; setTimeout(done,300) }
+function swipeNo(el){ el=el||$("swDeck").querySelector(".swc:last-child"); if(!el) return; flyOut(el,-1,()=>{ swPos++; renderDeck() }) }
+async function swipeYes(el){ el=el||$("swDeck").querySelector(".swc:last-child"); if(!el) return; const id=el.dataset.swid, r=recipes.find(x=>x.id===id);
+  flyOut(el,1,async()=>{ close("swipeOv");
+    try{ await api.setPlan(swDay,id,swMeal); await refreshAll(); syncShopping({quiet:true}); toast(`${r?r.title:"Planned"} for ${slotLabel(swDay,swMeal)}`); if($("planOv").classList.contains("open")) renderPlan() }catch(e){ toast("Couldn't save the plan") } }) }
+$("swNo").onclick=()=>swipeNo(); $("swYes").onclick=()=>swipeYes();
+$("swUndo").onclick=()=>{ if(swPos>0){ swPos--; renderDeck() } };
+$("swDeck").addEventListener("click",e=>{ if(e.target.id==="swAgain"){ swPos=0; renderDeck() } });
+$("swDays").onclick=e=>{ const b=e.target.closest("[data-swday]"); if(b){ swDay=b.dataset.swday; buildDeck() } };
+$("swMeals").onclick=e=>{ const b=e.target.closest("[data-swmeal]"); if(b){ swMeal=b.dataset.swmeal; buildDeck() } };
+document.addEventListener("keydown",e=>{ if(!$("swipeOv").classList.contains("open")) return; if(e.key==="ArrowLeft") swipeNo(); if(e.key==="ArrowRight") swipeYes() });
+
+// Drag a card: it tilts as it moves, the stamp fades in, and past the threshold it flies off.
+function attachSwipe(el, onLeft, onRight, onTap){
+  let x0=0,y0=0,dx=0,dy=0,id=null,t0=0,moved=false;
+  const yes=el.querySelector(".stamp.yes"), no=el.querySelector(".stamp.no");
+  el.addEventListener("pointerdown",e=>{ if(e.target.closest("button,a,input")) return; id=e.pointerId; x0=e.clientX; y0=e.clientY; dx=dy=0; t0=Date.now(); moved=false; el.setPointerCapture(id); el.classList.add("drag"); el.style.transition="none" });
+  el.addEventListener("pointermove",e=>{ if(e.pointerId!==id) return; dx=e.clientX-x0; dy=e.clientY-y0; if(Math.abs(dx)>6) moved=true; if(!moved) return;
+    el.style.transform=`translate(${dx}px,${dy*.25}px) rotate(${dx/14}deg)`; const k=Math.min(1,Math.abs(dx)/110); if(yes) yes.style.opacity=dx>0?k:0; if(no) no.style.opacity=dx<0?k:0 });
+  const end=e=>{ if(e.pointerId!==id) return; id=null; el.classList.remove("drag"); const v=Math.abs(dx)/Math.max(1,Date.now()-t0);
+    if(moved && (Math.abs(dx)>110 || v>.6)){ (dx>0?onRight:onLeft)(el); return }
+    el.style.transition=""; el.style.transform=""; if(yes) yes.style.opacity=0; if(no) no.style.opacity=0;
+    if(!moved && onTap) onTap() };
+  el.addEventListener("pointerup",end); el.addEventListener("pointercancel",end);
+}
+// wall idea card
+function hookWallSwipe(){ const el=document.querySelector("#wall .rc.swipeable"); if(!el||el._sw) return; el._sw=1;
+  attachSwipe(el, c=>wallNo(c), c=>wallYes(c), null) }
+function wallNo(c){ const id=(c||document.querySelector("#wall .rc.swipeable"))?.dataset.swipeId; const go=()=>{ if(id) ideaSkip.push(id); renderWall() }; c?flyOut(c,-1,go):go() }
+async function wallYes(c){ c=c||document.querySelector("#wall .rc.swipeable"); const id=c?.dataset.swipeId; if(!id) return; const r=recipes.find(x=>x.id===id);
+  flyOut(c,1,async()=>{ try{ await api.setPlan(today(),id,"dinner"); await refreshAll(); syncShopping({quiet:true}); toast(`${r?r.title:"Dinner"} for tonight`) }catch(e){ toast("Couldn't save the plan"); renderWall() } }) }
+document.addEventListener("click",async e=>{
+  if(e.target.closest("[data-ideano]")){ e.stopPropagation(); wallNo(document.querySelector("#wall .rc.swipeable")); return }
+  const y=e.target.closest("[data-ideayes]"); if(y){ e.stopPropagation(); wallYes(document.querySelector("#wall .rc.swipeable")); return }
+  const sw=e.target.closest("[data-swipe]"); if(sw){ e.stopPropagation(); openSwipe(sw.dataset.swipe||undefined); return }
+  if(e.target.closest("[data-unplan]")){ e.stopPropagation(); const tn=tonightRecipe(); if(!twoTap("unplan",e.target.closest("[data-unplan]"),"Tap to confirm")) return;
+    try{ await api.setPlan(today(),null,"dinner"); if(tonightState&&tonightState.date===today()) await api.setTonight(null); if(tn) ideaSkip.push(tn.r.id); await refreshAll(); syncShopping({quiet:true}); toast("Tonight is open again. Swipe for an idea") }catch(err){ toast("Couldn't change the plan") } }
+}, true);
+
 /* ======================== DAILY WORDS ======================== */
 const MAMA_NOTES=()=>["Thank you for the hundred small things you do before anyone else wakes up.",`${KID} is lucky to have you. So am I.`,"You make our house feel like home.","Thank you for your patience, even on the long days.",`Every hug you give ${KID} is shaping who she'll be.`,"You're doing a wonderful job, even when it doesn't feel like it.","Thank you for the good food, the good talks and the good mornings.",`${KID} learned that smile from you.`,"Today, let us take care of you for a change.","Your kindness is the best thing in this house.","Thank you for always knowing where everything is.","You turn ordinary days into good memories.","We notice everything you do. Thank you.",`${KID}'s favourite place is wherever you are.`,"You're a great mom and an even better friend.","Thank you for the bedtime songs and the early wake-ups.",`The way you love us is the way ${KID} will love the world.`,"Take a slow coffee today. You've earned it.","Thank you for making our home so beautiful, inside and out.","You make hard things look easy. We know they aren't.","Thank you for staying calm when we're not.",`From ${KID}: Mama, I love you. (She'd write it herself if she could.)`,"Thank you for every meal, every bath and every story.","You are enough, exactly as you are today.","Thank you for choosing us every day.","The best part of our mornings is you.",`Thank you for teaching ${KID} to be curious and kind.`,"Whatever today brings, we've got your back.","Thank you for the love you put into everything.",`Thank you, ${MOM}. For everything, always.`];
 const MOTTOS=["Small steps still count.","Do the next right thing.","Progress over perfection.","Be kind, starting with yourself.","One thing at a time.","Today is a fresh page.","Breathe. You've got this.","Make today a little lighter.","Choose patience today.","Start where you are.","Good things take time.","Show up, then keep going.","Rest is part of the work.","Be curious today.","Smile at someone first.","Focus on what you can control.","A calm mind finds a way.","Celebrate the small wins.","Try once more.","Listen more than you speak.","Let today be easy.","You've done hard things before.","Begin again, as often as you need.","Leave things a little better than you found them.","Plan less, do more.","Choose courage over comfort.","Gratitude turns enough into plenty.","Keep it simple.","Be the calm in the room.","Finish one thing well."];
@@ -1920,7 +2046,7 @@ function showRecipe(id){
     ${triedHTML(r)}
     <div class="row" style="margin:0 0 24px">
       <button class="pill dark" data-cook="${r.id}">Start cooking</button>
-      <button class="pill" data-tonight="${r.id}">${isT?"✓ Tonight's dinner":"Cook this tonight"}</button>
+      <button class="pill" data-tonight="${r.id}">${isT?"✓ Tonight's dinner (tap to remove)":"Cook this tonight"}</button>
       ${(()=>{ const sl=slotsFor(r.id); return sl.length?`<span class="hint2" style="margin:0;align-self:center">On the shopping list for ${slotLabel(...sl[0])}</span>`:"" })()}
       <select class="pill" data-plansel="${r.id}" style="padding-right:.8em"><option value="">Plan for…</option>${[...Array(7)].map((_,i)=>{const d=addDays(today(),i);return `<optgroup label="${dayLabel(d)} ${dayShort(d)}">${MEALS.map(([m,ml])=>`<option value="${d}|${m}">${ml}, ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}${planMap[pk(d,m)]===r.id?" ✓":""}</option>`).join("")}</optgroup>`}).join("")}</select>
     </div>
@@ -2004,7 +2130,9 @@ $("detail").onclick=async e=>{
   if(t.matches(".ing li")){ t.classList.toggle("done"); return }
   if(t.dataset.back!==undefined){ $("book").classList.remove("show-detail"); return }
   if(t.dataset.edit) editRecipe(recipes.find(r=>r.id===t.dataset.edit));
-  if(t.dataset.tonight){ await api.setPlan(today(), t.dataset.tonight); await refreshAll(); syncShopping({quiet:true}); showRecipe(t.dataset.tonight); toast("On the wall for tonight") }
+  if(t.dataset.tonight){ const on=planMap[pk(today(),"dinner")]===t.dataset.tonight;
+    await api.setPlan(today(), on?null:t.dataset.tonight); if(on && tonightState&&tonightState.date===today()) await api.setTonight(null);
+    await refreshAll(); syncShopping({quiet:true}); showRecipe(t.dataset.tonight); toast(on?"Taken off tonight":"On the wall for tonight") }
   if(t.dataset.del){ if(!twoTap("r"+t.dataset.del,t,"Tap again to delete")) return; await api.deleteRecipe(t.dataset.del); selId=null; await refreshAll(); showRecipe(recipes[0]?.id); toast("Recipe deleted") }
 };
 
@@ -2522,7 +2650,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.26";
+const APP_VERSION="2026-11-13.27";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
