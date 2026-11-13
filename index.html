@@ -800,7 +800,7 @@ const dayLabel = (ymd) => { const t=today(); if(ymd===t) return "Today"; if(ymd=
 const dayShort = (ymd) => new Intl.DateTimeFormat(CONFIG.locale,{day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(ymd+"T12:00:00Z"));
 const fmtDay = iso => new Intl.DateTimeFormat("en-CA",{timeZone:CONFIG.tz}).format(new Date(iso));
 const CAL_COLORS=["#86C6D9","#F08C78","#E5B13A","#9CC8A0","#B9A6E6"];
-const DEFAULT_ROUTINE={on:true,title:"Morning routine",items:[{id:"r1",icon:"🪥",label:"Brush teeth"},{id:"r2",icon:"👕",label:"Get dressed"},{id:"r3",icon:"🥣",label:"Breakfast"},{id:"r4",icon:"🧸",label:"Tidy toys"}]};
+const DEFAULT_ROUTINE={on:true,title:"Morning routine",items:[{id:"r1",icon:"🪥",label:"Brush teeth"},{id:"r2",icon:"👕",label:"Get dressed"},{id:"r3",icon:"🥣",label:"Breakfast"},{id:"r4",icon:"💊",label:"Take vitamins"}]};
 const THEMES=[
   {k:"rain",name:"Jakarta rain",note:"Teal after the rain, turmeric light",font:null},
   {k:"bali",name:"Bali",note:"Jungle at dusk, frangipani",font:"Instrument+Serif"},
@@ -1894,7 +1894,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.11";
+const APP_VERSION="2026-11-13.12";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
