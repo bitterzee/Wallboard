@@ -410,6 +410,24 @@ body.phone .pmeal .ml{width:70px}
 .kid-none{color:var(--fg3);font-size:16px;padding:4px 2px}
 .kid-up{font-size:15px;color:var(--fg2);padding:2px}.kid-up b{color:var(--fg);font-weight:600}
 .kid-row .kid-r{font-size:15px;padding:3px 2px}
+.jform{display:grid;grid-template-columns:2fr 1fr;gap:12px;background:var(--s1);border-radius:16px;padding:14px;margin-bottom:18px}
+.jform label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--fg2)}
+.jform input:not([type=file]){padding:.7em .8em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--bg);color:var(--fg);font-size:16px;min-width:0}
+.jform .kinds,.jform .row{grid-column:1/-1}
+body.phone .jform{grid-template-columns:1fr}
+.jmonth{font-size:13px;font-weight:700;color:var(--fg3);margin:18px 0 8px}
+.jent{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.jent .ph{width:88px;height:88px;border-radius:14px;background:var(--s2) center/cover;flex:none}
+.jent .ic{width:44px;height:44px;border-radius:50%;background:rgba(var(--accent-rgb),.15);display:grid;place-items:center;font-size:20px;flex:none}
+.jent .tx{flex:1;min-width:0}.jent b{display:block;font-size:17px;font-weight:600;line-height:1.3}
+.jent small{color:var(--fg3);font-size:13px}
+.devc li.ms{cursor:pointer;border-radius:8px;padding:3px 6px 3px 22px;margin-left:-6px}
+.devc li.ms:hover{background:rgba(var(--fg-rgb),.05)}
+.devc li.ms::before{left:6px;top:.62em}
+.devc li.ms.got{color:var(--fg)}
+.devc li.ms.got::before{content:"✓";background:none;color:var(--accent);width:auto;height:auto;top:3px;font-weight:700;font-size:13px}
+.devc li.ms small{color:var(--fg3);font-size:12px;margin-left:4px}
+.kid-new{font-size:14px;line-height:1.4;padding:2px;color:var(--fg2)}.kid-new b{color:var(--fg)}
 .rtabs{display:flex;gap:4px;background:var(--s1);border-radius:99px;padding:4px;margin:0 0 18px;width:max-content;max-width:100%}
 .rtabs button{padding:.55em 1.2em;border-radius:99px;font-size:15px;font-weight:600;color:var(--fg2)}
 .rtabs button.on{background:var(--accent);color:var(--accent-ink)}
@@ -863,7 +881,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <section class="ov" id="kidOv">
   <div class="bar"><h1 class="serif" data-kid>Kid</h1><button class="pill dark" id="kidNew">Add</button><button class="pill" data-close>Close</button></div>
   <div class="scroll"><div class="wrapc">
-    <div class="rtabs" role="tablist"><button data-rtab="cal" class="on">Calendar</button><button data-rtab="grow">Growth</button><button data-rtab="dev">Development</button></div>
+    <div class="rtabs" role="tablist"><button data-rtab="cal" class="on">Calendar</button><button data-rtab="grow">Growth</button><button data-rtab="dev">Development</button><button data-rtab="log">Journal</button></div>
     <div id="rtCal">
     <div class="mnav"><button id="rmPrev" aria-label="Previous month">‹</button><h2 id="rmTitle"></h2><button id="rmNext" aria-label="Next month">›</button></div>
     <div class="mgrid" id="rmGrid"></div>
@@ -884,6 +902,16 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
       <p class="hint2" style="margin-top:14px">Percentiles compare <span data-kid>your child</span> with the WHO Child Growth Standards for girls up to 5 years. 50th means right in the middle: half of girls her age are bigger and half smaller. One reading doesn't say much; the trend over several months does. Ask her doctor about anything that worries you.</p>
     </div>
     <div id="rtDev" hidden></div>
+    <div id="rtLog" hidden>
+      <p class="hint2">Firsts and new skills, with the date and a photo. You can also tick milestones on the Development tab.</p>
+      <div class="jform">
+        <label class="jwhat">What happened<input id="jText" maxlength="140" placeholder="Said her first three-word sentence"></label>
+        <label>Date<input type="date" id="jDate"></label>
+        <div class="kinds" id="jAreas"></div>
+        <div class="row" style="margin:0"><label class="pill" style="cursor:pointer;display:inline-flex;align-items:center;flex-direction:row;font-size:15px;color:var(--fg)"><input type="file" id="jPhoto" accept="image/*" hidden><span id="jPhotoL">Add a photo</span></label><button class="pill dark" id="jSave">Save to journal</button></div>
+      </div>
+      <div id="jList"></div>
+    </div>
   </div></div>
 </section>
 <section class="ov sheet" id="kidEdOv">
@@ -1111,7 +1139,7 @@ const SEED = [
 ].map((r,i)=>({id:uuid(),photo_path:null,source_url:i===3?"https://www.youtube.com/watch?v=M7lc1UVf-VE":null,source_kind:i===3?"youtube":null,cooked_count:i===0?3:i===1?1:0,last_cooked:i<2?addDays(today(),-4):null,created_at:new Date().toISOString(),...r}));
 
 const api = DEMO ? (() => {
-  const mem = { stock:[{name:'rice',label:'Rice',qty:'5 kg',location:'Cupboard'},{name:'egg',label:'Eggs',qty:'10',location:'Fridge',expires:addDays(today(),9)},{name:'shallot',label:'Shallots',qty:'1 bag',location:'Cupboard'},{name:'garlic',label:'Garlic',location:'Cupboard'},{name:'kecap mani',label:'Kecap manis',location:'Cupboard'},{name:'chicken thighs or leg',label:'Chicken thighs',qty:'500 g',location:'Fridge',expires:addDays(today(),1)},{name:'lime',label:'Limes',qty:'4',location:'Fridge'},{name:'spinach',label:'Spinach',qty:'1 bunch',location:'Fridge',expires:addDays(today(),2)},{name:'frozen peas',label:'Frozen peas',location:'Freezer'}], rv:[{recipe_id:SEED[1].id,reviewer:"mom",rating:5,note:"Rich broth, make it again"},{recipe_id:SEED[1].id,reviewer:"dad",rating:4,note:""},{recipe_id:SEED[1].id,reviewer:"baby",rating:5,note:"Finished the whole bowl"},{recipe_id:SEED[0].id,reviewer:"dad",rating:5,note:""},{recipe_id:SEED[0].id,reviewer:"baby",rating:2,note:"Too spicy for her"}], pantry:new Set(['rice','egg','shallot','garlic','kecap mani','chicken thighs or leg','lime','spinach']), state:{family:{kid:"Kiki",mom:"Mama"},kid_profile:{birth:addDays(today(),-790)},kid_growth:{items:[{id:"g1",d:addDays(today(),-430),h:76.5,w:9.6},{id:"g2",d:addDays(today(),-250),h:81.2,w:10.5},{id:"g3",d:addDays(today(),-70),h:86.9,w:11.7},{id:"g4",d:addDays(today(),-5),h:88.4,w:12.1}]},kid_cal:{items:[{id:"d1",kind:"daycare",title:"Daycare",t:"07:30",end:"16:00",days:[1,2,3,4,5],from:addDays(today(),-60),until:"",skip:[],note:""},{id:"d2",kind:"swim",title:"Swimming lesson",t:"09:00",end:"09:45",days:[6],from:addDays(today(),-30),until:"",skip:[],note:"Pack the swim nappy"},{id:"d3",kind:"doctor",title:"Check-up and vaccine",date:addDays(today(),4),t:"10:00",end:"",days:[],note:"Bring the vaccination book"}]}}, cals:[{id:'c1',name:'Dad',color:'#86C6D9'},{id:'c2',name:'Mom',color:'#F08C78'}], recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()+'|dinner']:SEED[1].id,[today()+'|lunch']:SEED[0].id,[addDays(today(),1)+'|dinner']:SEED[0].id,[addDays(today(),1)+'|breakfast']:SEED[3].id,[addDays(today(),3)+'|dinner']:SEED[2].id}, shop:[] };
+  const mem = { stock:[{name:'rice',label:'Rice',qty:'5 kg',location:'Cupboard'},{name:'egg',label:'Eggs',qty:'10',location:'Fridge',expires:addDays(today(),9)},{name:'shallot',label:'Shallots',qty:'1 bag',location:'Cupboard'},{name:'garlic',label:'Garlic',location:'Cupboard'},{name:'kecap mani',label:'Kecap manis',location:'Cupboard'},{name:'chicken thighs or leg',label:'Chicken thighs',qty:'500 g',location:'Fridge',expires:addDays(today(),1)},{name:'lime',label:'Limes',qty:'4',location:'Fridge'},{name:'spinach',label:'Spinach',qty:'1 bunch',location:'Fridge',expires:addDays(today(),2)},{name:'frozen peas',label:'Frozen peas',location:'Freezer'}], rv:[{recipe_id:SEED[1].id,reviewer:"mom",rating:5,note:"Rich broth, make it again"},{recipe_id:SEED[1].id,reviewer:"dad",rating:4,note:""},{recipe_id:SEED[1].id,reviewer:"baby",rating:5,note:"Finished the whole bowl"},{recipe_id:SEED[0].id,reviewer:"dad",rating:5,note:""},{recipe_id:SEED[0].id,reviewer:"baby",rating:2,note:"Too spicy for her"}], pantry:new Set(['rice','egg','shallot','garlic','kecap mani','chicken thighs or leg','lime','spinach']), state:{kid_journal:{items:[{id:"j1",d:addDays(today(),-1),text:"Said \"Mama, more mango please\"",area:"Talking"},{id:"j2",d:addDays(today(),-40),text:"Kicks a ball",area:"Moving",ref:"Kicks a ball"},{id:"j3",d:addDays(today(),-95),text:"First steps up the stairs on her own",area:"Moving"}]},family:{kid:"Kiki",mom:"Mama"},kid_profile:{birth:addDays(today(),-790)},kid_growth:{items:[{id:"g1",d:addDays(today(),-430),h:76.5,w:9.6},{id:"g2",d:addDays(today(),-250),h:81.2,w:10.5},{id:"g3",d:addDays(today(),-70),h:86.9,w:11.7},{id:"g4",d:addDays(today(),-5),h:88.4,w:12.1}]},kid_cal:{items:[{id:"d1",kind:"daycare",title:"Daycare",t:"07:30",end:"16:00",days:[1,2,3,4,5],from:addDays(today(),-60),until:"",skip:[],note:""},{id:"d2",kind:"swim",title:"Swimming lesson",t:"09:00",end:"09:45",days:[6],from:addDays(today(),-30),until:"",skip:[],note:"Pack the swim nappy"},{id:"d3",kind:"doctor",title:"Check-up and vaccine",date:addDays(today(),4),t:"10:00",end:"",days:[],note:"Bring the vaccination book"}]}}, cals:[{id:'c1',name:'Dad',color:'#86C6D9'},{id:'c2',name:'Mom',color:'#F08C78'}], recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()+'|dinner']:SEED[1].id,[today()+'|lunch']:SEED[0].id,[addDays(today(),1)+'|dinner']:SEED[0].id,[addDays(today(),1)+'|breakfast']:SEED[3].id,[addDays(today(),3)+'|dinner']:SEED[2].id}, shop:[] };
   const listeners=[]; const ping=()=>listeners.forEach(f=>f());
   return {
     async session(){ me={name:"Demo",email:"demo",role:"dad"}; return true },
@@ -1153,6 +1181,8 @@ const api = DEMO ? (() => {
     async importRecipe(url){ await new Promise(r=>setTimeout(r,700)); if(!/^https?:\/\//.test(url)) throw new Error("Paste a full link that starts with https://");
       return {title:"Ayam Bakar Madu",category:"Dinner",cook_time:"1 hr 10 min",serves:"4",ingredients:["1 kg chicken pieces","4 cloves garlic","5 shallots","3 tbsp honey","4 tbsp kecap manis","1 tsp coriander","2 limes"],steps:["Blend garlic, shallots and coriander into a paste.","Marinate the chicken in the paste, honey and kecap manis for 30 minutes.","Grill over medium heat, basting often, until cooked and sticky.","Serve with lime and rice."],notes:"Demo import: in the real app this comes from the page you paste.",source_url:url,photo_path:null,partial:false} },
     async urls(paths){ const o={}; paths.forEach(p=>o[p]=mem.blobs[p]); return o },
+    async uploadFile(file,folder){ const p=`${folder}/${uuid()}.jpg`; mem.blobs[p]=URL.createObjectURL(await shrink(file,1600,.84)); urlMap[p]=mem.blobs[p]; return p },
+    async removeFile(p){ delete mem.blobs[p] },
     subscribe(f){ listeners.push(f) },
   };
 })() : (() => {
@@ -1221,6 +1251,8 @@ const api = DEMO ? (() => {
       if(error){ let msg="Couldn't import that link. Check it, or add the recipe by hand."; try{ const j=await error.context.json(); if(j?.error) msg=j.error }catch(e){} throw new Error(msg) }
       if(data?.error) throw new Error(data.error); return data;
     },
+    async uploadFile(file,folder){ const p=`${folder}/${uuid()}.jpg`; must(await sb.storage.from("wallboard").upload(p, await shrink(file,1600,.84), {contentType:"image/jpeg"})); Object.assign(urlMap, await this.urls([p])); return p },
+    async removeFile(p){ if(p) sb.storage.from("wallboard").remove([p]) },
     async urls(paths){
       const now=Date.now(), need=[...new Set(paths.filter(p=>p&&!(cache[p]&&cache[p].exp>now)))];
       for(let i=0;i<need.length;i+=100){
@@ -1245,7 +1277,7 @@ const api = DEMO ? (() => {
 
 /* ======================== STATE ======================== */
 let reviews={}, rvEdit=null, stockRows=[], stEdit=null, tsRecipe=null, tsSel=[];
-let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, kidCal=null, wordsCfg=null, kidBags=null, kidBagDone=null, kidProfile=null, kidGrowth=null, calendars=[], events=[], eventsFailed=[], calIds=null;
+let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, kidCal=null, wordsCfg=null, kidBags=null, kidBagDone=null, kidProfile=null, kidGrowth=null, kidJournal=null, calendars=[], events=[], eventsFailed=[], calIds=null;
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
 const MODES=["auto","morning","day","dinner","night"];
@@ -1274,14 +1306,14 @@ async function refreshAll(){
   try{
     let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
     planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[pk(p.day,p.meal||"dinner"),p.recipe_id]));
-    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, kidCal, wordsCfg, kidBags, kidBagDone, kidProfile, kidGrowth, familyCfg] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("kid_cal"), api.state("words"), api.state("kid_bags"), api.state("kid_bag_done"), api.state("kid_profile"), api.state("kid_growth"), api.state("family")]); applyFamily();
+    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, kidCal, wordsCfg, kidBags, kidBagDone, kidProfile, kidGrowth, familyCfg, kidJournal] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("kid_cal"), api.state("words"), api.state("kid_bags"), api.state("kid_bag_done"), api.state("kid_profile"), api.state("kid_growth"), api.state("family"), api.state("kid_journal")]); applyFamily();
     reviews={}; (rvs||[]).forEach(x=>{ (reviews[x.recipe_id] ||= {})[x.reviewer]=x });
     if(th && th.theme && th.theme!==theme) applyTheme(th.theme);
     stockRows = pan||[]; pantrySet = new Set(stockRows.map(x=>x.name));
     const ids=(calendars||[]).map(c=>c.id).join(); if(ids!==calIds){ calIds=ids; loadEvents() }
     layoutChosen = !!lay; if(lay && lay!==layout){ layout=lay; LS.set("layout",layout); nextPhoto() }
     recipes.sort((a,b)=>a.title.localeCompare(b.title));
-    urlMap = await api.urls([...recipes.map(r=>r.photo_path), ...photos.map(p=>p.path)].filter(Boolean));
+    urlMap = await api.urls([...recipes.map(r=>r.photo_path), ...photos.map(p=>p.path), ...journal().map(j=>j.photo)].filter(Boolean));
   }catch(e){ console.error(e); toast("Couldn't reach Supabase — showing last data") }
   buildPhotoOrder(); renderWall(); renderBookList(); renderPhotoGrid(); renderPlan(); renderShop();
   if($("pantryOv").classList.contains("open")) renderPantry();
@@ -1396,7 +1428,7 @@ function renderWall(){
         ${wxChips(14)}
         ${wordsHTML()}
         ${routineHTML("row")}
-        ${kidHTML("row",4)}${devTip()?`<div class="kid-dev" data-kidto="dev" style="margin-top:-8px">This week for ${KID}: <b>${esc(devTip())}</b></div>`:""}
+        ${kidHTML("row",4)}${devTip()&&!kidNudge()?`<div class="kid-dev" data-kidto="dev" style="margin-top:-8px">This week for ${KID}: <b>${esc(devTip())}</b></div>`:""}
         ${agendaHTML(6)}
         ${useSoonHTML()}
         <div class="fc">${fcHTML()}</div>
@@ -1541,13 +1573,13 @@ document.addEventListener("click", async e=>{
   try{ await api.setState("kid_bag_done",cur) }catch(err){ toast("Couldn't save. Check your connection") }
 }, true);
 function kidHTML(variant, n=3){
-  if(!kidItems().length) return `<div class="kid ${variant==="row"?"kid-row":""}" data-open="kidOv" role="button" tabindex="0"><div class="kid-h"><span>${KID}'s calendar</span></div><div class="kid-none">Tap to add daycare, swimming and doctor visits</div></div>`;
+  if(!kidItems().length) return `<div class="kid ${variant==="row"?"kid-row":""}" data-open="kidOv" role="button" tabindex="0"><div class="kid-h"><span>${KID}'s calendar</span></div><div class="kid-none">Tap to add daycare, swimming and doctor visits</div>${kidNudge()}</div>`;
   const list=occOn(today()), now=minNow(), left0=list.filter(x=>toMin(x.end||x.t)<0 || toMin(x.end||x.t)>=now-30), sp=nextSpecial();
   const left = left0.length>n ? [...left0.filter(x=>toMin(x.t)>now), ...left0.filter(x=>!(toMin(x.t)>now))].slice(0,n).sort((a,b)=>toMin(a.t)-toMin(b.t)) : left0, more=left0.length-left.length;
   const rows=left.slice(0,n).map(x=>`<div class="kid-r"><span class="e">${rIcon(x)}</span><span class="t">${x.t?fmtT(x.t):"All day"}</span><span class="n">${esc(x.title)}</span></div>`).join("");
   return `<div class="kid ${variant==="row"?"kid-row":""}" data-open="kidOv" role="button" tabindex="0"><div class="kid-h"><span>${KID} today</span>${more>0?`<small>${more} more</small>`:""}</div>
     ${rows || `<div class="kid-none">${list.length?"All done for today":"Nothing planned today"}</div>`}
-    ${sp && !(variant==="row" && bagNow().length)?`<div class="kid-up">Coming up: ${rIcon(sp)} <b>${esc(sp.title)}</b>, ${whenLabel(sp.date)}${sp.t?" at "+fmtT(sp.t):""}</div>`:""}${bagHTML(variant==="row")}${!bagNow().length && devTip() && variant!=="row" ? `<div class="kid-dev" data-kidto="dev">This week: <b>${esc(devTip())}</b></div>`:""}</div>`;
+    ${sp && !(variant==="row" && bagNow().length)?`<div class="kid-up">Coming up: ${rIcon(sp)} <b>${esc(sp.title)}</b>, ${whenLabel(sp.date)}${sp.t?" at "+fmtT(sp.t):""}</div>`:""}${bagHTML(variant==="row")}${!bagNow().length ? (kidNudge() || (devTip() && variant!=="row" ? `<div class="kid-dev" data-kidto="dev">This week: <b>${esc(devTip())}</b></div>`:"")) : ""}</div>`;
 }
 const bagLeft = () => bagNow().reduce((n,b)=>n+b.items.length-b.done.size,0);
 const kidLine = () => { const now=minNow(), o=occOn(today()), x=o.find(x=>toMin(x.t)>=now) || o.find(x=>toMin(x.end)>=now); if(x) return `<div class="d-next"><span>${KID}:</span> ${rIcon(x)} ${esc(x.title)}${x.t?` <span>at</span> ${fmtT(x.t)}`:""}${bagLeft()?`<span>, ${bagLeft()} things to pack</span>`:""}</div>`;
@@ -1741,16 +1773,54 @@ function renderDev(){
   if(!b){ $("rtDev").innerHTML=`<p class="hint2">Add ${KID}'s birthday on the Growth tab to see what most children her age are learning, with ideas to try each week.</p>`; return }
   if(!d||d.early){ $("rtDev").innerHTML=`<p class="hint2">${KID} is ${ageLabel(b)}. These lists start from 9 months.</p>`; return }
   const tip=devTip();
-  $("rtDev").innerHTML=`<p class="devhead">${KID} is <b>${ageLabel(b)}</b>. By <b>${d.age}</b>, most children can do these things. Every child grows at her own pace, so use this as a guide for play, not a test.</p>
-    <div class="devg">${Object.entries(d.areas).map(([a,l])=>`<div class="devc"><h3>${AREA_IC[a]||""} ${a}</h3><ul>${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</div>
+  $("rtDev").innerHTML=`<p class="devhead">${KID} is <b>${ageLabel(b)}</b>. By <b>${d.age}</b>, most children can do these things. Every child grows at her own pace, so use this as a guide for play, not a test. Tap one when ${esc(KID)} does it, and it's saved to the journal with today's date.</p>
+    <div class="devg">${Object.entries(d.areas).map(([a,l])=>`<div class="devc"><h3>${AREA_IC[a]||""} ${a}</h3><ul>${l.map(x=>{ const g=msGot(x); return `<li class="ms ${g?"got":""}" data-ms="${esc(x)}" data-msa="${esc(a)}" role="button" tabindex="0">${esc(x)}${g?`<small>${dayShort(g.d)}</small>`:""}</li>` }).join("")}</ul></div>`).join("")}</div>
     <h2 class="sh" style="margin-top:22px">Ideas to try</h2><p class="hint2">The highlighted one is this week's focus and shows on the wall.</p>
     <div class="devtips">${d.tips.map(t=>`<div class="${t===tip?"now":""}">${esc(t)}</div>`).join("")}</div>
     <p class="hint2" style="margin-top:16px">Based on the CDC's "Learn the Signs. Act Early." milestones (cdc.gov/milestones). This isn't a screening test. If ${KID} loses skills she had, or you have any worry, talk to her doctor at the next visit or sooner.</p>`;
 }
+$("rtDev").onclick=async e=>{ const li=e.target.closest("[data-ms]"); if(!li) return; const t=li.dataset.ms;
+  if(msGot(t)){ kidTab("log"); return }
+  await addJournal({d:today(),text:t,area:li.dataset.msa,ref:t}, null) };
 document.querySelector(".rtabs").onclick=e=>{ const b=e.target.closest("[data-rtab]"); if(b) kidTab(b.dataset.rtab) };
-function kidTab(t){ document.querySelectorAll(".rtabs button").forEach(x=>x.classList.toggle("on",x.dataset.rtab===t)); $("rtCal").hidden=t!=="cal"; $("rtGrow").hidden=t!=="grow"; $("rtDev").hidden=t!=="dev"; $("kidNew").style.display=t==="cal"?"":"none";
-  if(t==="grow") renderGrowth(); if(t==="dev") renderDev() }
+function kidTab(t){ document.querySelectorAll(".rtabs button").forEach(x=>x.classList.toggle("on",x.dataset.rtab===t)); $("rtCal").hidden=t!=="cal"; $("rtGrow").hidden=t!=="grow"; $("rtDev").hidden=t!=="dev"; $("rtLog").hidden=t!=="log"; $("kidNew").style.display=t==="cal"?"":"none";
+  if(t==="grow") renderGrowth(); if(t==="dev") renderDev(); if(t==="log") renderJournal() }
 document.addEventListener("click", e=>{ const b=e.target.closest("[data-kidto]"); if(!b) return; e.stopPropagation(); open("kidOv"); kidTab(b.dataset.kidto) }, true);
+
+/* ======================== KID'S JOURNAL ======================== */
+const journal = () => ((kidJournal&&kidJournal.items)||[]).slice().sort((a,b)=>b.d.localeCompare(a.d));
+let jArea="Talking", jFile=null;
+function renderJournal(){
+  if(!$("jDate").value) $("jDate").value=today();
+  $("jAreas").innerHTML=[...Object.keys(AREA_IC),"Other"].map(a=>`<button type="button" class="chip2 ${jArea===a?"on":""}" data-jarea="${a}">${AREA_IC[a]||"⭐"} ${a}</button>`).join("");
+  const b=birth(), items=journal(); let last="", h="";
+  for(const j of items){ const mo=new Intl.DateTimeFormat(CONFIG.locale,{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(j.d+"T12:00:00Z")); if(mo!==last){ h+=`<div class="jmonth">${mo}</div>`; last=mo }
+    const u=j.photo&&photoUrl(j.photo);
+    h+=`<div class="jent">${u?`<a class="ph" href="${u}" target="_blank" rel="noopener" style="background-image:url('${u}')" aria-label="Open photo"></a>`:`<span class="ic">${AREA_IC[j.area]||"⭐"}</span>`}<div class="tx"><b>${esc(j.text)}</b><small>${dayShort(j.d)}${b?`, at ${ageLabel(b,j.d)}`:""}${j.area?`, ${esc(j.area.toLowerCase())}`:""}</small></div><button class="pill" data-jdel="${j.id}" style="min-height:34px;padding:.3em .9em;font-size:13px">Delete</button></div>` }
+  $("jList").innerHTML = h || `<p class="hint2" style="color:var(--fg3)">Nothing yet. Her next new word, first jump or first drawing goes here.</p>`;
+}
+$("jAreas").onclick=e=>{ const b=e.target.closest("[data-jarea]"); if(!b) return; jArea=b.dataset.jarea; renderJournal() };
+$("jPhoto").onchange=e=>{ jFile=e.target.files[0]||null; $("jPhotoL").textContent=jFile?"Photo added ✓":"Add a photo" };
+async function addJournal(entry, file){
+  let photo=null; if(file){ try{ photo=await api.uploadFile(file,"journal") }catch(e){ toast("Couldn't upload the photo. Saved without it") } }
+  const items=[...((kidJournal&&kidJournal.items)||[]), {id:uuid(),...entry,photo}]; kidJournal={items};
+  renderWall(); if(!$("rtLog").hidden) renderJournal(); if(!$("rtDev").hidden) renderDev();
+  try{ await api.setState("kid_journal",kidJournal); toast("Saved to the journal") }catch(e){ toast("Couldn't save. Check your connection") }
+}
+$("jSave").onclick=async()=>{ const text=$("jText").value.trim(), d=$("jDate").value||today(); if(!text){ toast("Write what happened first"); $("jText").focus(); return }
+  $("jSave").disabled=true; await addJournal({d,text,area:jArea==="Other"?null:jArea}, jFile); $("jSave").disabled=false;
+  $("jText").value=""; jFile=null; $("jPhoto").value=""; $("jPhotoL").textContent="Add a photo"; renderJournal() };
+$("jList").onclick=async e=>{ const b=e.target.closest("[data-jdel]"); if(!b) return; if(!twoTap("j"+b.dataset.jdel,b,"Tap to confirm")) return;
+  const x=journal().find(j=>j.id===b.dataset.jdel); kidJournal={items:journal().filter(j=>j.id!==b.dataset.jdel)}; if(x?.photo) api.removeFile(x.photo); renderJournal(); renderWall();
+  try{ await api.setState("kid_journal",kidJournal) }catch(e){} };
+const msGot = t => journal().find(j=>j.ref===t);
+// monthly measuring reminder and fresh milestones for the wall
+function kidNudge(){
+  const j=journal()[0]; if(j && daysTo(j.d)>=-3) return `<div class="kid-new" data-kidto="log">🎉 New: <b>${esc(j.text)}</b>, ${daysTo(j.d)===0?"today":daysTo(j.d)===-1?"yesterday":dayShort(j.d)}</div>`;
+  if(birth()){ const g=growth(), last=g[g.length-1], ago=last?-daysTo(last.d):null;
+    if(!last || ago>=30) return `<div class="kid-new" data-kidto="grow">📏 Time to measure ${esc(KID)}${last?`. Last time was ${ago>=60?Math.round(ago/30)+" months":Math.round(ago/7)+" weeks"} ago`:""}</div>` }
+  return "";
+}
 
 /* ======================== DAILY WORDS ======================== */
 const MAMA_NOTES=()=>["Thank you for the hundred small things you do before anyone else wakes up.",`${KID} is lucky to have you. So am I.`,"You make our house feel like home.","Thank you for your patience, even on the long days.",`Every hug you give ${KID} is shaping who she'll be.`,"You're doing a wonderful job, even when it doesn't feel like it.","Thank you for the good food, the good talks and the good mornings.",`${KID} learned that smile from you.`,"Today, let us take care of you for a change.","Your kindness is the best thing in this house.","Thank you for always knowing where everything is.","You turn ordinary days into good memories.","We notice everything you do. Thank you.",`${KID}'s favourite place is wherever you are.`,"You're a great mom and an even better friend.","Thank you for the bedtime songs and the early wake-ups.",`The way you love us is the way ${KID} will love the world.`,"Take a slow coffee today. You've earned it.","Thank you for making our home so beautiful, inside and out.","You make hard things look easy. We know they aren't.","Thank you for staying calm when we're not.",`From ${KID}: Mama, I love you. (She'd write it herself if she could.)`,"Thank you for every meal, every bath and every story.","You are enough, exactly as you are today.","Thank you for choosing us every day.","The best part of our mornings is you.",`Thank you for teaching ${KID} to be curious and kind.`,"Whatever today brings, we've got your back.","Thank you for the love you put into everything.",`Thank you, ${MOM}. For everything, always.`];
@@ -2452,7 +2522,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.25";
+const APP_VERSION="2026-11-13.26";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
