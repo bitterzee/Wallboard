@@ -460,6 +460,21 @@ body.phone .stockadd input{grid-column:1/-1}
 .ing li .instock{margin-left:auto;align-self:center}
 .usesoon{font-size:15px;color:var(--fg2);line-height:1.5}
 .usesoon b{color:var(--accent);font-weight:600;margin-right:4px}
+.scanbar{display:flex;align-items:center;gap:12px;margin:4px 0 8px;padding:12px 14px;border:1px dashed var(--line2);border-radius:var(--r-md)}
+.scanbar p{flex:1;font-size:14px;color:var(--fg2);line-height:1.45}
+.scanbar .pill{display:flex;align-items:center;gap:6px;flex:none}
+.scanbar svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.scthumbs{display:flex;gap:8px;overflow-x:auto;flex:none}
+.scthumbs img{width:64px;height:64px;object-fit:cover;border-radius:10px;flex:none}
+.scrow{display:grid;grid-template-columns:auto 1fr 92px 104px;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line)}
+.scrow .box{width:24px;height:24px;border:1.5px solid var(--line2);border-radius:7px}
+.scrow.on .box{background:var(--accent);border-color:var(--accent)}
+.scrow input,.scrow select{padding:.55em .6em;border:1px solid var(--line);border-radius:var(--r-sm,10px);background:var(--bg);font-size:16px;color:var(--fg);min-width:0;width:100%}
+.scrow:not(.on) input,.scrow:not(.on) select{opacity:.5}
+.scrow .tag{grid-column:2/-1;margin-top:-4px;font-size:12px;color:var(--fg3)}
+body.phone .scrow{grid-template-columns:auto 1fr 1fr}
+body.phone .scrow input[data-f=label]{grid-column:2/-1}
+body.phone .scrow input[data-f=qty]{grid-column:2}
 .tsrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 4px;border-bottom:1px solid var(--line);font-size:16px}
 .tsrow .box{width:22px;height:22px;border:1.5px solid var(--line2);border-radius:7px;flex:none}
 .tsrow.on .box{background:var(--accent);border-color:var(--accent)}
@@ -642,9 +657,21 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
   <div class="bar"><div class="seg" role="tablist"><button data-open="shopOv" aria-selected="false">Shopping list</button><button class="on" aria-selected="true">In stock</button></div><button class="pill" data-close>Close</button></div>
   <div class="scroll"><div class="wrapc">
     <form class="stockadd" id="stockAdd"><input id="stockItem" placeholder="Add something, like 1 kg rice" autocomplete="off"><select id="stockLoc" aria-label="Where it's kept"><option value="">Auto</option><option>Fridge</option><option>Freezer</option><option>Cupboard</option></select><button class="pill dark" type="submit">Add</button></form>
+    <div class="scanbar"><p>Take photos of the fridge or cupboards and AI lists what it sees. You check the list before anything is saved.</p><button class="pill dark" id="scanBtn"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Scan photos</span></button><input type="file" id="scanFile" accept="image/*" multiple hidden></div>
     <p class="hint2" style="margin-top:6px">Tick items off in the shopping list, then tap <b>Put away</b> to move them here. Recipes and the shopping list check this page, so you don't buy what you already have.</p>
     <div id="stockList"></div>
   </div></div>
+</section>
+
+<!-- scan photos → in stock -->
+<section class="ov sheet" id="scanOv">
+  <div class="sheetbox" style="height:min(720px,90vh);width:min(640px,94vw)">
+    <h2 class="serif">What's in stock</h2>
+    <div class="scthumbs" id="scThumbs"></div>
+    <p id="scMsg"></p>
+    <div class="scroll" id="scList"></div>
+    <div class="row" style="margin-top:4px"><button class="pill dark" id="scGo" disabled>Add to In stock</button><button class="pill" id="scMore">Add photos</button><button class="pill" data-close>Cancel</button></div>
+  </div>
 </section>
 
 <!-- recipe → shopping list -->
@@ -874,6 +901,7 @@ const api = DEMO ? (() => {
     async events(){ const t=today(), t1=addDays(t,1), at=(d,h)=>`${d}T${h}:00+07:00`; const c=Object.fromEntries(mem.cals.map(x=>[x.name,x]));
       const ev=(d,h,e,title,cal)=>({title,start:at(d,h),end:at(d,e),allDay:false,cal:c[cal]?.id,color:c[cal]?.color});
       return {events:[ev(t,"07:30","08:00","School run","Christie"),ev(t,"15:00","16:00","Swimming lesson","Christie"),ev(t,"17:30","18:30","Site call","Renaldo"),ev(t,"19:00","21:00","Dinner with Oma","Christie"),{title:"Grandma visits",start:t1,end:addDays(t1,1),allDay:true,cal:"c2",color:c.Christie?.color},ev(t1,"09:00","10:00","Dentist","Renaldo")].filter(e=>e.cal),failed:[]} },
+    async scanStock(images,where){ await new Promise(r=>setTimeout(r,1200)); return {note:"",items:[{name:"Eggs",qty:"8",location:"Fridge",confidence:"high"},{name:"Tempeh",qty:"2 blocks",location:"Fridge",confidence:"high"},{name:"Spinach",qty:"1 bunch",location:"Fridge",confidence:"medium"},{name:"Sambal oelek",qty:"1 jar",location:"Fridge",confidence:"high"},{name:"Carrots",qty:"4",location:"Fridge",confidence:"high"},{name:"Fish balls",qty:"1 pack",location:"Freezer",confidence:"low"},{name:"Milk",qty:"1 L",location:"Fridge",confidence:"high"}]} },
     async parseText(text){ await new Promise(r=>setTimeout(r,400)); return {title:"Recipe from a photo",ingredients:[],steps:[],partial:true,source_kind:"photo",message:"Demo mode: in the real app the text from your picture is sorted into ingredients and steps."} },
     async markCooked(id,delta){ const r=mem.recipes.find(x=>x.id===id); if(!r) return; r.cooked_count=Math.max(0,(r.cooked_count||0)+delta); r.last_cooked=delta>0?today():(r.cooked_count?r.prev_cooked||null:null); ping() },
     async importRecipe(url){ await new Promise(r=>setTimeout(r,700)); if(!/^https?:\/\//.test(url)) throw new Error("Paste a full link that starts with https://");
@@ -930,6 +958,11 @@ const api = DEMO ? (() => {
     async deleteReview(recipe_id,reviewer){ must(await sb.from("wb_reviews").delete().eq("recipe_id",recipe_id).eq("reviewer",reviewer)) },
     async testCalendar(url){ const { data, error } = await sb.functions.invoke("calendar",{ body:{ test_url:url, tz:CONFIG.tz } }); if(error) throw error; return data },
     async events(){ const { data, error } = await sb.functions.invoke("calendar",{ body:{ tz:CONFIG.tz, days:8 } }); if(error) throw error; return data },
+    async scanStock(images,where){
+      const { data, error } = await sb.functions.invoke("scan-stock", { body:{ images, where } });
+      if(error){ let msg="Couldn't read those photos. Try again."; try{ const j=await error.context.json(); if(j?.error) msg=j.error }catch(e){} throw new Error(msg) }
+      if(data?.error) throw new Error(data.error); return data;
+    },
     async parseText(text){
       const { data, error } = await sb.functions.invoke("import-recipe", { body:{ text } });
       if(error){ let msg="Couldn't read that picture."; try{ const j=await error.context.json(); if(j?.error) msg=j.error }catch(e){} throw new Error(msg) }
@@ -1535,6 +1568,45 @@ $("stockList").onclick=async e=>{
 };
 $("bStock").onclick=()=>open("stockOv");
 
+/* ---------- scan photos with AI ---------- */
+let scItems=[], scBusy=false, scShots=[];
+const b64=blob=>new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(String(r.result).split(",")[1]); r.onerror=rej; r.readAsDataURL(blob) });
+$("scanBtn").onclick=()=>$("scanFile").click();
+$("scMore").onclick=()=>{ if(!scBusy) $("scanFile").click() };
+$("scanFile").onchange=async e=>{
+  const files=[...e.target.files].slice(0,4); e.target.value=""; if(!files.length || scBusy) return;
+  if(!$("scanOv").classList.contains("open")){ scItems=[]; scShots.forEach(u=>URL.revokeObjectURL(u)); scShots=[]; open("scanOv") }
+  scBusy=true; $("scGo").disabled=true; $("scMsg").textContent=`Reading ${files.length>1?files.length+" photos":"your photo"}… this takes about 15 seconds.`; renderScan(true);
+  try{
+    const blobs=await Promise.all(files.map(f=>shrink(f,1400,.82)));
+    blobs.forEach(b=>scShots.push(URL.createObjectURL(b))); $("scThumbs").innerHTML=scShots.map(u=>`<img src="${u}" alt="">`).join("");
+    const images=await Promise.all(blobs.map(async b=>({data:await b64(b),media_type:"image/jpeg"})));
+    const d=await api.scanStock(images,$("stockLoc").value||"");
+    let added=0;
+    for(const x of d.items||[]){ const k=keyOf(x.name); if(!k) continue; const prev=scItems.find(i=>i.k===k); if(prev){ if(x.qty && !prev.qty) prev.qty=x.qty; continue }
+      const have=stockRows.some(s=>s.name===k); scItems.push({k,label:x.name,qty:x.qty||"",location:x.location,have,unsure:x.confidence==="low",on:!have && x.confidence!=="low"}); added++ }
+    $("scMsg").textContent = scItems.length ? `Found ${scItems.length} item${scItems.length>1?"s":""}. Untick anything that's wrong, fix names or amounts, then add them.${d.note?" "+d.note:""}` : (d.note || "Couldn't spot any food in that photo. Try again closer up, with the light on.");
+  }catch(err){ $("scMsg").textContent = err.message || "Couldn't read those photos. Try again." }
+  finally{ scBusy=false; renderScan() }
+};
+function renderScan(loading){
+  const L=["Fridge","Freezer","Cupboard"];
+  $("scList").innerHTML = loading && !scItems.length ? "" : scItems.map((x,i)=>`<div class="scrow ${x.on?"on":""}" data-sci="${i}"><button class="box" data-sctog="${i}" aria-label="Include ${esc(x.label)}" aria-pressed="${x.on}"></button><input data-f="label" value="${esc(x.label)}" aria-label="Name"><input data-f="qty" value="${esc(x.qty)}" placeholder="Amount" aria-label="Amount"><select data-f="location" aria-label="Kept in">${L.map(l=>`<option ${x.location===l?"selected":""}>${l}</option>`).join("")}</select>${x.have||x.unsure?`<span class="tag">${x.have?"Already in stock. Tick to update the amount.":"Not sure about this one."}</span>`:""}</div>`).join("");
+  const n=scItems.filter(x=>x.on).length; $("scGo").disabled=scBusy||!n; $("scGo").textContent = n ? `Add ${n} to In stock` : "Add to In stock";
+}
+$("scList").onclick=e=>{ const b=e.target.closest("[data-sctog]"); if(!b) return; const x=scItems[+b.dataset.sctog]; x.on=!x.on; renderScan() };
+$("scList").oninput=e=>{ const r=e.target.closest("[data-sci]"), f=e.target.dataset.f; if(!r||!f) return; scItems[+r.dataset.sci][f]=e.target.value };
+$("scGo").onclick=async()=>{
+  const sel=scItems.filter(x=>x.on && x.label.trim()); if(!sel.length) return; $("scGo").disabled=true;
+  let n=0;
+  for(const x of sel){ const k=keyOf(x.label.trim())||x.k; if(!k) continue; const ex=stockRows.find(s=>s.name===k);
+    const extra={label:ex?.label||x.label.trim(),qty:x.qty.trim()||ex?.qty||null,location:x.location};
+    if(ex) Object.assign(ex,extra); else stockRows.push({name:k,...extra}); pantrySet.add(k);
+    try{ await api.setPantry(k,true,extra); n++ }catch(err){} }
+  close("scanOv"); renderStock(); syncShopping({quiet:true});
+  toast(n===sel.length ? `Added ${n} item${n>1?"s":""} to In stock` : `Saved ${n} of ${sel.length}. Check your connection`);
+};
+
 /* ======================== RECIPE → SHOPPING LIST ======================== */
 function openToShop(id){
   const r=recipes.find(x=>x.id===id); if(!r) return; tsRecipe=r;
@@ -1822,7 +1894,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.10";
+const APP_VERSION="2026-11-13.11";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();

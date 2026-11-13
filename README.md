@@ -63,3 +63,7 @@ She signs in with her Capcus login. If she doesn't have one, create her in Authe
 - On a shopping list, tick items as you buy them, then tap **Put away** to move them into stock. Building the list from the dinner plan skips what's already in stock.
 - Every recipe has **Add to shopping list**, and items already in stock start unticked. Each list item shows which recipes it's for, and tapping a name opens the recipe.
 - **What can I cook?** uses the same stock, and prefers recipes that use up food to use soon.
+
+## Scanning the fridge with AI
+On **In stock**, tap **Scan photos**, take up to 4 photos of the fridge, freezer or cupboards, then check the list before adding. It uses Claude's vision through the `scan-stock` function.
+To switch it on once: create a key at console.anthropic.com → API keys, then in Supabase open Edge Functions → Secrets and add `ANTHROPIC_API_KEY`. Each scan costs a few cents.
