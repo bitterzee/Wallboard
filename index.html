@@ -428,6 +428,32 @@ body.phone .mday{min-height:54px;padding:4px}body.phone .mday .ic{font-size:12px
 [data-theme=batik]{--bg:#13152A;--s1:#1C1F38;--s2:#262A48;--s3:#31365A;--fg:#F2EADD;--fg2:#BDB3A2;--fg3:#8A8273;--line:rgba(242,234,221,.10);--line2:rgba(242,234,221,.18);--accent:#D39A4C;--accent-ink:#22150A;--rain:#93B6E8;--warn:#E8937A;
   --fg-rgb:242,234,221;--shade-rgb:12,13,28;--s1-rgb:28,31,56;--accent-rgb:211,154,76;--rain-rgb:147,182,232;--night:#07081A;--cook:#0E1024;
   --fd:"Cormorant Garamond",Georgia,serif;--fdw:300;--fdt:-.02em;--fdw2:500;--fdt2:-.01em}
+[data-theme=orbit]{--bg:#060914;--s1:#0C1224;--s2:#131B33;--s3:#1C2644;--fg:#EAF6FF;--fg2:#93A9C6;--fg3:#62779A;--line:rgba(140,220,255,.12);--line2:rgba(140,220,255,.24);--accent:#5CF2E6;--accent-ink:#001A18;--rain:#9D8CFF;--warn:#FF7A9C;
+  --fg-rgb:234,246,255;--shade-rgb:4,7,18;--s1-rgb:12,18,36;--accent-rgb:92,242,230;--rain-rgb:157,140,255;--night:#03050C;--cook:#070B18;
+  --fd:"Chakra Petch",system-ui,sans-serif;--fdw:300;--fdt:-.01em;--fdw2:500;--fdt2:0}
+/* Orbit: moving light, a travelling grid and a slow scan line. Transforms and opacity only, so the old iPad keeps up. */
+.fx{display:none;position:fixed;inset:-60px 0;pointer-events:none;overflow:hidden}
+body[data-theme=orbit] .fx{display:block}
+.fx i{position:absolute;display:block}
+.fx-a,.fx-b{width:80vmax;height:80vmax;border-radius:50%;will-change:transform}
+.fx-a{left:-30vmax;top:-30vmax;background:radial-gradient(closest-side,rgba(92,242,230,.20),transparent);animation:fxDriftA 26s ease-in-out infinite alternate}
+.fx-b{right:-34vmax;bottom:-30vmax;background:radial-gradient(closest-side,rgba(157,140,255,.22),transparent);animation:fxDriftB 32s ease-in-out infinite alternate}
+@keyframes fxDriftA{to{transform:translate(28vmax,18vmax) scale(1.15)}}
+@keyframes fxDriftB{to{transform:translate(-30vmax,-22vmax) scale(.9)}}
+.fx-grid{position:absolute;left:-40%;right:-40%;bottom:0;height:46%;perspective:340px;-webkit-mask-image:linear-gradient(to top,#000 10%,transparent);mask-image:linear-gradient(to top,#000 10%,transparent);opacity:.42}
+.fx-grid i{left:0;right:0;top:-100%;bottom:-100%;transform-origin:50% 50%;background-image:linear-gradient(rgba(92,242,230,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(92,242,230,.4) 1px,transparent 1px);background-size:56px 56px;animation:fxGrid 3.2s linear infinite;will-change:transform}
+@keyframes fxGrid{from{transform:rotateX(72deg) translateY(0)}to{transform:rotateX(72deg) translateY(56px)}}
+.fx-scan{left:0;right:0;top:0;height:140px;background:linear-gradient(to bottom,transparent,rgba(92,242,230,.04) 75%,rgba(92,242,230,.12) 98%,transparent);animation:fxScan 9s cubic-bezier(.5,0,.5,1) infinite;will-change:transform}
+@keyframes fxScan{0%{transform:translateY(-160px);opacity:0}8%{opacity:1}70%{opacity:1}100%{transform:translateY(110vh);opacity:0}}
+.fx-stars{inset:0;background-image:radial-gradient(1px 1px at 12% 22%,#fff,transparent),radial-gradient(1px 1px at 72% 12%,#fff,transparent),radial-gradient(1.5px 1.5px at 38% 64%,#cfefff,transparent),radial-gradient(1px 1px at 86% 48%,#fff,transparent),radial-gradient(1px 1px at 56% 34%,#fff,transparent),radial-gradient(1.5px 1.5px at 22% 82%,#d8d0ff,transparent),radial-gradient(1px 1px at 92% 78%,#fff,transparent);opacity:.5;animation:fxTwinkle 5s ease-in-out infinite alternate}
+@keyframes fxTwinkle{to{opacity:.15}}
+body[data-theme=orbit][data-mode=day] .fx-grid{opacity:.3}
+body[data-theme=orbit][data-mode=night] .fx-grid,body[data-theme=orbit][data-mode=night] .fx-scan{display:none}
+body[data-theme=orbit] .t-big{text-shadow:0 0 34px rgba(92,242,230,.35)}
+body[data-theme=orbit] .rc,body[data-theme=orbit] .rie-now{box-shadow:0 0 0 1px rgba(92,242,230,.18),0 0 40px rgba(92,242,230,.08)}
+body[data-theme=orbit] .pill.dark{box-shadow:0 0 22px rgba(92,242,230,.35)}
+body[data-theme=orbit] .ov{background-image:linear-gradient(rgba(140,220,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(140,220,255,.03) 1px,transparent 1px);background-size:40px 40px}
+body[data-theme=orbit] .thm[data-theme=orbit] .tp,.thm[data-theme=orbit] .tp{background:linear-gradient(135deg,#0C1224,#131B33 50%,#1d1a40)}
 body[data-theme=shibuya] .t-big{text-shadow:0 0 28px rgba(255,59,141,.35)}
 body[data-theme=snow] .t-big{font-size-adjust:.62}
 body[data-theme=batik] .ov,body[data-theme=batik] .ov .list,body[data-theme=batik] .detail,body[data-theme=batik][data-mode=night]{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60' fill='none' stroke='%23D39A4C' stroke-opacity='.07' stroke-width='1.2'%3E%3Cellipse cx='30' cy='15' rx='7' ry='13'/%3E%3Cellipse cx='30' cy='45' rx='7' ry='13'/%3E%3Cellipse cx='15' cy='30' rx='13' ry='7'/%3E%3Cellipse cx='45' cy='30' rx='13' ry='7'/%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/svg%3E");background-size:60px 60px}
@@ -593,7 +619,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 </style>
 </head>
 <body data-mode="day">
-<div class="bg" id="bgA"></div><div class="bg" id="bgB"></div><div class="shade"></div>
+<div class="bg" id="bgA"></div><div class="bg" id="bgB"></div><div class="shade"></div><div class="fx" aria-hidden="true"><i class="fx-stars"></i><i class="fx-a"></i><i class="fx-b"></i><i class="fx-grid"><i></i></i><i class="fx-scan"></i></div>
 <main id="wall"></main>
 
 <div class="ctl"><button id="bMenu" aria-label="Open menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Menu</button></div>
@@ -902,6 +928,7 @@ const THEMES=[
   {k:"shibuya",name:"Shibuya",note:"Neon crossing at night",font:"Dela+Gothic+One"},
   {k:"snow",name:"Snowboarding",note:"Night riding, goggle orange",font:"Anton"},
   {k:"batik",name:"Batik",note:"Indigo cloth, soga gold",font:"Cormorant+Garamond:wght@300;500;600"},
+  {k:"orbit",name:"Orbit",note:"Moving light and a travelling grid",font:"Chakra+Petch:wght@300;500;600"},
 ];
 function loadFont(t){ if(t&&t.font&&!document.querySelector(`link[data-font="${t.k}"]`)){ const l=document.createElement("link"); l.rel="stylesheet"; l.href=`https://fonts.googleapis.com/css2?family=${t.font}&display=swap`; l.dataset.font=t.k; document.head.appendChild(l) } }
 let theme="rain";
@@ -2109,7 +2136,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.17";
+const APP_VERSION="2026-11-13.18";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
