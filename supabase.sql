@@ -122,3 +122,10 @@ select * from (values
    null,'Starter')
 ) as v(title, category, cook_time, serves, ingredients, steps, notes, created_by_name)
 where not exists (select 1 from public.wb_recipes);
+
+-- Breakfast and lunch in the meal plan (2026-11-13)
+alter table public.wb_meal_plan add column if not exists meal text not null default 'dinner';
+alter table public.wb_meal_plan drop constraint if exists wb_meal_plan_meal_check;
+alter table public.wb_meal_plan add constraint wb_meal_plan_meal_check check (meal in ('breakfast','lunch','dinner'));
+alter table public.wb_meal_plan drop constraint if exists wb_meal_plan_pkey;
+alter table public.wb_meal_plan add primary key (day, meal);

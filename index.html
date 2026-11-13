@@ -214,6 +214,18 @@ select.pill{appearance:none;-webkit-appearance:none;background:var(--s1)}
 .pday .pr .th{width:48px;height:48px;font-size:22px}
 .pday .pr span.t{font-weight:600;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pday .pr span.add{color:var(--fg3);border:1px dashed var(--line2);border-radius:99px;padding:.5em 1em;font-size:14px}
+.pday{align-items:flex-start}
+.pday .dl{padding-top:10px}
+.pmeals{flex:1;min-width:0;display:grid;gap:2px}
+.pmeal{display:flex;align-items:center;gap:10px}
+.pmeal .ml{width:78px;flex:none;font-size:13px;color:var(--fg3);font-weight:600}
+.pmeal .pr{min-height:46px}
+.pmeal .pr .th{width:40px;height:40px;font-size:18px}
+.pmeal .pr span.add{padding:.35em .9em;font-size:13px}
+body.phone .pday{flex-direction:column;gap:4px}
+body.phone .pday .dl{width:auto;padding-top:0;display:flex;gap:8px;align-items:baseline}
+body.phone .pmeals{width:100%}
+body.phone .pmeal .ml{width:70px}
 .pday .x{width:38px;height:38px;border-radius:50%;color:var(--fg3);flex:none}
 
 /* shopping */
@@ -590,7 +602,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <h2 class="serif">Menu</h2>
     <div class="menu-grid">
       <button id="bBook">Recipes</button>
-      <button id="bPlan">Dinner plan</button>
+      <button id="bPlan">Meal plan</button>
       <button id="bShop">Shopping list</button>
       <button id="bStock">In stock</button>
       <button id="bPantry2">What can I cook?</button>
@@ -689,8 +701,8 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 
 <!-- meal plan -->
 <section class="ov" id="planOv">
-  <div class="bar"><h1 class="serif">Dinner plan</h1><button class="pill dark" id="planShop">Shopping list</button><button class="pill" data-close>Close</button></div>
-  <div class="scroll"><div class="wrapc"><p class="hint2">Tap a day to choose its dinner. Today's shows on the wall, and every planned dinner's ingredients go on the shopping list automatically, minus what's in stock.</p><div id="planList"></div></div></div>
+  <div class="bar"><h1 class="serif">Meal plan</h1><button class="pill dark" id="planShop">Shopping list</button><button class="pill" data-close>Close</button></div>
+  <div class="scroll"><div class="wrapc"><p class="hint2">Tap breakfast, lunch or dinner to choose a recipe. Today's meals show on the wall, and every planned meal's ingredients go on the shopping list automatically, minus what's in stock.</p><div id="planList"></div></div></div>
 </section>
 
 <!-- shopping list -->
@@ -946,7 +958,7 @@ const SEED = [
 ].map((r,i)=>({id:uuid(),photo_path:null,source_url:i===3?"https://www.youtube.com/watch?v=M7lc1UVf-VE":null,source_kind:i===3?"youtube":null,cooked_count:i===0?3:i===1?1:0,last_cooked:i<2?addDays(today(),-4):null,created_at:new Date().toISOString(),...r}));
 
 const api = DEMO ? (() => {
-  const mem = { stock:[{name:'rice',label:'Rice',qty:'5 kg',location:'Cupboard'},{name:'egg',label:'Eggs',qty:'10',location:'Fridge',expires:addDays(today(),9)},{name:'shallot',label:'Shallots',qty:'1 bag',location:'Cupboard'},{name:'garlic',label:'Garlic',location:'Cupboard'},{name:'kecap mani',label:'Kecap manis',location:'Cupboard'},{name:'chicken thighs or leg',label:'Chicken thighs',qty:'500 g',location:'Fridge',expires:addDays(today(),1)},{name:'lime',label:'Limes',qty:'4',location:'Fridge'},{name:'spinach',label:'Spinach',qty:'1 bunch',location:'Fridge',expires:addDays(today(),2)},{name:'frozen peas',label:'Frozen peas',location:'Freezer'}], rv:[{recipe_id:SEED[1].id,reviewer:"mom",rating:5,note:"Rich broth, make it again"},{recipe_id:SEED[1].id,reviewer:"dad",rating:4,note:""},{recipe_id:SEED[1].id,reviewer:"baby",rating:5,note:"Finished the whole bowl"},{recipe_id:SEED[0].id,reviewer:"dad",rating:5,note:""},{recipe_id:SEED[0].id,reviewer:"baby",rating:2,note:"Too spicy for her"}], pantry:new Set(['rice','egg','shallot','garlic','kecap mani','chicken thighs or leg','lime','spinach']), state:{rie_cal:{items:[{id:"d1",kind:"daycare",title:"Daycare",t:"07:30",end:"16:00",days:[1,2,3,4,5],from:addDays(today(),-60),until:"",skip:[],note:""},{id:"d2",kind:"swim",title:"Swimming lesson",t:"09:00",end:"09:45",days:[6],from:addDays(today(),-30),until:"",skip:[],note:"Pack the swim nappy"},{id:"d3",kind:"doctor",title:"Check-up and vaccine",date:addDays(today(),4),t:"10:00",end:"",days:[],note:"Bring the vaccination book"}]}}, cals:[{id:'c1',name:'Renaldo',color:'#86C6D9'},{id:'c2',name:'Christie',color:'#F08C78'}], recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()]:SEED[1].id,[addDays(today(),1)]:SEED[0].id,[addDays(today(),3)]:SEED[2].id}, shop:[] };
+  const mem = { stock:[{name:'rice',label:'Rice',qty:'5 kg',location:'Cupboard'},{name:'egg',label:'Eggs',qty:'10',location:'Fridge',expires:addDays(today(),9)},{name:'shallot',label:'Shallots',qty:'1 bag',location:'Cupboard'},{name:'garlic',label:'Garlic',location:'Cupboard'},{name:'kecap mani',label:'Kecap manis',location:'Cupboard'},{name:'chicken thighs or leg',label:'Chicken thighs',qty:'500 g',location:'Fridge',expires:addDays(today(),1)},{name:'lime',label:'Limes',qty:'4',location:'Fridge'},{name:'spinach',label:'Spinach',qty:'1 bunch',location:'Fridge',expires:addDays(today(),2)},{name:'frozen peas',label:'Frozen peas',location:'Freezer'}], rv:[{recipe_id:SEED[1].id,reviewer:"mom",rating:5,note:"Rich broth, make it again"},{recipe_id:SEED[1].id,reviewer:"dad",rating:4,note:""},{recipe_id:SEED[1].id,reviewer:"baby",rating:5,note:"Finished the whole bowl"},{recipe_id:SEED[0].id,reviewer:"dad",rating:5,note:""},{recipe_id:SEED[0].id,reviewer:"baby",rating:2,note:"Too spicy for her"}], pantry:new Set(['rice','egg','shallot','garlic','kecap mani','chicken thighs or leg','lime','spinach']), state:{rie_cal:{items:[{id:"d1",kind:"daycare",title:"Daycare",t:"07:30",end:"16:00",days:[1,2,3,4,5],from:addDays(today(),-60),until:"",skip:[],note:""},{id:"d2",kind:"swim",title:"Swimming lesson",t:"09:00",end:"09:45",days:[6],from:addDays(today(),-30),until:"",skip:[],note:"Pack the swim nappy"},{id:"d3",kind:"doctor",title:"Check-up and vaccine",date:addDays(today(),4),t:"10:00",end:"",days:[],note:"Bring the vaccination book"}]}}, cals:[{id:'c1',name:'Renaldo',color:'#86C6D9'},{id:'c2',name:'Christie',color:'#F08C78'}], recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()+'|dinner']:SEED[1].id,[today()+'|lunch']:SEED[0].id,[addDays(today(),1)+'|dinner']:SEED[0].id,[addDays(today(),1)+'|breakfast']:SEED[3].id,[addDays(today(),3)+'|dinner']:SEED[2].id}, shop:[] };
   const listeners=[]; const ping=()=>listeners.forEach(f=>f());
   return {
     async session(){ me={name:"Demo",email:"demo",role:"dad"}; return true },
@@ -964,8 +976,8 @@ const api = DEMO ? (() => {
     async deletePhoto(ph){ mem.photos=mem.photos.filter(x=>x.id!==ph.id); ping() },
     async tonight(){ return mem.tonight }, async setTonight(id){ mem.tonight={recipe_id:id,date:today()}; ping() },
     async layout(){ return mem.layout||null }, async setLayout(l){ mem.layout=l; ping() },
-    async plan(){ return Object.entries(mem.plan).map(([day,recipe_id])=>({day,recipe_id})) },
-    async setPlan(day,id){ if(id) mem.plan[day]=id; else delete mem.plan[day]; ping() },
+    async plan(){ return Object.entries(mem.plan).map(([k,recipe_id])=>{ const [day,meal="dinner"]=k.split("|"); return {day,meal,recipe_id} }) },
+    async setPlan(day,id,meal="dinner"){ const k=day+"|"+meal; if(id) mem.plan[k]=id; else delete mem.plan[k]; ping() },
     async shopping(){ return mem.shop.map(x=>({...x})) },
     async addShop(items){ items.forEach(i=>mem.shop.push({id:uuid(),checked:false,source:"manual",created_at:new Date().toISOString(),added_by_name:me.name,...i})); ping() },
     async updateShop(id,patch){ const i=mem.shop.find(x=>x.id===id); if(i) Object.assign(i,patch); ping() },
@@ -1021,8 +1033,8 @@ const api = DEMO ? (() => {
     async setTonight(id){ must(await sb.from("wb_state").upsert({key:"tonight",value:{recipe_id:id,date:today()},updated_at:new Date().toISOString()})) },
     async layout(){ const d=must(await sb.from("wb_state").select("value").eq("key","layout").maybeSingle()); return d?.value?.layout||null },
     async setLayout(l){ must(await sb.from("wb_state").upsert({key:"layout",value:{layout:l},updated_at:new Date().toISOString()})) },
-    async plan(){ const t=today(); return must(await sb.from("wb_meal_plan").select("day,recipe_id").gte("day",addDays(t,-1)).lte("day",addDays(t,14))) },
-    async setPlan(day,id){ if(id) must(await sb.from("wb_meal_plan").upsert({day,recipe_id:id,updated_by_name:me.name,updated_at:new Date().toISOString()})); else must(await sb.from("wb_meal_plan").delete().eq("day",day)) },
+    async plan(){ const t=today(); return must(await sb.from("wb_meal_plan").select("day,meal,recipe_id").gte("day",addDays(t,-1)).lte("day",addDays(t,14))) },
+    async setPlan(day,id,meal="dinner"){ if(id) must(await sb.from("wb_meal_plan").upsert({day,meal,recipe_id:id,updated_by_name:me.name,updated_at:new Date().toISOString()},{onConflict:"day,meal"})); else must(await sb.from("wb_meal_plan").delete().eq("day",day).eq("meal",meal)) },
     async shopping(){ return must(await sb.from("wb_shopping").select("*").order("created_at")) },
     async addShop(items){ if(items.length) must(await sb.from("wb_shopping").insert(items.map(i=>({source:"manual",...i,added_by_name:me.name})))) },
     async updateShop(id,patch){ must(await sb.from("wb_shopping").update(patch).eq("id",id)) },
@@ -1090,7 +1102,12 @@ function autoMode(){ const h=hourNow(), c=CONFIG;
   if(h>=c.dinnerFrom) return "dinner"; if(h>=c.dayFrom) return "day"; return "morning"; }
 const mode = () => isPhone() ? "phone" : layout==="B" ? "split" : (modeOverride==="auto" ? autoMode() : modeOverride);
 
-function plannedFor(day){ const id=planMap[day]; return id ? recipes.find(x=>x.id===id)||null : null }
+const MEALS=[["breakfast","Breakfast"],["lunch","Lunch"],["dinner","Dinner"]], mealName=m=>(MEALS.find(x=>x[0]===m)||MEALS[2])[1];
+const pk=(day,meal="dinner")=>day+"|"+meal;
+function plannedFor(day,meal="dinner"){ const id=planMap[pk(day,meal)]; return id ? recipes.find(x=>x.id===id)||null : null }
+const plannedIds = () => new Set(Object.values(planMap));
+function slotsFor(id){ const out=[]; for(let i=0;i<7;i++){ const d=addDays(today(),i); MEALS.forEach(([m])=>{ if(planMap[pk(d,m)]===id) out.push([d,m]) }) } return out }
+const slotLabel = (d,m) => { const dl=dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d); return m==="dinner" ? (dl==="today"?"tonight":dl+" dinner") : `${dl} ${mealName(m).toLowerCase()}` };
 function tonightRecipe(){
   const p=plannedFor(today()); if(p) return {r:p,picked:true};
   if(tonightState && tonightState.date===today()){ const r=recipes.find(x=>x.id===tonightState.recipe_id); if(r) return {r,picked:true} }
@@ -1103,7 +1120,7 @@ const photoUrl = p => p ? urlMap[p] : null;
 async function refreshAll(){
   try{
     let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
-    planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[p.day,p.recipe_id]));
+    planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[pk(p.day,p.meal||"dinner"),p.recipe_id]));
     let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, rieCal, wordsCfg] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("rie_cal"), api.state("words")]);
     reviews={}; (rvs||[]).forEach(x=>{ (reviews[x.recipe_id] ||= {})[x.reviewer]=x });
     if(th && th.theme && th.theme!==theme) applyTheme(th.theme);
@@ -1169,7 +1186,8 @@ function renderWall(){
   if(!wx){ $("wall").innerHTML=""; return }
   const scrollY=$("wall").scrollTop;
   const w=wxNow(), tn=tonightRecipe();
-  const tChip = tn ? `<span class="chip">${tn.picked?"Tonight":"Idea"}: ${esc(tn.r.title)}</span>` : "";
+  const bf=plannedFor(today(),"breakfast"), lu=plannedFor(today(),"lunch");
+  const tChip = (m=>`${m==="morning"&&bf&&hourNow()<10?`<span class="chip" style="margin-right:6px">Breakfast: ${esc(bf.title)}</span>`:""}${m==="morning"&&lu&&!(bf&&hourNow()<10)?`<span class="chip" style="margin-right:6px">Lunch: ${esc(lu.title)}</span>`:""}${tn?`<span class="chip">${tn.picked?"Tonight":"Idea"}: ${esc(tn.r.title)}</span>`:""}`)(mode());
   let h="";
   if(m==="morning"){
     const rt=routineHTML("wall"), rie=rieHTML("card", rt?1:3), ag=agendaHTML(rt?(rie?1:2):(rie?3:6));
@@ -1195,7 +1213,8 @@ function renderWall(){
         <div class="meta">${metaHTML(r)}</div>
         ${rvMini(r)}
         <ul>${show.map(i=>`<li>${esc(i)}</li>`).join("")}${ing.length>show.length?`<li style="color:var(--ink2)">+ ${ing.length-show.length} more</li>`:""}</ul>
-        ${tmr?`<div class="tmr">Tomorrow: <b>${esc(tmr.title)}</b></div>`:""}
+        ${(()=>{ const b=plannedFor(today(),"breakfast"), l=plannedFor(today(),"lunch"), x=[b&&`Breakfast <b>${esc(b.title)}</b>`, l&&`Lunch <b>${esc(l.title)}</b>`].filter(Boolean);
+          return x.length||tmr ? `<div class="tmr">${x.length?`Today: ${x.join(", ")}`:""}${x.length&&tmr?"<br>":""}${tmr?`Tomorrow: <b>${esc(tmr.title)}</b>`:""}</div>` : "" })()}
         <div class="acts"><button class="btn-cook" data-cook="${r.id}">Start cooking</button><button class="btn-ghost" data-openbook="${r.id}">${tn.picked?"Recipe":"Pick another"}</button>${r.created_by_name?`<span class="by">by ${esc(r.created_by_name)}</span>`:""}</div></div></div>`;
     } else card=`<div class="rc"><div class="b" style="justify-content:center"><div class="eyebrow">Dinner</div><h2 class="serif">Add your first recipe</h2><div class="acts"><button class="btn-cook" data-new>Add recipe</button></div></div></div>`;
     const fc3 = m==="split" ? `<div class="fc3">${wx.daily.time.slice(1,4).map((t,j)=>{const i=j+1;return `<div><div class="d">${new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div><span class="hi">${Math.round(wx.daily.temperature_2m_max[i])}°</span> <span class="lo">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div></div>`}).join("")}</div>` : "";
@@ -1511,8 +1530,8 @@ function showRecipe(id){
     <div class="row" style="margin:0 0 24px">
       <button class="pill dark" data-cook="${r.id}">Start cooking</button>
       <button class="pill" data-tonight="${r.id}">${isT?"✓ Tonight's dinner":"Cook this tonight"}</button>
-      ${(()=>{ const ds=[...Array(7)].map((_,i)=>addDays(today(),i)).filter(d=>planMap[d]===r.id); return ds.length?`<span class="hint2" style="margin:0;align-self:center">On the shopping list for ${dayLabel(ds[0]).toLowerCase()==="today"?"today":dayLabel(ds[0])}</span>`:"" })()}
-      <select class="pill" data-plansel="${r.id}" style="padding-right:.8em"><option value="">Plan for…</option>${[...Array(7)].map((_,i)=>{const d=addDays(today(),i);return `<option value="${d}">${dayLabel(d)} ${dayShort(d)}${planMap[d]===r.id?" ✓":""}</option>`}).join("")}</select>
+      ${(()=>{ const sl=slotsFor(r.id); return sl.length?`<span class="hint2" style="margin:0;align-self:center">On the shopping list for ${slotLabel(...sl[0])}</span>`:"" })()}
+      <select class="pill" data-plansel="${r.id}" style="padding-right:.8em"><option value="">Plan for…</option>${[...Array(7)].map((_,i)=>{const d=addDays(today(),i);return `<optgroup label="${dayLabel(d)} ${dayShort(d)}">${MEALS.map(([m,ml])=>`<option value="${d}|${m}">${ml}, ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}${planMap[pk(d,m)]===r.id?" ✓":""}</option>`).join("")}</optgroup>`}).join("")}</select>
     </div>
     <div class="cols">
       <div><h3>Ingredients</h3><ul class="ing">${(r.ingredients||[]).map(i=>`<li><span class="box"></span><span>${esc(i)}</span>${lineInStock(i)?`<span class="instock">In stock</span>`:""}</li>`).join("")}</ul></div>
@@ -1554,13 +1573,13 @@ function editRecipe(r){
     const rec={...base,title:String(f.get("title")).trim(),category:String(f.get("category")||"").trim()||null,cook_time:String(f.get("cook_time")||"").trim()||null,serves:String(f.get("serves")||"").trim()||null,
       ingredients:lines("ingredients"),steps:lines("steps"),notes:String(f.get("notes")||"").trim()||null,source_url:String(f.get("source_url")||"").trim()||null};
     $("rfSave").textContent="Saving…";
-    try{ const id=await api.saveRecipe(rec, file&&file.size?file:null); await refreshAll(); showRecipe(id); toast("Recipe saved"); if(Object.values(planMap).includes(id)) syncShopping({quiet:true}) }
+    try{ const id=await api.saveRecipe(rec, file&&file.size?file:null); await refreshAll(); showRecipe(id); toast("Recipe saved"); if(plannedIds().has(id)) syncShopping({quiet:true}) }
     catch(err){ console.error(err); $("rfSave").textContent="Save recipe"; toast("Couldn't save — check your connection") }
   };
 }
 $("detail").addEventListener("change", async e=>{
-  const sel=e.target.closest("[data-plansel]"); if(!sel||!sel.value) return; const d=sel.value, id=sel.dataset.plansel;
-  try{ await api.setPlan(d,id); await refreshAll(); syncShopping({quiet:true}); showRecipe(id); toast(`Planned for ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}`) }catch(err){ toast("Couldn't save the plan") }
+  const sel=e.target.closest("[data-plansel]"); if(!sel||!sel.value) return; const [d,m="dinner"]=sel.value.split("|"), id=sel.dataset.plansel;
+  try{ await api.setPlan(d,id,m); await refreshAll(); syncShopping({quiet:true}); showRecipe(id); toast(`Planned for ${slotLabel(d,m)}`) }catch(err){ toast("Couldn't save the plan") }
 });
 $("items").onclick=e=>{ const b=e.target.closest(".item"); if(b) showRecipe(b.dataset.id) };
 $("cats").onclick=e=>{ if(e.target.dataset.cat){ cat=e.target.dataset.cat; renderBookList() } };
@@ -1601,24 +1620,23 @@ $("detail").onclick=async e=>{
 /* ======================== MEAL PLAN ======================== */
 function renderPlan(){
   const t=today();
-  $("planList").innerHTML=[...Array(7)].map((_,i)=>{ const d=addDays(t,i), r=plannedFor(d), pu=r&&photoUrl(r.photo_path);
-    return `<div class="pday ${i===0?"today":""}"><div class="dl"><b>${dayLabel(d)}</b><small>${dayShort(d)}</small></div>
-      <button class="pr" data-pickday="${d}">${r?`<span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</span><span class="t">${esc(r.title)}</span>`:`<span class="add">+ Choose dinner</span>`}</button>
-      ${r?`<button class="x" data-clearday="${d}" aria-label="Clear">✕</button>`:""}</div>` }).join("");
+  $("planList").innerHTML=[...Array(7)].map((_,i)=>{ const d=addDays(t,i);
+    return `<div class="pday ${i===0?"today":""}"><div class="dl"><b>${dayLabel(d)}</b><small>${dayShort(d)}</small></div><div class="pmeals">${MEALS.map(([m,ml])=>{ const r=plannedFor(d,m), pu=r&&photoUrl(r.photo_path);
+      return `<div class="pmeal"><span class="ml">${ml}</span><button class="pr" data-pickday="${d}" data-meal="${m}">${r?`<span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</span><span class="t">${esc(r.title)}</span>`:`<span class="add">+ Choose</span>`}</button>${r?`<button class="x" data-clearday="${d}" data-meal="${m}" aria-label="Clear ${ml.toLowerCase()}">✕</button>`:""}</div>` }).join("")}</div></div>` }).join("");
 }
-let pickDay=null;
-function openPick(d){ pickDay=d; $("pickTitle").textContent=`Dinner for ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}`; $("pickQ").value=""; renderPick(); open("pickOv") }
+let pickDay=null, pickMeal="dinner";
+function openPick(d,m="dinner"){ pickDay=d; pickMeal=m; $("pickTitle").textContent=`${mealName(m)} for ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}`; $("pickClear").textContent=`No ${mealName(m).toLowerCase()} planned`; $("pickQ").value=""; renderPick(); open("pickOv") }
 function renderPick(){
   const q=$("pickQ").value.trim().toLowerCase();
   $("pickList").innerHTML=recipes.filter(r=>!q||(r.title+" "+(r.category||"")).toLowerCase().includes(q)).map(r=>{ const pu=photoUrl(r.photo_path);
-    return `<button class="item ${planMap[pickDay]===r.id?"sel":""}" data-pick="${r.id}"><span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</span><span><b>${esc(r.title)}${!isTried(r)?`<span class="newtag">New</span>`:""}</b><small>${esc([r.category,r.cook_time].filter(Boolean).join(", "))}</small></span></button>` }).join("") || `<p class="empty" style="padding:16px">No recipes match.</p>`;
+    return `<button class="item ${planMap[pk(pickDay,pickMeal)]===r.id?"sel":""}" data-pick="${r.id}"><span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</span><span><b>${esc(r.title)}${!isTried(r)?`<span class="newtag">New</span>`:""}</b><small>${esc([r.category,r.cook_time].filter(Boolean).join(", "))}</small></span></button>` }).join("") || `<p class="empty" style="padding:16px">No recipes match.</p>`;
 }
 $("pickQ").oninput=renderPick;
-$("pickList").onclick=async e=>{ const b=e.target.closest("[data-pick]"); if(!b) return; close("pickOv"); try{ await api.setPlan(pickDay,b.dataset.pick); await refreshAll(); syncShopping({quiet:true}) }catch(err){ toast("Couldn't save the plan") } };
-$("pickClear").onclick=async()=>{ close("pickOv"); try{ await api.setPlan(pickDay,null); await refreshAll(); syncShopping({quiet:true}) }catch(err){} };
+$("pickList").onclick=async e=>{ const b=e.target.closest("[data-pick]"); if(!b) return; close("pickOv"); try{ await api.setPlan(pickDay,b.dataset.pick,pickMeal); await refreshAll(); syncShopping({quiet:true}) }catch(err){ toast("Couldn't save the plan") } };
+$("pickClear").onclick=async()=>{ close("pickOv"); try{ await api.setPlan(pickDay,null,pickMeal); await refreshAll(); syncShopping({quiet:true}) }catch(err){} };
 $("planList").onclick=async e=>{
-  const p=e.target.closest("[data-pickday]"); if(p) return openPick(p.dataset.pickday);
-  const c=e.target.closest("[data-clearday]"); if(c){ try{ await api.setPlan(c.dataset.clearday,null); await refreshAll(); syncShopping({quiet:true}) }catch(err){} }
+  const p=e.target.closest("[data-pickday]"); if(p) return openPick(p.dataset.pickday,p.dataset.meal||"dinner");
+  const c=e.target.closest("[data-clearday]"); if(c){ try{ await api.setPlan(c.dataset.clearday,null,c.dataset.meal||"dinner"); await refreshAll(); syncShopping({quiet:true}) }catch(err){} }
 };
 
 /* ======================== SHOPPING LIST ======================== */
@@ -1659,7 +1677,7 @@ let syncing=false;
 async function syncShopping(opts={}){
   if(syncing) return; syncing=true;
   try{
-    const t=today(), meals=[...Array(7)].map((_,i)=>plannedFor(addDays(t,i))).filter(Boolean);
+    const t=today(), meals=[...Array(7)].flatMap((_,i)=>MEALS.map(([m])=>plannedFor(addDays(t,i),m))).filter(Boolean);
     const want=new Map(); let skipped=new Set();
     for(const r of meals) for(const line of (r.ingredients||[])) for(const it of parseIng(line)){
       const k=keyOf(it.name); if(!k) continue; if(hasKey(k)){ skipped.add(k); continue }
@@ -2089,7 +2107,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.15";
+const APP_VERSION="2026-11-13.16";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
