@@ -457,6 +457,27 @@ body.phone .jform{grid-template-columns:1fr}
 .swctl{display:flex;gap:22px;align-items:center}
 body.phone .swc h2{font-size:22px}
 .rc .swbtn{width:46px;height:46px;font-size:19px}
+.tbar{position:fixed;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);z-index:90;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:94vw;pointer-events:none}
+.tchip{pointer-events:auto;display:flex;align-items:center;gap:12px;background:rgba(var(--s1-rgb),.94);border:1px solid var(--line2);border-radius:99px;padding:8px 10px 8px 18px;box-shadow:0 10px 30px rgba(0,0,0,.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.tchip .tl{font-size:15px;color:var(--fg2);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tchip .tt{font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em;min-width:3.2ch;text-align:right}
+.tchip button{width:36px;height:36px;border-radius:50%;background:rgba(var(--fg-rgb),.08);font-size:15px;color:var(--fg2)}
+.tchip.done{background:var(--accent);color:var(--accent-ink);border-color:transparent;animation:tpulse 1s ease-in-out infinite}
+.tchip.done .tl,.tchip.done .tt{color:var(--accent-ink)}
+.tchip.done button{width:auto;padding:0 14px;border-radius:99px;background:rgba(0,0,0,.18);color:var(--accent-ink);font-weight:700}
+@keyframes tpulse{50%{transform:scale(1.05)}}
+body.cooking .tbar{top:calc(env(safe-area-inset-top) + 86px)}
+body.phone .tchip .tt{font-size:22px}body.phone .tchip{padding:6px 8px 6px 14px}
+.tmpre{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:6px 0 4px}
+.tmpre button{padding:.8em 0;border-radius:14px;background:var(--s1);border:1px solid var(--line);font-weight:600;font-size:16px;color:var(--fg)}
+.tmpre button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.cktm{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:clamp(17px,2vw,22px);padding:.7em 1.3em;border-radius:99px}
+.cktm.run{background:var(--s1);color:var(--fg)}
+.scalebar{display:flex;align-items:center;gap:8px;margin:-4px 0 12px;flex-wrap:wrap}
+.scalebar>button:not(.chip2):not(.lnk){width:36px;height:36px;border-radius:50%;border:1px solid var(--line2);font-size:18px;font-weight:600;color:var(--fg)}
+.scalebar span{font-size:15px;color:var(--fg2);min-width:84px;text-align:center}.scalebar b{color:var(--fg)}
+.scalebar .lnk{font-size:13px;color:var(--fg3);text-decoration:underline}
+.scalebar .chip2{margin-left:auto}
 .rtabs{display:flex;gap:4px;background:var(--s1);border-radius:99px;padding:4px;margin:0 0 18px;width:max-content;max-width:100%}
 .rtabs button{padding:.55em 1.2em;border-radius:99px;font-size:15px;font-weight:600;color:var(--fg2)}
 .rtabs button.on{background:var(--accent);color:var(--accent-ink)}
@@ -773,6 +794,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
       <button id="bShop">Shopping list</button>
       <button id="bStock">In stock</button>
       <button id="bPantry2">What can I cook?</button>
+      <button data-open="timerOv">Timer</button>
       <button id="bKid" data-kid>Kid</button>
       <button data-swipe="">Swipe for a meal</button>
       <button id="bPhotos">Photos</button>
@@ -976,6 +998,18 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
   </div>
 </section>
 
+<!-- timers -->
+<div id="timerBar" class="tbar" aria-live="polite"></div>
+<section class="ov sheet" id="timerOv">
+  <div class="sheetbox" style="width:min(520px,94vw)">
+    <h2 class="serif">Start a timer</h2>
+    <div class="f"><label>What for <span>(optional)</span><input id="tmLabel" maxlength="30" placeholder="Rice"></label></div>
+    <div class="tmpre" id="tmPre"></div>
+    <div class="f" style="max-width:200px"><label>Or minutes<input id="tmMin" inputmode="numeric" placeholder="12"></label></div>
+    <div class="row"><button class="pill dark" id="tmGo">Start</button><button class="pill" data-close>Cancel</button></div>
+  </div>
+</section>
+
 <!-- scan photos → in stock -->
 <section class="ov sheet" id="scanOv">
   <div class="sheetbox" style="height:min(720px,90vh);width:min(640px,94vw)">
@@ -1016,7 +1050,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <div class="row" style="margin-top:0"><button class="pill dark" type="submit" id="impGo">Import link</button><button class="pill" type="button" data-close>Cancel</button></div>
     <div class="orline">or</div>
     <label class="picbtn"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg>From a photo or screenshot<input type="file" id="impPics" accept="image/*" multiple hidden></label>
-    <p class="hint2" style="margin:0">Pick one or more pictures of a recipe, like a cookbook page or a screenshot. Clear printed text reads best.</p>
+    <p class="hint2" style="margin:0">Pick up to 6 pictures: a cookbook page, a handwritten card, or screenshots of a Short or Reel where the ingredients are written on screen. Claude reads them and writes the recipe.</p>
     <div class="impprog" id="impProg"></div>
     <div class="err" id="impErr"></div>
   </form>
@@ -1033,7 +1067,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <button class="pill" data-close>Done</button>
   </div>
   <div class="ck">
-    <div class="step"><div class="n" id="ckN"></div><div class="txt" id="ckTxt"></div><div class="ck-heard" id="ckHeard"></div></div>
+    <div class="step"><div class="n" id="ckN"></div><div class="txt" id="ckTxt"></div><div id="ckTimer"></div><div class="ck-heard" id="ckHeard"></div></div>
     <div class="ingp" id="ckIngP"></div><div class="ckvid" id="ckVidP"></div>
   </div>
   <div class="dots" id="ckDots"></div>
@@ -1217,6 +1251,7 @@ const api = DEMO ? (() => {
       const ev=(d,h,e,title,cal)=>({title,start:at(d,h),end:at(d,e),allDay:false,cal:c[cal]?.id,color:c[cal]?.color});
       return {events:[ev(t,"07:30","08:00","School run","Mom"),ev(t,"15:00","16:00","Swimming lesson","Mom"),ev(t,"17:30","18:30","Site call","Dad"),ev(t,"19:00","21:00","Dinner with Oma","Mom"),{title:"Grandma visits",start:t1,end:addDays(t1,1),allDay:true,cal:"c2",color:c.Mom?.color},ev(t1,"09:00","10:00","Dentist","Dad")].filter(e=>e.cal),failed:[]} },
     async scanStock(images,where){ await new Promise(r=>setTimeout(r,1200)); return {note:"",items:[{name:"Eggs",qty:"8",location:"Fridge",confidence:"high"},{name:"Tempeh",qty:"2 blocks",location:"Fridge",confidence:"high"},{name:"Spinach",qty:"1 bunch",location:"Fridge",confidence:"medium"},{name:"Sambal oelek",qty:"1 jar",location:"Fridge",confidence:"high"},{name:"Carrots",qty:"4",location:"Fridge",confidence:"high"},{name:"Fish balls",qty:"1 pack",location:"Freezer",confidence:"low"},{name:"Milk",qty:"1 L",location:"Fridge",confidence:"high"}]} },
+    async readPictures(images){ await new Promise(r=>setTimeout(r,1200)); return {title:"Ayam Goreng Bawang Putih",category:"Dinner",cook_time:"45 min",serves:"4",ingredients:["1 kg chicken, cut into 8","2 whole heads garlic (bawang putih)","1 tbsp coriander seeds","1 tsp salt","Oil for frying"],steps:["Blend half the garlic with the coriander and salt.","Rub the paste over the chicken and leave for 30 minutes.","Fry the chicken until golden, about 15 minutes.","Fry the rest of the garlic until crisp and scatter over the chicken."],notes:null,source_kind:"photo",partial:false,message:"Claude read this from your pictures. Check the amounts before saving."} },
     async parseText(text){ await new Promise(r=>setTimeout(r,400)); return {title:"Recipe from a photo",ingredients:[],steps:[],partial:true,source_kind:"photo",message:"Demo mode: in the real app the text from your picture is sorted into ingredients and steps."} },
     async markCooked(id,delta){ const r=mem.recipes.find(x=>x.id===id); if(!r) return; r.cooked_count=Math.max(0,(r.cooked_count||0)+delta); r.last_cooked=delta>0?today():(r.cooked_count?r.prev_cooked||null:null); ping() },
     async importRecipe(url){ await new Promise(r=>setTimeout(r,700)); if(!/^https?:\/\//.test(url)) throw new Error("Paste a full link that starts with https://");
@@ -1280,6 +1315,11 @@ const api = DEMO ? (() => {
       if(error){ let msg="Couldn't read those photos. Try again."; try{ const j=await error.context.json(); if(j?.error) msg=j.error }catch(e){} throw new Error(msg) }
       if(data?.error) throw new Error(data.error); return data;
     },
+    async readPictures(images){
+      const { data, error } = await sb.functions.invoke("import-recipe", { body:{ images } });
+      if(error){ let msg="Couldn't read those pictures. Try again."; try{ const j=await error.context.json(); if(j?.error) msg=j.error }catch(e){} const er=new Error(msg); er.noKey=/ANTHROPIC_API_KEY/.test(msg); throw er }
+      if(data?.error){ const er=new Error(data.error); er.noKey=/ANTHROPIC_API_KEY/.test(data.error); throw er } return data;
+    },
     async parseText(text){
       const { data, error } = await sb.functions.invoke("import-recipe", { body:{ text } });
       if(error){ let msg="Couldn't read that picture."; try{ const j=await error.context.json(); if(j?.error) msg=j.error }catch(e){} throw new Error(msg) }
@@ -1318,7 +1358,7 @@ const api = DEMO ? (() => {
 
 /* ======================== STATE ======================== */
 let reviews={}, rvEdit=null, stockRows=[], stEdit=null, tsRecipe=null, tsSel=[];
-let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, kidCal=null, wordsCfg=null, kidBags=null, kidBagDone=null, kidProfile=null, kidGrowth=null, kidJournal=null, calendars=[], events=[], eventsFailed=[], calIds=null;
+let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, kidCal=null, wordsCfg=null, kidBags=null, kidBagDone=null, kidProfile=null, kidGrowth=null, kidJournal=null, timersCfg=null, calendars=[], events=[], eventsFailed=[], calIds=null;
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
 const MODES=["auto","morning","day","dinner","night"];
@@ -1358,7 +1398,7 @@ async function refreshAll(){
   try{
     let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
     planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[pk(p.day,p.meal||"dinner"),p.recipe_id]));
-    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, kidCal, wordsCfg, kidBags, kidBagDone, kidProfile, kidGrowth, familyCfg, kidJournal] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("kid_cal"), api.state("words"), api.state("kid_bags"), api.state("kid_bag_done"), api.state("kid_profile"), api.state("kid_growth"), api.state("family"), api.state("kid_journal")]); applyFamily();
+    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, kidCal, wordsCfg, kidBags, kidBagDone, kidProfile, kidGrowth, familyCfg, kidJournal, timersCfg] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("kid_cal"), api.state("words"), api.state("kid_bags"), api.state("kid_bag_done"), api.state("kid_profile"), api.state("kid_growth"), api.state("family"), api.state("kid_journal"), api.state("timers")]); renderTimers(); applyFamily();
     reviews={}; (rvs||[]).forEach(x=>{ (reviews[x.recipe_id] ||= {})[x.reviewer]=x });
     if(th && th.theme && th.theme!==theme) applyTheme(th.theme);
     stockRows = pan||[]; pantrySet = new Set(stockRows.map(x=>x.name));
@@ -1488,7 +1528,7 @@ function renderWall0(){
         ${useSoonHTML()}
         <div class="fc">${fcHTML()}</div>
         ${card}
-        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span><span style="display:flex;gap:6px"><button data-open="kidOv">${KID}</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
+        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span><span style="display:flex;gap:6px"><button data-open="timerOv">Timer</button><button data-open="kidOv">${KID}</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
       </div>`;
     }
     const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : kidHTML("row",bagNow().length?1:2);
@@ -1948,6 +1988,46 @@ document.addEventListener("click",async e=>{
     try{ await api.setPlan(today(),null,"dinner"); if(tonightState&&tonightState.date===today()) await api.setTonight(null); if(tn) ideaSkip.push(tn.r.id); await refreshAll(); syncShopping({quiet:true}); toast("Tonight is open again. Swipe for an idea") }catch(err){ toast("Couldn't change the plan") } }
 }, true);
 
+/* ======================== KITCHEN TIMERS ======================== */
+// Shared through the database, so a timer started on a phone rings on the wall too.
+const timers = () => ((timersCfg&&timersCfg.items)||[]);
+let tmPick=null, audioCtx=null, lastBeep=0, dismissedLocal=new Set();
+document.addEventListener("pointerdown",()=>{ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended") audioCtx.resume() }catch(e){} },{passive:true});
+function chime(){ if(!audioCtx) return; const t=audioCtx.currentTime; [0,.22,.44].forEach((d,i)=>{ const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type="sine"; o.frequency.value=[880,1175,1568][i]; g.gain.setValueAtTime(.0001,t+d); g.gain.exponentialRampToValueAtTime(.35,t+d+.02); g.gain.exponentialRampToValueAtTime(.0001,t+d+.5); o.connect(g).connect(audioCtx.destination); o.start(t+d); o.stop(t+d+.55) }) }
+const fmtLeft = ms => { const s=Math.max(0,Math.ceil(ms/1000)), h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return h?`${h}:${String(m).padStart(2,"0")}:${String(x).padStart(2,"0")}`:`${m}:${String(x).padStart(2,"0")}` };
+function renderTimers(){
+  const now=Date.now(), list=timers().filter(t=>now-t.end<15*60e3);
+  $("timerBar").innerHTML=list.map(t=>{ const left=t.end-now, done=left<=0;
+    return `<div class="tchip ${done?"done":""}" data-tmid="${t.id}"><span class="tl">${esc(t.label||"Timer")}</span><span class="tt">${done?"Done!":fmtLeft(left)}</span><button data-tmx="${t.id}" aria-label="${done?"Dismiss":"Cancel timer"}">${done?"OK":"✕"}</button></div>` }).join("");
+  if(list.some(t=>t.end<=now) && now-lastBeep>3500){ lastBeep=now; chime(); try{ navigator.vibrate&&navigator.vibrate([200,100,200]) }catch(e){} }
+  if(!$("cook").classList.contains("open")) return; renderCkTimer();
+}
+setInterval(()=>{ if(timers().length) renderTimers() },1000);
+async function saveTimers(items){ timersCfg={items}; renderTimers(); try{ await api.setState("timers",timersCfg) }catch(e){ toast("Couldn't sync the timer") } }
+async function startTimer(mins,label){ if(!(mins>0)) return; const t={id:uuid(),label:(label||"").trim()||`${niceNum(mins,"")} min`,end:Date.now()+mins*60e3,dur:mins};
+  await saveTimers([...timers().filter(x=>Date.now()-x.end<15*60e3), t]); toast(`Timer started: ${t.label}`) }
+$("timerBar").addEventListener("click",e=>{ const b=e.target.closest("[data-tmx]"); if(!b) return; saveTimers(timers().filter(t=>t.id!==b.dataset.tmx)) });
+// the sheet
+function renderTmPre(){ $("tmPre").innerHTML=[1,3,5,8,10,12,15,20,30,45].map(m=>`<button data-tmm="${m}" class="${tmPick===m?"on":""}">${m} min</button>`).join("") }
+$("tmPre").onclick=e=>{ const b=e.target.closest("[data-tmm]"); if(!b) return; tmPick=+b.dataset.tmm; $("tmMin").value=""; renderTmPre() };
+$("tmMin").oninput=()=>{ tmPick=null; renderTmPre() };
+$("tmGo").onclick=async()=>{ const m=tmPick || parseFloat(($("tmMin").value||"").replace(",",".")); if(!(m>0)){ toast("Pick a time"); return } close("timerOv"); await startTimer(m,$("tmLabel").value); $("tmLabel").value=""; $("tmMin").value=""; tmPick=null };
+// times written in a recipe step: "18 minutes", "10-15 menit", "1 hour", "1 jam", "30 seconds"
+function stepMinutes(txt){
+  const m=String(txt).match(/(\d+(?:[.,]\d+)?)(?:\s*(?:-|–|to|sampai|hingga)\s*(\d+(?:[.,]\d+)?))?\s*(hours?|hrs?|jam|minutes?|mins?|menit|seconds?|secs?|detik)\b/i); if(!m) return null;
+  const n=parseFloat((m[2]||m[1]).replace(",",".")), u=m[3].toLowerCase();
+  return /^(h|jam)/.test(u)? n*60 : /^(s|detik)/.test(u)? n/60 : n;
+}
+const ckLabel = () => `${ck.r.title.split(/\s+/).slice(0,2).join(" ")}, step ${ck.i+1}`;
+function renderCkTimer(){
+  const box=$("ckTimer"); if(!box||!ck) return; const mins=stepMinutes(ck.r.steps[ck.i]); if(!mins){ box.innerHTML=""; return }
+  const label=ckLabel(), run=timers().find(t=>t.label===label && t.end>Date.now());
+  box.innerHTML = run ? `<button class="cktm run" data-tmx="${run.id}">⏱ ${fmtLeft(run.end-Date.now())} left · Stop</button>` : `<button class="cktm" data-cktm="${mins}">⏱ Start ${niceNum(mins,"")} min timer</button>`;
+}
+$("ckTimer").addEventListener("click",e=>{ const s=e.target.closest("[data-cktm]"), x=e.target.closest("[data-tmx]");
+  if(s) startTimer(+s.dataset.cktm,ckLabel()); if(x) saveTimers(timers().filter(t=>t.id!==x.dataset.tmx)) });
+document.addEventListener("click",e=>{ if(e.target.closest('[data-open="timerOv"]')){ tmPick=null; renderTmPre(); if($("menuOv").classList.contains("open")) close("menuOv") } }, true);
+
 /* ======================== DAILY WORDS ======================== */
 const MAMA_NOTES=()=>["Thank you for the hundred small things you do before anyone else wakes up.",`${KID} is lucky to have you. So am I.`,"You make our house feel like home.","Thank you for your patience, even on the long days.",`Every hug you give ${KID} is shaping who she'll be.`,"You're doing a wonderful job, even when it doesn't feel like it.","Thank you for the good food, the good talks and the good mornings.",`${KID} learned that smile from you.`,"Today, let us take care of you for a change.","Your kindness is the best thing in this house.","Thank you for always knowing where everything is.","You turn ordinary days into good memories.","We notice everything you do. Thank you.",`${KID}'s favourite place is wherever you are.`,"You're a great mom and an even better friend.","Thank you for the bedtime songs and the early wake-ups.",`The way you love us is the way ${KID} will love the world.`,"Take a slow coffee today. You've earned it.","Thank you for making our home so beautiful, inside and out.","You make hard things look easy. We know they aren't.","Thank you for staying calm when we're not.",`From ${KID}: Mama, I love you. (She'd write it herself if she could.)`,"Thank you for every meal, every bath and every story.","You are enough, exactly as you are today.","Thank you for choosing us every day.","The best part of our mornings is you.",`Thank you for teaching ${KID} to be curious and kind.`,"Whatever today brings, we've got your back.","Thank you for the love you put into everything.",`Thank you, ${MOM}. For everything, always.`];
 const MOTTOS=["Small steps still count.","Do the next right thing.","Progress over perfection.","Be kind, starting with yourself.","One thing at a time.","Today is a fresh page.","Breathe. You've got this.","Make today a little lighter.","Choose patience today.","Start where you are.","Good things take time.","Show up, then keep going.","Rest is part of the work.","Be curious today.","Smile at someone first.","Focus on what you can control.","A calm mind finds a way.","Celebrate the small wins.","Try once more.","Listen more than you speak.","Let today be easy.","You've done hard things before.","Begin again, as often as you need.","Leave things a little better than you found them.","Plan less, do more.","Choose courage over comfort.","Gratitude turns enough into plenty.","Keep it simple.","Be the calm in the room.","Finish one thing well."];
@@ -2032,6 +2112,55 @@ function renderBookList(){
     <span><b>${esc(r.title)}${!isTried(r)?`<span class="newtag">New</span>`:""}${tn&&tn.picked&&tn.r.id===r.id?` <span style="color:var(--accent);font-weight:600;font-size:13px">Tonight</span>`:""}</b><small>${esc([r.category,r.cook_time,r.source_kind==="youtube"?"Video":r.source_kind==="instagram"?"Instagram":null].filter(Boolean).join(", "))}${(r.cooked_count||0)>0?`<span class="madetag">Made ${r.cooked_count}×</span>`:""}${(()=>{const sc=score(r.id), b=(reviews[r.id]||{}).baby; return (sc!=null?`<span class="score">★ ${sc.toFixed(1)}</span>`:"")+(b?` ${BABY[b.rating][0]}`:"")})()}</small></span></button>` }).join("")
     || `<p class="empty" style="padding:16px">No recipes match.</p>`;
 }
+/* ---------- scale servings, convert units ---------- */
+const SC_FR={"½":.5,"¼":.25,"¾":.75,"⅓":1/3,"⅔":2/3,"⅛":.125};
+const SC_UNIT="cups?|gelas|tbsp|tbs|tablespoons?|sdm|tsp|teaspoons?|sdt|oz|ounces?|lbs?|pounds?|ons|g|gr|gram|grams|kg|ml|l|liters?|litres?|cloves?|siung|butir|buah|lembar|batang|ruas|ikat|pinch(?:es)?|cm";
+const SC_QTY=new RegExp(`^\\s*(\\d+\\s+\\d+\\/\\d+|\\d+\\s*[½¼¾⅓⅔⅛]|\\d+\\/\\d+|\\d+(?:[.,]\\d+)?|[½¼¾⅓⅔⅛])(?:\\s*(?:-|–|to|sampai)\\s*(\\d+(?:[.,]\\d+)?))?\\s*(${SC_UNIT})?\\b\\.?`,"i");
+const scNum=t=>{ t=t.trim(); let m;
+  if((m=t.match(/^(\d+)\s+(\d+)\/(\d+)$/))) return +m[1]+m[2]/m[3];
+  if((m=t.match(/^(\d+)\s*([½¼¾⅓⅔⅛])$/))) return +m[1]+SC_FR[m[2]];
+  if((m=t.match(/^(\d+)\/(\d+)$/))) return m[1]/m[2];
+  if(SC_FR[t]!=null) return SC_FR[t]; return parseFloat(t.replace(",",".")) };
+function niceNum(v, unit){
+  if(/^(g|ml)$/.test(unit) && v>=50) return String(Math.round(v/5)*5);
+  if(v>=10) return String(Math.round(v));
+  const w=Math.floor(v), f=v-w, opts=[[0,""],[.25,"¼"],[1/3,"⅓"],[.5,"½"],[2/3,"⅔"],[.75,"¾"],[1,""]];
+  const [fv,fs]=opts.reduce((a,b)=>Math.abs(b[0]-f)<Math.abs(a[0]-f)?b:a);
+  if(Math.abs(fv-f)<.06){ const W=w+(fv===1?1:0); return (W?String(W):"")+(fv===1||fv===0?"":fs) || "0" }
+  return String(Math.round(v*10)/10);
+}
+const SC_METRIC={cup:[240,"ml"],cups:[240,"ml"],oz:[28.35,"g"],ounce:[28.35,"g"],ounces:[28.35,"g"],lb:[453.6,"g"],lbs:[453.6,"g"],pound:[453.6,"g"],pounds:[453.6,"g"],ons:[100,"g"]};
+const SC_SPOON={sdm:"tbsp",tbs:"tbsp",tablespoon:"tbsp",tablespoons:"tbsp",sdt:"tsp",teaspoon:"tsp",teaspoons:"tsp"};
+function scaleLine(line, k, metric){
+  const m=line.match(SC_QTY); if(!m || (k===1 && !metric)) return line;
+  let a=scNum(m[1]), b=m[2]!=null?scNum(m[2]):null, unit=(m[3]||"").toLowerCase(), u=m[3]||"";
+  if(isNaN(a)) return line; a*=k; if(b!=null) b*=k;
+  if(metric){ if(SC_METRIC[unit]){ const [f,nu]=SC_METRIC[unit]; a*=f; if(b!=null) b*=f; u=nu; unit=nu } else if(SC_SPOON[unit]){ u=SC_SPOON[unit]; unit=u } }
+  if(unit==="g" && a>=1000){ a/=1000; if(b!=null) b/=1000; u="kg"; unit="kg" } else if(unit==="ml" && a>=1000){ a/=1000; if(b!=null) b/=1000; u="L"; unit="l" }
+  const qty=niceNum(a,unit)+(b!=null?"–"+niceNum(b,unit):"");
+  const rest=line.slice(m[0].length);
+  return `${qty}${u?(/^(g|kg|ml|L)$/.test(u)?"":" ")+u:""}${rest.startsWith(" ")||!rest?"":" "}${rest}`;
+}
+let scaleState={}; const metricOn=()=>LS.get("metric")===true;
+const baseServes=r=>{ const n=parseInt(r.serves); return n>0?n:null };
+function factorFor(r){ const st=scaleState[r.id]; if(!st) return 1; const b=baseServes(r); return b? st/b : st }
+function scaleBarHTML(r){
+  const b=baseServes(r), cur=scaleState[r.id] ?? (b||1);
+  const lbl = b ? `Serves <b>${cur}</b>` : `<b>${cur===1?"1×":niceNum(cur,"")+"×"}</b> recipe`;
+  return `<div class="scalebar"><button data-scale="-1" aria-label="Fewer">−</button><span>${lbl}</span><button data-scale="1" aria-label="More">+</button>
+    ${cur!==(b||1)?`<button class="lnk" data-scale="0">Reset</button>`:""}<button class="chip2 ${metricOn()?"on":""}" data-metric aria-pressed="${metricOn()}">Metric</button></div>`;
+}
+function ingItemsHTML(r){ const k=factorFor(r), mt=metricOn(); return (r.ingredients||[]).map(i=>`<li><span class="box"></span><span>${esc(scaleLine(i,k,mt))}</span>${lineInStock(i)?`<span class="instock">In stock</span>`:""}</li>`).join("") }
+document.addEventListener("click",e=>{
+  const sc=e.target.closest("[data-scale]"), mt=e.target.closest("[data-metric]"); if(!sc&&!mt) return;
+  const r=recipes.find(x=>x.id===selId); if(!r) return; e.stopPropagation();
+  if(mt){ LS.set("metric",!metricOn()) }
+  else { const b=baseServes(r), cur=scaleState[r.id] ?? (b||1), d=+sc.dataset.scale;
+    if(d===0) delete scaleState[r.id];
+    else if(b) scaleState[r.id]=Math.max(1,Math.min(40,cur+d));
+    else { const steps=[.5,1,1.5,2,3,4], i=steps.indexOf(cur); scaleState[r.id]=steps[Math.max(0,Math.min(steps.length-1,(i<0?1:i)+d))] } }
+  const bar=document.querySelector("#detail .scalebar"); if(bar) bar.outerHTML=scaleBarHTML(r); $("ingList").innerHTML=ingItemsHTML(r);
+}, true);
 function showRecipe(id){
   if(rvEdit && rvEdit.id!==id) rvEdit=null;
   editing=false; selId=id; renderBookList(); const r=recipes.find(x=>x.id===id);
@@ -2051,7 +2180,7 @@ function showRecipe(id){
       <select class="pill" data-plansel="${r.id}" style="padding-right:.8em"><option value="">Plan for…</option>${[...Array(7)].map((_,i)=>{const d=addDays(today(),i);return `<optgroup label="${dayLabel(d)} ${dayShort(d)}">${MEALS.map(([m,ml])=>`<option value="${d}|${m}">${ml}, ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}${planMap[pk(d,m)]===r.id?" ✓":""}</option>`).join("")}</optgroup>`}).join("")}</select>
     </div>
     <div class="cols">
-      <div><h3>Ingredients</h3><ul class="ing">${(r.ingredients||[]).map(i=>`<li><span class="box"></span><span>${esc(i)}</span>${lineInStock(i)?`<span class="instock">In stock</span>`:""}</li>`).join("")}</ul></div>
+      <div><h3>Ingredients</h3>${scaleBarHTML(r)}<ul class="ing" id="ingList">${ingItemsHTML(r)}</ul></div>
       <div><h3>Method</h3><ol class="steps">${(r.steps||[]).map(s=>`<li><span>${esc(s)}</span></li>`).join("")}</ol>
       ${r.notes?`<div class="notes"><b>Notes</b><br>${esc(r.notes)}</div>`:""}
 </div>
@@ -2375,6 +2504,12 @@ function loadScript(src){ return new Promise((res,rej)=>{ const s=document.creat
 $("impPics").onchange=async e=>{
   const files=[...e.target.files]; e.target.value=""; if(!files.length) return;
   const prog=$("impProg"); $("impErr").textContent="";
+  // Claude reads the pictures; the on-device text reader is only the fallback
+  try{
+    prog.textContent=`Claude is reading ${files.length>1?`your ${Math.min(files.length,6)} pictures`:"your picture"}… this takes about 20 seconds.`;
+    const images=await Promise.all(files.slice(0,6).map(async f=>({data:await b64(await shrink(f,1600,.85)),media_type:"image/jpeg"})));
+    const d=await api.readPictures(images); prog.textContent=""; fromImport(d,null); return;
+  }catch(err){ if(!err.noKey){ prog.textContent=""; $("impErr").textContent=err.message||"Couldn't read those pictures. Try again."; return } }
   try{
     if(!window.Tesseract){ prog.textContent="Getting the text reader ready…"; await loadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js") }
     let text="";
@@ -2523,7 +2658,7 @@ let ck={r:null,i:0}, wakeLock=null;
 function openCook(id){
   const r=recipes.find(x=>x.id===id); if(!r||!(r.steps||[]).length){ toast("This recipe has no steps yet"); return }
   ck={r,i:0}; $("ckTitle").textContent=r.title;
-  $("ckIngP").innerHTML=`<ul>${(r.ingredients||[]).map(i=>`<li>${esc(i)}</li>`).join("")}</ul>`; $("ckIngP").classList.remove("open"); $("ckIng").textContent="Ingredients";
+  $("ckIngP").innerHTML=`${factorFor(r)!==1?`<p class="hint2">Scaled ${baseServes(r)?`to serve ${scaleState[r.id]}`:`×${niceNum(factorFor(r),"")}`}</p>`:""}<ul>${(r.ingredients||[]).map(i=>`<li>${esc(scaleLine(i,factorFor(r),metricOn()))}</li>`).join("")}</ul>`; $("ckIngP").classList.remove("open"); $("ckIng").textContent="Ingredients";
   const yid=ytIdOf(r.source_url); $("ckVid").style.display=yid?"":"none"; $("ckVidP").classList.remove("open"); $("ckVidP").innerHTML=""; $("ckVid").dataset.yid=yid||"";
   renderCook(); open("cook");
   try{ navigator.wakeLock?.request("screen").then(l=>wakeLock=l).catch(()=>{}) }catch(e){}
@@ -2559,7 +2694,7 @@ function renderCook(){
   $("ckN").textContent=`Step ${ck.i+1} of ${n}`; $("ckTxt").textContent=s[ck.i];
   $("ckDots").innerHTML=s.map((_,i)=>`<i class="${i===ck.i?"on":""}"></i>`).join("");
   $("ckBack").style.visibility=ck.i?"visible":"hidden"; $("ckNext").textContent=ck.i===n-1?"Finished":"Next";
-  $("ckSpeak").classList.toggle("on",HF.speak); speakStep();
+  $("ckSpeak").classList.toggle("on",HF.speak); renderCkTimer(); speakStep();
 }
 $("ckNext").onclick=()=>{ if(ck.i<ck.r.steps.length-1){ ck.i++; renderCook(); return }
   const id=ck.r.id, rr=recipes.find(x=>x.id===id);
@@ -2651,7 +2786,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.28";
+const APP_VERSION="2026-11-13.29";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();

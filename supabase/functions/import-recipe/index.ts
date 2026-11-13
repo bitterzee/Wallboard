@@ -103,8 +103,24 @@ Deno.serve(async (req) => {
   const { data: ok, error: authErr } = await userClient.rpc("wb_is_member");
   if (authErr || ok !== true) return json({ error: "Sign in to the wallboard first." }, 401);
 
-  let body: { url?: string; text?: string } = {};
+  let body: { url?: string; text?: string; images?: { data: string; media_type?: string }[] } = {};
   try { body = await req.json(); } catch { /* */ }
+
+  // Photos or screenshots of a recipe, read by Claude
+  if (Array.isArray(body.images) && body.images.length) {
+    const KEY = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!KEY) return json({ error: "Reading pictures with Claude needs an ANTHROPIC_API_KEY secret in Supabase." }, 503);
+    const imgs = body.images.filter((i) => typeof i?.data === "string" && i.data.length > 100 && i.data.length < 3_500_000).slice(0, 6)
+      .map((i) => ({ data: i.data, type: /^image\/(jpeg|png|webp)$/.test(i.media_type ?? "") ? i.media_type! : "image/jpeg" }));
+    if (!imgs.length) return json({ error: "Add at least one picture." }, 400);
+    try {
+      const ai = await recipeFromVideo(KEY, { title: "", author: "", description: "", transcript: "", lang: "", images: imgs, photos: true });
+      if (!ai || !ai.found || ai.ingredients.length + ai.steps.length < 2) return json({ error: "Claude couldn't find a recipe in those pictures. Try screenshots where the ingredients are written on screen." }, 422);
+      const partial = !ai.ingredients.length || !ai.steps.length;
+      return json({ title: ai.title || "Recipe from pictures", category: ai.category, cook_time: ai.cook_time, serves: ai.serves, ingredients: ai.ingredients, steps: ai.steps, notes: ai.tips || null,
+        source_url: null, source_kind: "photo", photo_path: null, partial, message: partial ? "Claude read part of the recipe. Fill in the rest." : "Claude read this from your pictures. Check the amounts before saving." });
+    } catch (e) { return json({ error: (e as Error).message }, 502); }
+  }
 
   // Text read from a photo or screenshot on the device
   if (typeof body.text === "string" && body.text.trim()) {

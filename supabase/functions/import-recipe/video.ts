@@ -120,10 +120,13 @@ const TOOL = {
   },
 };
 
-export async function recipeFromVideo(key: string, v: { title: string; author: string; description: string; transcript: string; lang: string; images?: { data: string; type: string }[] }) {
+export async function recipeFromVideo(key: string, v: { title: string; author: string; description: string; transcript: string; lang: string; images?: { data: string; type: string }[]; photos?: boolean }) {
   const model = Deno.env.get("IMPORT_MODEL") || "claude-sonnet-5-5";
   const pics = v.images ?? [];
-  const prompt =
+  const prompt = v.photos ?
+    `These pictures show one recipe: a cookbook page, a handwritten card, a website screenshot, or screenshots of a cooking video with the recipe written on screen. ` +
+    `Read all the text in them, in order, and write out the recipe. Use English, but keep common Indonesian ingredient and dish names (with the English in brackets the first time if helpful). ` +
+    `Keep the amounts exactly as written. Combine information that is spread across several pictures. If the pictures don't contain a recipe, set found to false. Answer only by calling report_recipe.` :
     (pics.length ? `The images are frames from the video in time order: the first ones are grids of small frames across the whole video (read them left to right, top to bottom), the last are single frames. Read on-screen text such as ingredient names and amounts, and watch what is added at each step.\n` : "") +
     `Here is a cooking video's title, description` + (v.transcript ? ` and transcript (the transcript may be auto-generated, so expect mis-heard words)` : ` (it has no speech)`) + `.\n` +
     `Write the recipe that is cooked in it. Use English, but keep common Indonesian ingredient and dish names (with the English in brackets the first time if helpful). ` +
