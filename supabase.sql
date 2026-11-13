@@ -16,7 +16,7 @@ create table if not exists public.wb_members (
 -- Household logins (existing Capcus logins). Add your wife with:
 --   insert into public.wb_members values ('her@email.com','Her name');
 insert into public.wb_members (email, display_name) values
-  ('renrasfuldi@gmail.com', 'Renaldo')
+  ('you@example.com', 'Dad')
 on conflict (email) do update set display_name = excluded.display_name;
 
 create or replace function public.wb_is_member()
@@ -129,3 +129,19 @@ alter table public.wb_meal_plan drop constraint if exists wb_meal_plan_meal_chec
 alter table public.wb_meal_plan add constraint wb_meal_plan_meal_check check (meal in ('breakfast','lunch','dinner'));
 alter table public.wb_meal_plan drop constraint if exists wb_meal_plan_pkey;
 alter table public.wb_meal_plan add primary key (day, meal);
+
+-- Lock-down (2026-11-13): confirmed household emails only; no anon access; members can't edit the member list
+create or replace function public.wb_is_member()
+returns boolean language sql stable security definer set search_path to 'public'
+as $$
+  select exists (
+    select 1 from public.wb_members m join auth.users u on lower(u.email) = lower(m.email)
+    where u.id = auth.uid() and u.email_confirmed_at is not null
+      and lower(coalesce(auth.jwt() ->> 'email','')) = lower(m.email)
+  );
+$$;
+revoke all on function public.wb_is_member() from anon, public;
+grant execute on function public.wb_is_member() to authenticated;
+revoke all on public.wb_members, public.wb_recipes, public.wb_photos, public.wb_state, public.wb_meal_plan,
+  public.wb_shopping, public.wb_pantry, public.wb_calendars, public.wb_reviews from anon;
+revoke insert, update, delete on public.wb_members from authenticated;
