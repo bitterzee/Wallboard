@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -175,6 +175,80 @@ body.awake .ctl{opacity:1;pointer-events:auto}
 .dots i{width:10px;height:10px;border-radius:50%;background:#3a352f}
 .dots i.on{background:var(--accent)}
 
+/* rain, on-this-day, tomorrow */
+.rain{display:inline-flex;align-items:center;gap:.5em;background:rgba(140,200,255,.2);border:1px solid rgba(140,200,255,.5);color:#dcefff;border-radius:99px;padding:.4em 1em;font-weight:700;align-self:flex-start}
+.rain.heavy{background:rgba(255,140,120,.25);border-color:rgba(255,170,150,.65);color:#ffe4dd}
+.otd{display:inline-block;background:rgba(0,0,0,.6);color:#fff;border-radius:99px;padding:.35em 1em;font-weight:700}
+.tmr{font-size:15px;color:var(--ink2);border-top:1px solid var(--line);padding-top:8px}
+.tmr b{color:var(--ink)}
+
+/* plan, shopping, sheets */
+.scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
+.wrapc{max-width:760px;margin:0 auto;padding:14px 16px 28px}
+.pday{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);background:#fff;border-radius:14px;margin-bottom:10px}
+.pday.today{border-color:#c48a2c;box-shadow:0 0 0 1px #c48a2c inset}
+.pday .dl{width:96px;flex:none}.pday .dl b{display:block;font-size:16px}.pday .dl small{color:var(--ink2);font-size:13px}
+.pday .pr{flex:1;min-width:0;display:flex;align-items:center;gap:10px;text-align:left;min-height:48px}
+.pday .pr .th{width:46px;height:46px;font-size:18px}
+.pday .pr span.t{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pday .pr span.add{color:var(--ink2)}
+.pday .x{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);color:var(--ink2);flex:none}
+.hint2{color:var(--ink2);font-size:14px;line-height:1.5;margin:4px 0 14px}
+.shopadd{display:flex;gap:8px;margin-bottom:14px}
+.shopadd input{flex:1;padding:.75em .95em;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:16px;color:var(--ink)}
+.aisle{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink2);font-weight:800;margin:18px 0 6px}
+.srow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 4px;border-bottom:1px solid var(--line);font-size:17px;min-height:48px}
+.srow .box{width:24px;height:24px;border:2px solid #b8aa96;border-radius:7px;flex:none}
+.srow.done{color:var(--ink2)}.srow.done .nm{text-decoration:line-through}
+.srow.done .box{background:#8a6a3e;border-color:#8a6a3e}
+.srow .nm{flex:1;min-width:0}.srow .nm small{display:block;color:var(--ink2);font-size:12px}
+.srow .q{color:var(--ink2);font-size:15px;white-space:nowrap}
+.srow .del{color:var(--ink2);padding:4px 8px;font-size:18px}
+.sheet{background:rgba(0,0,0,.55);align-items:center;justify-content:center;z-index:30}
+.sheetbox{background:var(--paper);color:var(--ink);border-radius:20px;padding:22px;width:min(560px,92vw);max-height:86vh;display:flex;flex-direction:column;gap:10px}
+.sheetbox h2{font-size:26px;font-weight:600}
+.sheetbox p{color:var(--ink2);font-size:15px;line-height:1.5}
+.sheetbox input{padding:.8em 1em;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:16px;color:var(--ink)}
+.sheetbox .err{color:#b3412e;font-size:14px;min-height:1.2em}
+.notice{background:#f1e7d7;border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.45}
+.notice.warn{background:#fbe3dc}
+
+/* tabs + iPhone layout */
+#tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;display:none;grid-template-columns:repeat(5,1fr);background:rgba(20,18,16,.97);border-top:1px solid #2e2a25;padding:4px 4px calc(4px + env(safe-area-inset-bottom))}
+body.phone #tabs{display:grid}
+body.phone.cooking #tabs,body.phone.signin #tabs{display:none}
+#tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#9c9388;font-size:11px;font-weight:700;min-height:52px}
+#tabs svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#tabs button.on{color:var(--accent)}
+body.phone .ov{bottom:calc(61px + env(safe-area-inset-bottom))}
+body.phone #cook,body.phone #login,body.phone #layoutOv,body.phone .sheet{bottom:0}
+body.phone .ctl,body.phone .demo-badge{display:none!important}
+.pgrid .empty{grid-column:1/-1}
+body.phone #bookOv [data-close],body.phone #photosOv [data-close],body.phone #planOv [data-close],body.phone #shopOv [data-close],body.phone #bookLayout,body.phone #bookOv [data-open]{display:none}
+body.phone .toast{bottom:calc(78px + env(safe-area-inset-bottom))}
+body.phone #wall{left:0;top:0;width:100%;height:auto;bottom:calc(61px + env(safe-area-inset-bottom));transform:none;padding:calc(env(safe-area-inset-top) + 14px) 18px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+body[data-mode=phone] .shade{background:linear-gradient(180deg,rgba(0,0,0,.62),rgba(0,0,0,.28) 38%,rgba(0,0,0,.72))}
+.pw{display:flex;flex-direction:column;gap:14px;max-width:520px;margin:0 auto}
+.pw-time{font-size:78px}
+.pw-date{font-size:17px;font-weight:600;margin-top:6px}
+.pw-wx{display:flex;align-items:center;gap:12px}.pw-wx svg{width:56px;height:auto}
+.pw-temp{font-size:44px;font-weight:300;line-height:1}
+.pw-desc{font-size:14px;color:var(--muted);margin-top:3px}
+.pw .fc{gap:6px;font-size:12px}.pw .fc>div{padding:8px 2px;border-radius:12px}.pw .fc svg{width:60%;margin:4px auto}
+.pw .rc{border-radius:20px}.pw .rc .ph{height:150px;min-height:0;font-size:48px}
+.pw .rc .b{padding:16px;gap:9px}
+.pw .eyebrow{font-size:11px}.pw .rc h2{font-size:26px}.pw .meta{font-size:12px}
+.pw .rc ul{font-size:14px;column-gap:14px}
+.pw .btn-cook{font-size:15px}.pw .btn-ghost{font-size:14px}.pw .by{font-size:12px}
+.pw .rain{font-size:14px}.pw .otd{font-size:13px;align-self:flex-start}
+.pw-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:var(--muted);padding-bottom:6px}
+.pw-foot button{color:var(--accent);font-weight:700;font-size:13px}
+body.phone .ck .step{padding:22px 22px}
+body.phone .ck .n{font-size:13px}
+body.phone .ck .nav button{min-height:84px;font-size:20px}
+body.phone .bar{padding-left:16px;padding-right:12px}
+body.phone .bar h1{font-size:22px}
+
 /* layout chooser */
 .lchoices{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .lc{text-align:left;background:#1f1c19;border:2px solid #3a352f;border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:8px;color:#f6f1e8}
@@ -216,6 +290,8 @@ body.awake .ctl{opacity:1;pointer-events:auto}
   <button id="bLayout">Layout</button>
   <button id="bMode">Mode: Auto</button>
   <button id="bBook">Recipes</button>
+  <button id="bPlan">Plan</button>
+  <button id="bShop">Shopping</button>
   <button id="bPhotos">Photos</button>
 </div>
 
@@ -234,7 +310,7 @@ body.awake .ctl{opacity:1;pointer-events:auto}
         <div class="cats" id="cats"></div>
       </div>
       <div class="items" id="items"></div>
-      <div style="padding:12px;border-top:1px solid var(--line)"><button class="pill dark" id="bNew" style="width:100%">+ Add recipe</button></div>
+      <div style="padding:12px;border-top:1px solid var(--line);display:flex;gap:8px"><button class="pill dark" id="bNew" style="flex:1">+ Add recipe</button><button class="pill" id="bImport" style="flex:1">Import link</button></div>
     </aside>
     <article class="detail" id="detail"></article>
   </div>
@@ -252,6 +328,42 @@ body.awake .ctl{opacity:1;pointer-events:auto}
     <span style="color:var(--ink2);font-size:14px;margin-right:auto" id="who"></span>
     <button class="pill" id="bSignOut">Sign out</button>
   </div>
+</section>
+
+<!-- meal plan -->
+<section class="ov" id="planOv">
+  <div class="bar"><h1 class="serif">Dinner plan</h1><button class="pill dark" id="planShop">Shopping list →</button><button class="pill" data-close>Close</button></div>
+  <div class="scroll"><div class="wrapc"><p class="hint2">Tap a day to choose its dinner. Today's shows on the wall. Your plan is shared, so you both see the same week.</p><div id="planList"></div></div></div>
+</section>
+
+<!-- shopping list -->
+<section class="ov" id="shopOv">
+  <div class="bar"><h1 class="serif">Shopping list</h1><button class="pill" id="shopBuild">From plan</button><button class="pill" data-close>Close</button></div>
+  <div class="scroll"><div class="wrapc">
+    <form class="shopadd" id="shopAdd"><input id="shopItem" placeholder="Add an item, like 2 kg rice" autocomplete="off"><button class="pill dark" type="submit">Add</button></form>
+    <div id="shopList"></div>
+  </div></div>
+</section>
+
+<!-- recipe picker -->
+<section class="ov sheet" id="pickOv">
+  <div class="sheetbox" style="height:min(640px,86vh)">
+    <h2 class="serif" id="pickTitle">Choose dinner</h2>
+    <input id="pickQ" placeholder="Search recipes">
+    <div class="scroll" id="pickList" style="margin:0 -6px"></div>
+    <div class="row" style="margin-top:4px"><button class="pill warn" id="pickClear">No dinner planned</button><button class="pill" data-close>Cancel</button></div>
+  </div>
+</section>
+
+<!-- import -->
+<section class="ov sheet" id="importOv">
+  <form class="sheetbox" id="impForm">
+    <h2 class="serif">Import a recipe</h2>
+    <p>Paste a link from a recipe site, like Cookpad, a food blog or BBC Good Food. It fills in the title, ingredients, steps and photo, and you check it before saving.</p>
+    <input id="impUrl" type="url" inputmode="url" placeholder="https://" autocomplete="off" required>
+    <div class="err" id="impErr"></div>
+    <div class="row" style="margin-top:0"><button class="pill dark" type="submit" id="impGo">Import</button><button class="pill" type="button" data-close>Cancel</button></div>
+  </form>
 </section>
 
 <!-- cooking mode -->
@@ -304,6 +416,14 @@ body.awake .ctl{opacity:1;pointer-events:auto}
 
 <div class="toast" id="toast"></div>
 
+<nav id="tabs">
+  <button data-tab="today" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Today</button>
+  <button data-tab="recipes"><svg viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zm0 0A2 2 0 0 0 6 22h14"/><path d="M9 7h7M9 11h5"/></svg>Recipes</button>
+  <button data-tab="plan"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M8 14h3M8 17h6"/></svg>Plan</button>
+  <button data-tab="shop"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20.5" r="1.2"/><circle cx="17" cy="20.5" r="1.2"/></svg>Shopping</button>
+  <button data-tab="photos"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5L5 20"/></svg>Photos</button>
+</nav>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ======================== CONFIG ======================== */
@@ -329,6 +449,10 @@ const LS = { get(k,d){try{const v=localStorage.getItem("wb."+k);return v?JSON.pa
 function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2400)}
 const fmt = (o,d=new Date()) => new Intl.DateTimeFormat(CONFIG.locale,{timeZone:CONFIG.tz,...o}).format(d);
 const today = () => new Intl.DateTimeFormat("en-CA",{timeZone:CONFIG.tz}).format(new Date());
+const addDays = (ymd,n) => { const d=new Date(ymd+"T12:00:00Z"); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10) };
+const dayLabel = (ymd) => { const t=today(); if(ymd===t) return "Today"; if(ymd===addDays(t,1)) return "Tomorrow"; return new Intl.DateTimeFormat(CONFIG.locale,{weekday:"long",timeZone:"UTC"}).format(new Date(ymd+"T12:00:00Z")) };
+const dayShort = (ymd) => new Intl.DateTimeFormat(CONFIG.locale,{day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(ymd+"T12:00:00Z"));
+const isPhone = () => innerWidth < 700 || innerHeight < 500;
 const hourNow = () => +new Intl.DateTimeFormat("en-GB",{timeZone:CONFIG.tz,hour:"numeric",hourCycle:"h23"}).format(new Date());
 
 function shrink(file,max,q=.85){
@@ -339,6 +463,33 @@ function shrink(file,max,q=.85){
       URL.revokeObjectURL(url);c.toBlob(b=>b?res(b):rej(new Error("resize")),"image/jpeg",q)};
     img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("image"))};img.src=url;
   });
+}
+
+/* Read the date a photo was taken from its EXIF data (JPEG), before resizing strips it */
+async function photoDate(file){
+  try{
+    const buf=await file.slice(0,262144).arrayBuffer(), v=new DataView(buf);
+    if(v.getUint16(0)===0xFFD8){
+      let o=2;
+      while(o<v.byteLength-10){
+        const mk=v.getUint16(o), len=v.getUint16(o+2);
+        if(mk===0xFFE1 && v.getUint32(o+4)===0x45786966){
+          const t=o+10, le=v.getUint16(t)===0x4949;
+          const u16=p=>v.getUint16(t+p,le), u32=p=>v.getUint32(t+p,le);
+          const str=(p,n)=>{let s="";for(let i=0;i<n&&t+p+i<v.byteLength;i++){const c=v.getUint8(t+p+i);if(!c)break;s+=String.fromCharCode(c)}return s};
+          const ifd=off=>{const n=u16(off),out={};for(let i=0;i<n;i++){const e=off+2+i*12,cnt=u32(e+4);out[u16(e)]={cnt,at:cnt>4?u32(e+8):e+8,raw:u32(e+8)}}return out};
+          const i0=ifd(u32(4)); let dt=null;
+          if(i0[0x8769]){ const ex=ifd(i0[0x8769].raw), d=ex[0x9003]||ex[0x9004]; if(d) dt=str(d.at,d.cnt) }
+          if(!dt && i0[0x0132]) dt=str(i0[0x0132].at,i0[0x0132].cnt);
+          const m=dt&&dt.match(/^(\d{4}):(\d{2}):(\d{2})/); if(m && m[1]>"1900") return `${m[1]}-${m[2]}-${m[3]}`;
+          break;
+        }
+        if((mk&0xFF00)!==0xFF00) break; o+=2+len;
+      }
+    }
+  }catch(e){}
+  if(file.lastModified){ const d=new Date(file.lastModified); if(d.getFullYear()>1990 && Date.now()-d>2*864e5) return d.toISOString().slice(0,10) }
+  return null;
 }
 
 /* ======================== DATA LAYER ======================== */
@@ -353,7 +504,7 @@ const SEED = [
 ].map(r=>({id:uuid(),photo_path:null,source_url:null,created_at:new Date().toISOString(),...r}));
 
 const api = DEMO ? (() => {
-  const mem = { recipes:[...SEED], photos:[], tonight:{recipe_id:SEED[1].id,date:today()}, blobs:{} };
+  const mem = { recipes:[...SEED], photos:[], tonight:null, blobs:{}, plan:{[today()]:SEED[1].id,[addDays(today(),1)]:SEED[0].id,[addDays(today(),3)]:SEED[2].id}, shop:[] };
   const listeners=[]; const ping=()=>listeners.forEach(f=>f());
   return {
     async session(){ me={name:"Demo",email:"demo"}; return true },
@@ -367,10 +518,18 @@ const api = DEMO ? (() => {
     },
     async deleteRecipe(id){ mem.recipes=mem.recipes.filter(r=>r.id!==id); ping() },
     async photos(){ return mem.photos.slice() },
-    async addPhoto(file){ const p=`photos/${uuid()}.jpg`; mem.blobs[p]=URL.createObjectURL(await shrink(file,2048,.85)); mem.photos.push({id:uuid(),path:p,uploaded_by_name:me.name}); ping() },
+    async addPhoto(file){ const taken_at=await photoDate(file), p=`photos/${uuid()}.jpg`; mem.blobs[p]=URL.createObjectURL(await shrink(file,2048,.85)); mem.photos.push({id:uuid(),path:p,uploaded_by_name:me.name,taken_at}); ping() },
     async deletePhoto(ph){ mem.photos=mem.photos.filter(x=>x.id!==ph.id); ping() },
     async tonight(){ return mem.tonight }, async setTonight(id){ mem.tonight={recipe_id:id,date:today()}; ping() },
     async layout(){ return mem.layout||null }, async setLayout(l){ mem.layout=l; ping() },
+    async plan(){ return Object.entries(mem.plan).map(([day,recipe_id])=>({day,recipe_id})) },
+    async setPlan(day,id){ if(id) mem.plan[day]=id; else delete mem.plan[day]; ping() },
+    async shopping(){ return mem.shop.map(x=>({...x})) },
+    async addShop(items){ items.forEach(i=>mem.shop.push({id:uuid(),checked:false,source:"manual",created_at:new Date().toISOString(),added_by_name:me.name,...i})); ping() },
+    async updateShop(id,patch){ const i=mem.shop.find(x=>x.id===id); if(i) Object.assign(i,patch); ping() },
+    async deleteShop(ids){ mem.shop=mem.shop.filter(x=>!ids.includes(x.id)); ping() },
+    async importRecipe(url){ await new Promise(r=>setTimeout(r,700)); if(!/^https?:\/\//.test(url)) throw new Error("Paste a full link that starts with https://");
+      return {title:"Ayam Bakar Madu",category:"Dinner",cook_time:"1 hr 10 min",serves:"4",ingredients:["1 kg chicken pieces","4 cloves garlic","5 shallots","3 tbsp honey","4 tbsp kecap manis","1 tsp coriander","2 limes"],steps:["Blend garlic, shallots and coriander into a paste.","Marinate the chicken in the paste, honey and kecap manis for 30 minutes.","Grill over medium heat, basting often, until cooked and sticky.","Serve with lime and rice."],notes:"Demo import: in the real app this comes from the page you paste.",source_url:url,photo_path:null,partial:false} },
     async urls(paths){ const o={}; paths.forEach(p=>o[p]=mem.blobs[p]); return o },
     subscribe(f){ listeners.push(f) },
   };
@@ -399,12 +558,23 @@ const api = DEMO ? (() => {
     },
     async deleteRecipe(id){ const r=recipes.find(x=>x.id===id); must(await sb.from("wb_recipes").delete().eq("id",id)); if(r?.photo_path) sb.storage.from("wallboard").remove([r.photo_path]) },
     async photos(){ return must(await sb.from("wb_photos").select("*").order("created_at",{ascending:false})) },
-    async addPhoto(file){ const p=`photos/${uuid()}.jpg`; must(await sb.storage.from("wallboard").upload(p, await shrink(file,2048,.85), {contentType:"image/jpeg"})); must(await sb.from("wb_photos").insert({path:p,uploaded_by_name:me.name})) },
+    async addPhoto(file){ const taken_at=await photoDate(file), p=`photos/${uuid()}.jpg`; must(await sb.storage.from("wallboard").upload(p, await shrink(file,2048,.85), {contentType:"image/jpeg"})); must(await sb.from("wb_photos").insert({path:p,uploaded_by_name:me.name,taken_at})) },
     async deletePhoto(ph){ must(await sb.from("wb_photos").delete().eq("id",ph.id)); sb.storage.from("wallboard").remove([ph.path]) },
     async tonight(){ const d=must(await sb.from("wb_state").select("value").eq("key","tonight").maybeSingle()); return d?.value||null },
     async setTonight(id){ must(await sb.from("wb_state").upsert({key:"tonight",value:{recipe_id:id,date:today()},updated_at:new Date().toISOString()})) },
     async layout(){ const d=must(await sb.from("wb_state").select("value").eq("key","layout").maybeSingle()); return d?.value?.layout||null },
     async setLayout(l){ must(await sb.from("wb_state").upsert({key:"layout",value:{layout:l},updated_at:new Date().toISOString()})) },
+    async plan(){ const t=today(); return must(await sb.from("wb_meal_plan").select("day,recipe_id").gte("day",addDays(t,-1)).lte("day",addDays(t,14))) },
+    async setPlan(day,id){ if(id) must(await sb.from("wb_meal_plan").upsert({day,recipe_id:id,updated_by_name:me.name,updated_at:new Date().toISOString()})); else must(await sb.from("wb_meal_plan").delete().eq("day",day)) },
+    async shopping(){ return must(await sb.from("wb_shopping").select("*").order("created_at")) },
+    async addShop(items){ if(items.length) must(await sb.from("wb_shopping").insert(items.map(i=>({source:"manual",...i,added_by_name:me.name})))) },
+    async updateShop(id,patch){ must(await sb.from("wb_shopping").update(patch).eq("id",id)) },
+    async deleteShop(ids){ if(ids.length) must(await sb.from("wb_shopping").delete().in("id",ids)) },
+    async importRecipe(url){
+      const { data, error } = await sb.functions.invoke("import-recipe", { body:{ url } });
+      if(error){ let msg="Couldn't import that link. Check it, or add the recipe by hand."; try{ const j=await error.context.json(); if(j?.error) msg=j.error }catch(e){} throw new Error(msg) }
+      if(data?.error) throw new Error(data.error); return data;
+    },
     async urls(paths){
       const now=Date.now(), need=[...new Set(paths.filter(p=>p&&!(cache[p]&&cache[p].exp>now)))];
       for(let i=0;i<need.length;i+=100){
@@ -417,13 +587,15 @@ const api = DEMO ? (() => {
       let t; const deb=()=>{clearTimeout(t);t=setTimeout(f,400)};
       sb.channel("wallboard").on("postgres_changes",{event:"*",schema:"public",table:"wb_recipes"},deb)
         .on("postgres_changes",{event:"*",schema:"public",table:"wb_photos"},deb)
-        .on("postgres_changes",{event:"*",schema:"public",table:"wb_state"},deb).subscribe();
+        .on("postgres_changes",{event:"*",schema:"public",table:"wb_state"},deb)
+        .on("postgres_changes",{event:"*",schema:"public",table:"wb_meal_plan"},deb)
+        .on("postgres_changes",{event:"*",schema:"public",table:"wb_shopping"},deb).subscribe();
     },
   };
 })();
 
 /* ======================== STATE ======================== */
-let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false;
+let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[];
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
 const MODES=["auto","morning","day","dinner","night"];
@@ -431,9 +603,11 @@ const MODES=["auto","morning","day","dinner","night"];
 function autoMode(){ const h=hourNow(), c=CONFIG;
   if(h>=c.nightFrom || h<c.morningFrom) return "night";
   if(h>=c.dinnerFrom) return "dinner"; if(h>=c.dayFrom) return "day"; return "morning"; }
-const mode = () => layout==="B" ? "split" : (modeOverride==="auto" ? autoMode() : modeOverride);
+const mode = () => isPhone() ? "phone" : layout==="B" ? "split" : (modeOverride==="auto" ? autoMode() : modeOverride);
 
+function plannedFor(day){ const id=planMap[day]; return id ? recipes.find(x=>x.id===id)||null : null }
 function tonightRecipe(){
+  const p=plannedFor(today()); if(p) return {r:p,picked:true};
   if(tonightState && tonightState.date===today()){ const r=recipes.find(x=>x.id===tonightState.recipe_id); if(r) return {r,picked:true} }
   if(!recipes.length) return null;
   const mains=recipes.filter(r=>!/snack|dessert|drink/i.test(r.category||"")); const pool=mains.length?mains:recipes;
@@ -443,12 +617,13 @@ const photoUrl = p => p ? urlMap[p] : null;
 
 async function refreshAll(){
   try{
-    let lay; [recipes, photos, tonightState, lay] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout()]);
+    let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
+    planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[p.day,p.recipe_id]));
     layoutChosen = !!lay; if(lay && lay!==layout){ layout=lay; LS.set("layout",layout); nextPhoto() }
     recipes.sort((a,b)=>a.title.localeCompare(b.title));
     urlMap = await api.urls([...recipes.map(r=>r.photo_path), ...photos.map(p=>p.path)].filter(Boolean));
   }catch(e){ console.error(e); toast("Couldn't reach Supabase — showing last data") }
-  buildPhotoOrder(); renderWall(); renderBookList(); renderPhotoGrid();
+  buildPhotoOrder(); renderWall(); renderBookList(); renderPhotoGrid(); renderPlan(); renderShop();
   if($("bookOv").classList.contains("open") && selId && !editing) showRecipe(selId);
 }
 
@@ -465,15 +640,30 @@ const I={
 function wmo(c){ if(c===0)return["sun","Clear"]; if(c<=2)return["part",c===1?"Mostly clear":"Partly cloudy"]; if(c===3)return["cloud","Overcast"]; if(c<=48)return["fog","Fog"]; if(c<=57)return["rain","Drizzle"]; if(c<=67)return["rain","Rain"]; if(c<=77)return["snow","Snow"]; if(c<=82)return["rain","Showers"]; if(c<=86)return["snow","Snow showers"]; return["storm","Thunderstorm"] }
 async function loadWeather(){
   try{
-    const u=`https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=${encodeURIComponent(CONFIG.tz)}&temperature_unit=${CONFIG.units}&forecast_days=5`;
+    const u=`https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=precipitation_probability,precipitation&forecast_hours=12&timezone=${encodeURIComponent(CONFIG.tz)}&temperature_unit=${CONFIG.units}&forecast_days=5`;
     const r=await fetch(u); if(!r.ok) throw 0; wx=await r.json(); wxDemo=false;
   }catch(e){
     if(wx && !wxDemo) return; wxDemo=true; const t=new Date();
     const days=[...Array(5)].map((_,i)=>{const x=new Date(t);x.setDate(t.getDate()+i);return x.toLocaleDateString("en-CA")});
     wx={current:{temperature_2m:31,apparent_temperature:36,relative_humidity_2m:70,weather_code:2,wind_speed_10m:9},daily:{time:days,weather_code:[2,80,95,3,1],temperature_2m_max:[33,32,31,32,33],temperature_2m_min:[25,25,24,25,25],precipitation_probability_max:[20,70,85,40,15]}};
+    const h0=hourNow(); wx.hourly={time:[...Array(12)].map((_,i)=>{const hh=(h0+i)%24, d=h0+i>=24?addDays(today(),1):today(); return `${d}T${String(hh).padStart(2,"0")}:00`}),precipitation_probability:[10,10,20,40,80,85,60,30,20,10,10,10],precipitation:[0,0,0,.2,6,4,1,0,0,0,0,0]};
   }
   renderWall();
 }
+function rainAlert(){
+  const h=wx&&wx.hourly; if(!h||!h.time) return null;
+  const nowKey=`${today()}T${String(hourNow()).padStart(2,"0")}:00`;
+  let s0=h.time.findIndex(t=>t>=nowKey); if(s0<0) s0=0;
+  for(let i=s0;i<Math.min(h.time.length,s0+12);i++){
+    const p=(h.precipitation_probability||[])[i]??0, mm=(h.precipitation||[])[i]??0;
+    if(p>=60||mm>=1){
+      const heavy=Math.max(0,...(h.precipitation||[]).slice(i,i+3).map(x=>x||0))>=5, now=i===s0, at=h.time[i].slice(11,16);
+      return { heavy, text: heavy ? (now?"Heavy rain now":`Heavy rain around ${at}`)+" · bring the laundry in" : (now?"Rain likely now":`Rain likely around ${at}`)+` · ${p}%` };
+    }
+  }
+  return null;
+}
+const rainHTML = (px) => { const r=rainAlert(); return r ? `<span class="rain ${r.heavy?"heavy":""}" style="font-size:${px}px">🌧 ${esc(r.text)}</span>` : "" };
 const wxNow = () => { const c=wx.current, [ic,desc]=wmo(c.weather_code); return {ic:I[ic],desc,t:Math.round(c.temperature_2m),feels:Math.round(c.apparent_temperature),hum:c.relative_humidity_2m,wind:Math.round(c.wind_speed_10m),rain:wx.daily.precipitation_probability_max[0]??0} };
 const fcHTML = () => wx.daily.time.map((t,i)=>`<div><div class="d">${i===0?"Today":new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div>${Math.round(wx.daily.temperature_2m_max[i])}° <span class="muted">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div><div class="muted">${wx.daily.precipitation_probability_max[i]??0}%</div></div>`).join("");
 
@@ -492,33 +682,49 @@ function renderWall(){
       <div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}</div></div>
       <div style="display:flex;flex-direction:column;justify-content:center;gap:32px">
         <div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc muted">${w.desc} · feels ${w.feels}° · ${w.rain}% chance of rain</div></div></div>
+        ${rainHTML(21)}
         <div class="fc">${fcHTML()}</div>
       </div>
       <div class="m-foot"><span class="muted">${esc(CONFIG.place)}${wxDemo?" · sample weather":""}</span>${tChip}</div></div>`;
   } else if(m==="day"){
     const ph=currentPhoto();
-    h=`${ph&&ph.uploaded_by_name?`<div class="d-credit">Added by ${esc(ph.uploaded_by_name)}</div>`:""}
+    const ol=otdLabel(ph);
+    h=`<div class="d-credit" style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">${ol?`<span class="otd" style="font-size:20px">${ol}</span>`:""}${ph&&ph.uploaded_by_name?`<span>Added by ${esc(ph.uploaded_by_name)}</span>`:""}</div>
       <div class="d-strip"><div><div class="t-big d-time js-time">${timeStr()}</div><div class="d-date">${dateStr()}</div></div>
-      <div class="d-right"><div class="d-wx">${w.ic}<span><b style="font-size:1.4em;font-weight:400">${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${tChip}</div></div>`;
-  } else if(m==="dinner"||m==="split"){
-    let card;
+      <div class="d-right">${rainHTML(18)}<div class="d-wx">${w.ic}<span><b style="font-size:1.4em;font-weight:400">${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${tChip}</div></div>`;
+  } else if(m==="dinner"||m==="split"||m==="phone"){
+    let card; const tmr=plannedFor(addDays(today(),1));
     if(tn){ const r=tn.r, pu=photoUrl(r.photo_path), ing=r.ingredients||[], show=ing.slice(0,10);
       card=`<div class="rc"><div class="ph" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":"🍲"}</div><div class="b">
         <div class="eyebrow">${tn.picked?"Tonight's dinner":(m==="split"?"Recipe of the day":"Dinner idea")}</div><h2 class="serif">${esc(r.title)}</h2>
         <div class="meta">${metaHTML(r)}</div>
         <ul>${show.map(i=>`<li>${esc(i)}</li>`).join("")}${ing.length>show.length?`<li style="color:var(--ink2)">+ ${ing.length-show.length} more</li>`:""}</ul>
+        ${tmr?`<div class="tmr">Tomorrow: <b>${esc(tmr.title)}</b></div>`:""}
         <div class="acts"><button class="btn-cook" data-cook="${r.id}">Start cooking</button><button class="btn-ghost" data-openbook="${r.id}">${tn.picked?"Recipe":"Pick another"}</button>${r.created_by_name?`<span class="by">by ${esc(r.created_by_name)}</span>`:""}</div></div></div>`;
     } else card=`<div class="rc"><div class="b" style="justify-content:center"><div class="eyebrow">Dinner</div><h2 class="serif">Add your first recipe</h2><div class="acts"><button class="btn-cook" data-new>Add recipe</button></div></div></div>`;
     const fc3 = m==="split" ? `<div class="fc3">${wx.daily.time.slice(1,4).map((t,j)=>{const i=j+1;return `<div><div class="d">${new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div>${Math.round(wx.daily.temperature_2m_max[i])}° <span class="muted">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div></div>`}).join("")}</div>` : "";
-    const ph = m==="split" ? currentPhoto() : null;
+    const ph = m==="split"||m==="phone" ? currentPhoto() : null, ol=otdLabel(ph);
+    if(m==="phone"){
+      h=`<div class="pw">
+        <div><div class="t-big pw-time js-time">${timeStr()}</div><div class="pw-date">${dateStr()}</div></div>
+        ${ol?`<span class="otd">${ol}</span>`:""}
+        <div class="pw-wx">${w.ic}<div><div class="pw-temp">${w.t}°</div><div class="pw-desc">${w.desc} · feels ${w.feels}°</div></div></div>
+        ${rainHTML(14)}
+        <div class="fc">${fcHTML()}</div>
+        ${card}
+        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxDemo?" · sample weather":""}</span><button data-layoutpick>iPad layout: ${layout==="B"?"B · Split":"C · Day cycle"}</button></div>
+      </div>`;
+    } else
     h=`<div class="n-wrap"><div class="n-left"><div><div class="t-big n-time js-time">${timeStr()}</div><div class="n-date">${dateStr()}</div></div>
-      <div style="display:flex;flex-direction:column;gap:15px"><div class="n-wx">${w.ic}<span><b style="font-size:1.5em;font-weight:400">${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${fc3}
+      <div style="display:flex;flex-direction:column;gap:15px"><div class="n-wx">${w.ic}<span><b style="font-size:1.5em;font-weight:400">${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${rainHTML(16)}${fc3}
+      ${ol?`<span class="otd" style="font-size:15px;align-self:flex-start">${ol}</span>`:""}
       ${ph&&ph.uploaded_by_name?`<div class="muted" style="font-size:15px">Photo by ${esc(ph.uploaded_by_name)}</div>`:""}</div></div>${card}</div>`;
   } else {
     const d1=wx.daily; h=`<div class="ni"><div class="t-big js-time">${timeStr()}</div><div class="s">${dateStr()}</div>
       <div class="s">Tomorrow ${Math.round(d1.temperature_2m_max[1])}° / ${Math.round(d1.temperature_2m_min[1])}° · ${wmo(d1.weather_code[1])[1]}</div></div>`;
   }
   $("wall").innerHTML=h;
+  document.body.classList.toggle("phone", m==="phone");
   $("bMode").textContent = "Mode: " + (modeOverride==="auto" ? `Auto (${m})` : m[0].toUpperCase()+m.slice(1));
   $("bMode").style.display = layout==="B" ? "none" : "";
   $("bLayout").textContent = layout==="B" ? "Layout: B · Split" : "Layout: C · Day cycle";
@@ -535,18 +741,31 @@ const gradients=["#2b3245","#3d2c25","#24362f","#33283d"];
 let order=[], pi=0, front=$("bgA"), back=$("bgB"), shown=null;
 function buildPhotoOrder(){ const ids=photos.filter(p=>photoUrl(p.path)).map(p=>p.id); if(ids.join()!==order.slice().sort().join()&&ids.slice().sort().join()!==order.slice().sort().join()){ order=ids.sort(()=>Math.random()-.5); pi=0; if(!shown||!ids.includes(shown.id)) nextPhoto() } }
 const currentPhoto = () => shown;
+let slide=0, otdI=0;
+function otdSet(){
+  const t=today(), yr=+t.slice(0,4), md=t.slice(5), ok=p=>p.taken_at && +p.taken_at.slice(0,4)<yr && photoUrl(p.path);
+  const exact=photos.filter(p=>ok(p) && p.taken_at.slice(5)===md);
+  if(exact.length) return {list:exact, week:false};
+  const now=new Date(t+"T12:00:00Z");
+  return {list:photos.filter(p=>ok(p) && Math.abs(new Date(yr+"-"+p.taken_at.slice(5)+"T12:00:00Z")-now)<=3*864e5), week:true};
+}
+function otdLabel(ph){
+  if(!ph||!ph.taken_at) return null; const o=otdSet(); if(!o.list.some(p=>p.id===ph.id)) return null;
+  const n=+today().slice(0,4) - +ph.taken_at.slice(0,4); return `${o.week?"This week":"On this day"} · ${n} year${n>1?"s":""} ago`;
+}
 function nextPhoto(){
   if(mode()==="night") return;
   if(!order.length){ shown=null; back.style.background=gradients[pi++%gradients.length]; swap(); return }
-  const ph=photos.find(p=>p.id===order[pi%order.length]); pi++; if(!ph) return;
+  const o=otdSet(); slide++;
+  const ph = (o.list.length && slide%2===0) ? o.list[otdI++ % o.list.length] : photos.find(p=>p.id===order[pi++%order.length]); if(!ph) return;
   const url=photoUrl(ph.path), img=new Image();
-  img.onload=()=>{ back.style.background=`#15171b url("${url}") center/cover no-repeat`; shown=ph; swap(); if(mode()==="day"||mode()==="split") renderWall() };
+  img.onload=()=>{ back.style.background=`#15171b url("${url}") center/cover no-repeat`; shown=ph; swap(); if(["day","split","phone"].includes(mode())) renderWall() };
   img.src=url;
 }
 function swap(){ back.classList.add("on"); front.classList.remove("on"); [front,back]=[back,front] }
 
 function renderPhotoGrid(){
-  $("pgrid").innerHTML = photos.length ? photos.map(p=>`<figure style="background-image:url('${photoUrl(p.path)||""}')">${p.uploaded_by_name?`<figcaption>${esc(p.uploaded_by_name)}</figcaption>`:""}<button data-delphoto="${p.id}">Remove</button></figure>`).join("")
+  $("pgrid").innerHTML = photos.length ? photos.map(p=>`<figure style="background-image:url('${photoUrl(p.path)||""}')">${p.uploaded_by_name||p.taken_at?`<figcaption>${esc([p.taken_at&&dayShort(p.taken_at)+" "+p.taken_at.slice(0,4),p.uploaded_by_name].filter(Boolean).join(" · "))}</figcaption>`:""}<button data-delphoto="${p.id}">Remove</button></figure>`).join("")
     : `<p class="empty">No family photos yet. Add some from your phone or this iPad — they'll show on the wall right away.</p>`;
   $("who").textContent = DEMO ? "Demo mode — add your Supabase keys to share with your wife" : `Signed in as ${me.name} (${me.email})`;
 }
@@ -583,6 +802,7 @@ function showRecipe(id){
     <div class="row" style="margin:0 0 24px">
       <button class="pill dark" data-cook="${r.id}">Start cooking</button>
       <button class="pill" data-tonight="${r.id}">${isT?"✓ Tonight's dinner":"Cook this tonight"}</button>
+      <select class="pill" data-plansel="${r.id}" style="padding-right:.8em"><option value="">Plan for…</option>${[...Array(7)].map((_,i)=>{const d=addDays(today(),i);return `<option value="${d}">${dayLabel(d)} ${dayShort(d)}${planMap[d]===r.id?" ✓":""}</option>`}).join("")}</select>
     </div>
     <div class="cols">
       <div><h3>Ingredients</h3><ul class="ing">${(r.ingredients||[]).map(i=>`<li><span class="box"></span><span>${esc(i)}</span></li>`).join("")}</ul></div>
@@ -599,7 +819,8 @@ function editRecipe(r){
   r=r||{title:"",category:"",cook_time:"",serves:"",ingredients:[],steps:[],notes:"",source_url:"",photo_path:null};
   const cats=[...new Set(recipes.map(x=>x.category).filter(Boolean))];
   $("detail").innerHTML=`<form class="f" id="rf">
-    <h2 class="serif" style="font-size:30px">${r.id?"Edit recipe":"Add a recipe"}</h2>
+    <h2 class="serif" style="font-size:30px">${r.id?"Edit recipe":r._imported?"Check the import":"Add a recipe"}</h2>
+    ${r._imported?`<div class="notice ${r._partial?"warn":""}">${r._partial?"That page didn't include the full recipe, so fill in what's missing, then save.":"Imported. Check everything looks right, then save."}${r.photo_path?`<div id="impPhoto" style="margin-top:10px;height:140px;border-radius:12px;background:#dccdb7 center/cover"></div>`:""}</div>`:""}
     <label>Title<input name="title" required value="${esc(r.title)}" placeholder="Ayam goreng lengkuas"></label>
     <div class="r3">
       <label>Category<input name="category" list="catList" value="${esc(r.category)}" placeholder="Dinner"></label>
@@ -614,16 +835,22 @@ function editRecipe(r){
     <label>Photo <span>optional</span><input name="photo" type="file" accept="image/*"></label>
     <div class="row"><button class="pill dark" type="submit" id="rfSave">Save recipe</button><button class="pill" type="button" id="rfCancel">Cancel</button></div>
   </form>`;
+  if(r._imported && r.photo_path) api.urls([r.photo_path]).then(u=>{ const el=$("impPhoto"); if(el&&u[r.photo_path]) el.style.backgroundImage=`url('${u[r.photo_path]}')` }).catch(()=>{});
   $("rfCancel").onclick=()=> r.id ? showRecipe(r.id) : (innerWidth<=760 ? $("book").classList.remove("show-detail") : showRecipe(selId));
   $("rf").onsubmit=async e=>{
     e.preventDefault(); const f=new FormData(e.target), lines=k=>String(f.get(k)||"").split("\n").map(s=>s.trim()).filter(Boolean), file=f.get("photo");
-    const rec={...r,title:String(f.get("title")).trim(),category:String(f.get("category")||"").trim()||null,cook_time:String(f.get("cook_time")||"").trim()||null,serves:String(f.get("serves")||"").trim()||null,
+    const { _imported, _partial, ...base } = r;
+    const rec={...base,title:String(f.get("title")).trim(),category:String(f.get("category")||"").trim()||null,cook_time:String(f.get("cook_time")||"").trim()||null,serves:String(f.get("serves")||"").trim()||null,
       ingredients:lines("ingredients"),steps:lines("steps"),notes:String(f.get("notes")||"").trim()||null,source_url:String(f.get("source_url")||"").trim()||null};
     $("rfSave").textContent="Saving…";
     try{ const id=await api.saveRecipe(rec, file&&file.size?file:null); await refreshAll(); showRecipe(id); toast("Recipe saved") }
     catch(err){ console.error(err); $("rfSave").textContent="Save recipe"; toast("Couldn't save — check your connection") }
   };
 }
+$("detail").addEventListener("change", async e=>{
+  const sel=e.target.closest("[data-plansel]"); if(!sel||!sel.value) return; const d=sel.value, id=sel.dataset.plansel;
+  try{ await api.setPlan(d,id); await refreshAll(); showRecipe(id); toast(`Planned for ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}`) }catch(err){ toast("Couldn't save the plan") }
+});
 $("items").onclick=e=>{ const b=e.target.closest(".item"); if(b) showRecipe(b.dataset.id) };
 $("cats").onclick=e=>{ if(e.target.dataset.cat){ cat=e.target.dataset.cat; renderBookList() } };
 $("q").oninput=renderBookList;
@@ -633,9 +860,123 @@ $("detail").onclick=async e=>{
   if(t.matches(".ing li")){ t.classList.toggle("done"); return }
   if(t.dataset.back!==undefined){ $("book").classList.remove("show-detail"); return }
   if(t.dataset.edit) editRecipe(recipes.find(r=>r.id===t.dataset.edit));
-  if(t.dataset.tonight){ await api.setTonight(t.dataset.tonight); await refreshAll(); showRecipe(t.dataset.tonight); toast("On the wall for tonight") }
+  if(t.dataset.tonight){ await api.setPlan(today(), t.dataset.tonight); await refreshAll(); showRecipe(t.dataset.tonight); toast("On the wall for tonight") }
   if(t.dataset.del){ if(!twoTap("r"+t.dataset.del,t,"Tap again to delete")) return; await api.deleteRecipe(t.dataset.del); selId=null; await refreshAll(); showRecipe(recipes[0]?.id); toast("Recipe deleted") }
 };
+
+/* ======================== MEAL PLAN ======================== */
+function renderPlan(){
+  const t=today();
+  $("planList").innerHTML=[...Array(7)].map((_,i)=>{ const d=addDays(t,i), r=plannedFor(d), pu=r&&photoUrl(r.photo_path);
+    return `<div class="pday ${i===0?"today":""}"><div class="dl"><b>${dayLabel(d)}</b><small>${dayShort(d)}</small></div>
+      <button class="pr" data-pickday="${d}">${r?`<span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":"🍲"}</span><span class="t">${esc(r.title)}</span>`:`<span class="add">+ Choose dinner</span>`}</button>
+      ${r?`<button class="x" data-clearday="${d}" aria-label="Clear">✕</button>`:""}</div>` }).join("");
+}
+let pickDay=null;
+function openPick(d){ pickDay=d; $("pickTitle").textContent=`Dinner for ${dayLabel(d).toLowerCase()==="today"?"today":dayLabel(d)}`; $("pickQ").value=""; renderPick(); open("pickOv") }
+function renderPick(){
+  const q=$("pickQ").value.trim().toLowerCase();
+  $("pickList").innerHTML=recipes.filter(r=>!q||(r.title+" "+(r.category||"")).toLowerCase().includes(q)).map(r=>{ const pu=photoUrl(r.photo_path);
+    return `<button class="item ${planMap[pickDay]===r.id?"sel":""}" data-pick="${r.id}"><span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":"🍲"}</span><span><b>${esc(r.title)}</b><small>${esc([r.category,r.cook_time].filter(Boolean).join(" · "))}</small></span></button>` }).join("") || `<p class="empty" style="padding:16px">No recipes match.</p>`;
+}
+$("pickQ").oninput=renderPick;
+$("pickList").onclick=async e=>{ const b=e.target.closest("[data-pick]"); if(!b) return; close("pickOv"); try{ await api.setPlan(pickDay,b.dataset.pick); await refreshAll() }catch(err){ toast("Couldn't save the plan") } };
+$("pickClear").onclick=async()=>{ close("pickOv"); try{ await api.setPlan(pickDay,null); await refreshAll() }catch(err){} };
+$("planList").onclick=async e=>{
+  const p=e.target.closest("[data-pickday]"); if(p) return openPick(p.dataset.pickday);
+  const c=e.target.closest("[data-clearday]"); if(c){ try{ await api.setPlan(c.dataset.clearday,null); await refreshAll() }catch(err){} }
+};
+
+/* ======================== SHOPPING LIST ======================== */
+const AISLES=[
+  ["Spices & sauces",/\b(salt|garam|sugar|gula|pepper(?!s? ?\(bell)|merica|lada|cumin|jinten|jintan|coriander|ketumbar|candlenut|kemiri|terasi|shrimp paste|kecap|soy sauce|sauce|saus|oyster|vinegar|cuka|msg|stock|kaldu|bouillon|paste|spice|nutmeg|pala|cinnamon|kayu manis|clove(?!s? of garlic)|cengkeh|star anise|bunga lawang|paprika|curry|kari|chilli powder|honey|madu|sambal)\b/],
+  ["Meat & fish",/\b(chicken|ayam|beef|sapi|daging|pork|babi|fish|ikan|shrimp|udang|prawn|squid|cumi|tuna|salmon|lamb|kambing|mince|meat|bacon|sausage|sosis|anchov|teri)/],
+  ["Eggs & dairy",/\b(egg|telur|milk|susu|cheese|keju|butter|mentega|cream|krim|yogh?urt)/],
+  ["Produce",/\b(spinach|bayam|kangkung|tomato|tomat|onion|shallot|bawang|garlic|chil+i|cabai|cabe|lime|jeruk|lemon|lemongrass|serai|sereh|galangal|lengkuas|ginger|jahe|turmeric|kunyit|leaf|leaves|daun|corn|jagung|carrot|wortel|potato|kentang|cucumber|timun|celery|seledri|banana|pisang|plantain|sprout|tauge|toge|cabbage|kol|kubis|mushroom|jamur|basil|kemangi|herb|scallion|spring onion|eggplant|terong|terung|bean|buncis|kacang panjang|avocado|alpukat|mango|mangga|apple|apel|fingerroot|temu kunci|coriander leaves|cilantro|pandan|chayote|labu)/],
+  ["Pantry",/\b(rice|beras|nasi|flour|tepung|noodle|mie|mi |bihun|vermicelli|oil|minyak|coconut|santan|kelapa|bread|roti|pasta|spaghetti|oat|tofu|tahu|tempe|tempeh|can |canned|kaleng|cornstarch|maizena|baking|yeast|ragi|chocolate|cokelat|tea|teh|coffee|kopi)/],
+];
+const aisleOf = n => { const s=n.toLowerCase(); for(const [a,re] of AISLES) if(re.test(s)) return a; return "Other" };
+const UNIT="kg|g|gr|gram|grams|mg|l|liter|litre|liters|litres|ml|tbsp|tsp|tablespoons?|teaspoons?|sdm|sdt|cups?|cm|cloves?|siung|buah|butir|lembar|batang|stalks?|bunch(?:es)?|ikat|pcs?|pieces?|slices?|cans?|tins?|packs?|packets?|pinch(?:es)?|handfuls?|sprigs?|knobs?|ruas|bungkus|sachets?";
+const QTY_RE=new RegExp(`^\\s*((?:\\d+(?:[.,/]\\d+)?|[½¼¾⅓⅔])(?:\\s*[-–]\\s*\\d+(?:[.,]\\d+)?)?\\s*(?:(?:${UNIT})\\b\\.?)?(?:\\s+of)?)\\s+(.+)$`,"i");
+const SKIP=/^(water|air|ice|es batu|hot water|cold water|warm water)$/i;
+function parseIng(line){
+  let s=String(line).replace(/\([^)]*\)/g,"").replace(/\s+/g," ").trim(); if(!s) return [];
+  if(/:/.test(s)) s=s.split(":").slice(1).join(":").trim();             // "Spice paste: 6 shallots, 4 garlic"
+  const m=s.match(QTY_RE);
+  if(!m && /,| and /.test(s) && !/^(a |pinch)/i.test(s) && s.split(",").length>1) return s.split(",").flatMap(parseIng);
+  if(m && s.split(",").length>2 && /\d/.test(s.split(",")[1])) return s.split(",").flatMap(parseIng);
+  let qty="", name=s;
+  if(m){ qty=m[1].trim(); name=m[2] } else { const p=s.match(/^(?:a\s+)?(pinch|handful|dash|splash)\s+of\s+(.+)$/i); if(p){ qty=p[1]; name=p[2] } }
+  name=name.split(/,| to serve| for frying| for serving| to taste/i)[0].trim(); if(!name||SKIP.test(name)) return [];
+  if(/^(salt and pepper|salt|pepper)$/i.test(name)&&!qty) qty="";
+  return [{qty, name:name[0].toUpperCase()+name.slice(1)}];
+}
+const keyOf = n => n.toLowerCase().replace(/\b(fresh|large|small|medium|ripe|chopped|sliced|minced|picked|bruised|crushed|whole|boiled|day-old)\b/g,"").replace(/[^a-zÀ-ɏ ]/g,"").replace(/\s+/g," ").trim().replace(/(es|s)$/,"");
+function sumQty(qs){
+  qs=qs.filter(Boolean); if(!qs.length) return ""; if(qs.length===1) return qs[0];
+  const groups=new Map(), other=[];
+  for(const q of qs){ const m=q.match(/^(\d+(?:[.,]\d+)?)\s*(.*)$/); if(!m){ other.push(q); continue }
+    const u=m[2].trim(), k=u.toLowerCase().replace(/(?<=ch|sh|x)es$|s$/,""); const g=groups.get(k)||{n:0,u}; g.n+=parseFloat(m[1].replace(",",".")); if(u.length>g.u.length) g.u=u; groups.set(k,g) }
+  return [...[...groups.values()].map(g=>`${+g.n.toFixed(2)}${g.u?" "+g.u:""}`), ...other].join(" + ");
+}
+async function buildShopping(){
+  const t=today(), days=[...Array(7)].map((_,i)=>addDays(t,i)), meals=days.map(plannedFor).filter(Boolean);
+  if(!meals.length){ toast("Plan some dinners first"); tab("plan"); return }
+  const map=new Map();
+  for(const r of meals) for(const line of (r.ingredients||[])) for(const it of parseIng(line)){
+    const k=keyOf(it.name); if(!k) continue; const e=map.get(k)||{name:it.name,qtys:[],from:new Set()}; e.qtys.push(it.qty); e.from.add(r.title); map.set(k,e);
+  }
+  const items=[...map.values()].map(e=>({name:e.name, qty:sumQty(e.qtys)||null, aisle:aisleOf(e.name), note:[...e.from].join(", "), source:"plan"}));
+  try{
+    await api.deleteShop(shopping.filter(x=>x.source==="plan").map(x=>x.id));
+    await api.addShop(items); await refreshAll();
+    toast(`${items.length} items from ${meals.length} dinner${meals.length>1?"s":""}`); tab("shop");
+  }catch(err){ console.error(err); toast("Couldn't build the list") }
+}
+function renderShop(){
+  const order=[...AISLES.map(a=>a[0]),"Other"], todo=shopping.filter(x=>!x.checked), done=shopping.filter(x=>x.checked);
+  const row=x=>`<div style="display:flex;align-items:center"><button class="srow ${x.checked?"done":""}" data-shop="${x.id}"><span class="box"></span><span class="nm">${esc(x.name)}${x.note?`<small>${esc(x.note)}</small>`:""}</span>${x.qty?`<span class="q">${esc(x.qty)}</span>`:""}</button><button class="del" data-unshop="${x.id}" aria-label="Remove">✕</button></div>`;
+  let h=order.map(a=>{ const g=todo.filter(x=>(x.aisle||"Other")===a); return g.length?`<div class="aisle">${a}</div>${g.map(row).join("")}`:"" }).join("");
+  if(done.length) h+=`<div class="aisle" style="display:flex;justify-content:space-between;align-items:center">In the basket (${done.length})<button class="pill" id="shopClear" style="min-height:34px;padding:.3em .9em;font-size:13px">Clear</button></div>${done.map(row).join("")}`;
+  $("shopList").innerHTML = h || `<p class="empty" style="padding:24px 4px">Your list is empty. Plan this week's dinners, then tap <b>From plan</b>, or add items above.</p>`;
+}
+$("shopList").onclick=async e=>{
+  const d=e.target.closest("[data-unshop]"); if(d){ shopping=shopping.filter(x=>x.id!==d.dataset.unshop); renderShop(); try{ await api.deleteShop([d.dataset.unshop]) }catch(err){} return }
+  if(e.target.id==="shopClear"){ const ids=shopping.filter(x=>x.checked).map(x=>x.id); shopping=shopping.filter(x=>!x.checked); renderShop(); try{ await api.deleteShop(ids) }catch(err){} return }
+  const b=e.target.closest("[data-shop]"); if(!b) return; const it=shopping.find(x=>x.id===b.dataset.shop); if(!it) return;
+  it.checked=!it.checked; renderShop(); try{ await api.updateShop(it.id,{checked:it.checked}) }catch(err){ toast("Couldn't sync — check your connection") }
+};
+$("shopAdd").onsubmit=async e=>{
+  e.preventDefault(); const v=$("shopItem").value.trim(); if(!v) return; $("shopItem").value="";
+  const its=parseIng(v); const items=(its.length?its:[{name:v,qty:""}]).map(i=>({name:i.name,qty:i.qty||null,aisle:aisleOf(i.name),source:"manual"}));
+  try{ await api.addShop(items); await refreshAll() }catch(err){ toast("Couldn't add that") }
+};
+$("shopBuild").onclick=buildShopping;
+$("planShop").onclick=buildShopping;
+
+/* ======================== IMPORT ======================== */
+function openImport(){ $("impUrl").value=""; $("impErr").textContent=""; $("impGo").textContent="Import"; open("importOv"); setTimeout(()=>$("impUrl").focus(),50) }
+$("bImport").onclick=openImport;
+$("impForm").onsubmit=async e=>{
+  e.preventDefault(); const url=$("impUrl").value.trim(); $("impErr").textContent="";
+  if(!/^https?:\/\/\S+\.\S+/.test(url)){ $("impErr").textContent="Paste a full link that starts with https://"; return }
+  const b=$("impGo"); b.disabled=true; b.textContent="Importing…";
+  try{
+    const d=await api.importRecipe(url); close("importOv");
+    if(!$("bookOv").classList.contains("open")) (isPhone()?tab("recipes"):open("bookOv"));
+    editRecipe({title:d.title||"",category:d.category||"",cook_time:d.cook_time||"",serves:d.serves||"",ingredients:d.ingredients||[],steps:d.steps||[],notes:d.notes||"",source_url:d.source_url||url,photo_path:d.photo_path||null,_imported:true,_partial:!!d.partial});
+  }catch(err){ $("impErr").textContent=err.message||"Couldn't import that link." }
+  finally{ b.disabled=false; if(b.textContent==="Importing…") b.textContent="Import" }
+};
+
+/* ======================== TABS (iPhone) ======================== */
+const TAB_OV={recipes:"bookOv",plan:"planOv",shop:"shopOv",photos:"photosOv"};
+function tab(name){
+  Object.values(TAB_OV).forEach(id=>$(id).classList.remove("open"));
+  if(TAB_OV[name]) open(TAB_OV[name]); else markTab("today");
+}
+function markTab(name){ document.querySelectorAll("#tabs [data-tab]").forEach(b=>b.classList.toggle("on",b.dataset.tab===name)) }
+$("tabs").onclick=e=>{ const b=e.target.closest("[data-tab]"); if(b) tab(b.dataset.tab) };
 
 /* ======================== COOKING MODE ======================== */
 let ck={r:null,i:0}, wakeLock=null;
@@ -657,17 +998,31 @@ $("ckBack").onclick=()=>{ if(ck.i>0){ ck.i--; renderCook() } };
 $("ckIng").onclick=()=>{ const p=$("ckIngP"); p.classList.toggle("open"); $("ckIng").textContent=p.classList.contains("open")?"Steps":"Ingredients" };
 
 /* ======================== OVERLAYS, CONTROLS ======================== */
-function open(id){ $(id).classList.add("open"); if(id==="bookOv"){ renderBookList(); if(!selId && innerWidth>760) showRecipe(tonightRecipe()?.r.id) } }
-function close(id){ $(id).classList.remove("open"); if(id==="cook"){ try{ wakeLock?.release() }catch(e){} } }
+function open(id){
+  if(isPhone() && Object.values(TAB_OV).includes(id)){ Object.values(TAB_OV).forEach(x=>x!==id&&$(x).classList.remove("open")); markTab(Object.keys(TAB_OV).find(k=>TAB_OV[k]===id)) }
+  $(id).classList.add("open");
+  if(id==="bookOv"){ renderBookList(); if(!selId && innerWidth>760) showRecipe(tonightRecipe()?.r.id) }
+  if(id==="planOv") renderPlan(); if(id==="shopOv") renderShop();
+  if(id==="cook") document.body.classList.add("cooking"); if(id==="login") document.body.classList.add("signin");
+}
+function close(id){
+  $(id).classList.remove("open");
+  if(id==="cook"){ document.body.classList.remove("cooking"); try{ wakeLock?.release() }catch(e){} }
+  if(id==="login") document.body.classList.remove("signin");
+  if(isPhone() && Object.values(TAB_OV).includes(id) && !Object.values(TAB_OV).some(x=>$(x).classList.contains("open"))) markTab("today");
+}
 document.addEventListener("click",e=>{
   const c=e.target.closest("[data-close]"); if(c){ close(c.closest(".ov").id); return }
   const o=e.target.closest("[data-open]"); if(o){ open(o.dataset.open); return }
   const ck=e.target.closest("[data-cook]"); if(ck){ openCook(ck.dataset.cook); return }
   const ob=e.target.closest("[data-openbook]"); if(ob){ open("bookOv"); showRecipe(ob.dataset.openbook); return }
   if(e.target.closest("[data-new]")){ open("bookOv"); editRecipe(); return }
+  if(e.target.closest("[data-layoutpick]")){ openLayout(); return }
 });
 $("bBook").onclick=()=>open("bookOv");
 $("bPhotos").onclick=()=>open("photosOv");
+$("bPlan").onclick=()=>open("planOv");
+$("bShop").onclick=()=>open("shopOv");
 $("bMode").onclick=()=>{ modeOverride=MODES[(MODES.indexOf(modeOverride)+1)%MODES.length]; LS.set("mode",modeOverride); renderWall(); if(mode()!=="night") nextPhoto() };
 function openLayout(){ document.querySelectorAll(".lc").forEach(b=>b.classList.toggle("on", layoutChosen && b.dataset.layout===layout)); open("layoutOv") }
 async function chooseLayout(l){
@@ -704,8 +1059,7 @@ async function start(){
   await refreshAll(); api.subscribe(refreshAll);
   setInterval(refreshAll, 10*60e3);           // safety net + renews photo links
   setInterval(nextPhoto, Math.max(8,CONFIG.photoSeconds)*1000);
-  if(innerWidth<=760 && !DEMO){ open("bookOv"); $("bookClose").textContent="Wall" }
-  if(!layoutChosen) openLayout();
+  setTimeout(()=>{ if(!layoutChosen && !isPhone()) openLayout() }, 900); // wait for the screen size to settle
 }
 (async()=>{
   if(DEMO){ const b=document.createElement("div"); b.className="demo-badge"; b.textContent="DEMO DATA"; document.body.appendChild(b) }
@@ -715,10 +1069,10 @@ async function start(){
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden && started){ refreshAll(); loadWeather() } });
   setTimeout(()=>location.reload(), 12*3600e3); // fresh start twice a day for a long-running kiosk
 })();
-function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)) }
+function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.3";
+const APP_VERSION="2026-11-13.4";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();

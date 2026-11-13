@@ -31,3 +31,11 @@ She signs in with her Capcus login. If she doesn't have one, create her in Authe
 - Auto switches by time of day: Morning from 5:00, Day from 10:00, Dinner from 16:00 and Night from 21:00. To change the times, edit `CONFIG` at the top of `index.html`.
 - On your phones, the same site opens straight into the recipe book, so either of you can add recipes and photos or choose **Cook this tonight**. The wall updates within a second or two.
 - `supabase.sql` is the full setup script, kept for reference. You don't need to run it again.
+
+## New in this version
+- **Dinner plan**: plan the week's dinners. Today's shows on the wall, and tomorrow's appears underneath.
+- **Shopping list**: one tap builds a list from the plan, merged and grouped by aisle. Tick items off in the shop, and it syncs between your phones.
+- **Import a recipe from a link**: in Recipes, tap **Import link** and paste a recipe page. The Supabase function `import-recipe` reads it, and you check it before saving.
+- **Rain alerts**: a banner warns when rain is likely in the next 12 hours.
+- **On this day**: photos taken on today's date in past years appear in the slideshow with a label. The date comes from the photo itself.
+- **iPhone layout**: on a phone, the site has tabs for Today, Recipes, Plan, Shopping and Photos.
