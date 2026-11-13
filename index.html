@@ -1336,7 +1336,7 @@ function nextSpecial(){ // the next one-off (doctor visit and so on) after today
 const timeRange = x => x.t ? (x.end ? `${fmtT(x.t)}–${fmtT(x.end)}` : fmtT(x.t)) : "All day";
 const whenLabel = d => { const n=daysTo(d); return n===1?"Tomorrow":new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(d+"T12:00:00Z")) };
 function rieHTML(variant, n=3){
-  if(!rieItems().length) return "";
+  if(!rieItems().length) return `<button class="rie ${variant==="row"?"rie-row":""}" data-open="rieOv"><div class="rie-h"><span>Rie's calendar</span></div><div class="rie-none">Tap to add daycare, swimming and doctor visits</div></button>`;
   const list=occOn(today()), now=minNow(), left=list.filter(x=>toMin(x.end||x.t)<0 || toMin(x.end||x.t)>=now-30), sp=nextSpecial();
   const rows=left.slice(0,n).map(x=>`<div class="rie-r"><span class="e">${rIcon(x)}</span><span class="t">${x.t?fmtT(x.t):"All day"}</span><span class="n">${esc(x.title)}</span></div>`).join("");
   return `<button class="rie ${variant==="row"?"rie-row":""}" data-open="rieOv"><div class="rie-h"><span>Rie today</span>${left.length>n?`<small>${left.length-n} more</small>`:""}</div>
@@ -2089,7 +2089,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.14";
+const APP_VERSION="2026-11-13.15";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
