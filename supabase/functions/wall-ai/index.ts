@@ -3,6 +3,7 @@
 //   autopilot  - draft next week's meals
 //   translate  - a recipe in Bahasa Indonesia for the helper (cached)
 //   book       - the monthly memory book text
+//   story      - tonight's bedtime story about the child's day (English or Bahasa), kept in wb_state "stories"
 // Parents can use everything; the helper can only use translate. Needs the ANTHROPIC_API_KEY secret.
 import { createClient, SupabaseClient } from "jsr:@supabase/supabase-js@2";
 
@@ -218,6 +219,26 @@ async function book(db: SupabaseClient, key: string, month: string, photoCount: 
   return val;
 }
 
+async function story(db: SupabaseClient, key: string, date: string, lang: string, day: Any) {
+  const [journal, profile, family, saved] = await Promise.all([getState(db, "kid_journal"), getState(db, "kid_profile"), getState(db, "family"), getState(db, "stories")]);
+  const since = addDays(date, -7);
+  const recent = ((saved?.items ?? []) as Any[]).slice(-5).map((x) => x.title);
+  const ctx = {
+    child: family?.kid ?? "our daughter", mom: family?.mom ?? "Mama", birthday: profile?.birth ?? null, date,
+    today: { schedule: (day?.schedule ?? []).slice(0, 8).map(String), meals: (day?.meals ?? []).slice(0, 4).map(String), weather: String(day?.weather ?? "").slice(0, 80), helper_notes: (day?.notes ?? []).slice(0, 4).map(String) },
+    recent_firsts: (journal?.items ?? []).filter((j: Any) => j.d >= since && j.d <= date).map((j: Any) => j.text).slice(0, 6),
+    avoid_repeating_titles: recent,
+  };
+  const L = lang === "id" ? "Bahasa Indonesia (simple, warm, for a toddler)" : "English (simple, warm, for a toddler)";
+  const TOOL = { name: "tell_story", description: "A bedtime story.", input_schema: { type: "object", properties: { title: { type: "string" }, story: { type: "string", description: "About 350 to 450 words in short paragraphs separated by blank lines. Calm, gentle rhythm, a little gentle repetition, ends with the child getting sleepy and falling asleep." } }, required: ["title", "story"] } };
+  const out = await claude(key, { tools: [TOOL], messages: [{ role: "user", content: `Write tonight's bedtime story in ${L} for a toddler, read aloud by a parent. The child is the hero. Weave in two or three real things from her day below, made a little magical, but nothing scary, no peril, no screens, no sugar-heavy treats as rewards. Keep sentences short and easy to read aloud. Don't reuse these recent titles: ${recent.join("; ") || "none"}. Answer only by calling tell_story.\n\n${JSON.stringify(ctx)}` }] });
+  const b = toolInput(out, "tell_story"); if (!b) throw new Error("Couldn't write tonight's story. Try again.");
+  const val = { id: crypto.randomUUID(), d: date, lang: lang === "id" ? "id" : "en", title: String(b.title).slice(0, 120), text: String(b.story).slice(0, 5000) };
+  const items = [...((saved?.items ?? []) as Any[]).slice(-29), val];
+  await setState(db, "stories", { items });
+  return val;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
@@ -240,6 +261,7 @@ Deno.serve(async (req) => {
     if (body.action === "ask" && typeof body.text === "string" && body.text.trim()) return json(await ask(db, KEY, me, body.text, Array.isArray(body.history) ? body.history : []));
     if (body.action === "autopilot" && /^\d{4}-\d{2}-\d{2}$/.test(body.start ?? "")) return json(await autopilot(db, KEY, body.start, Array.isArray(body.busy) ? body.busy : [], String(body.notes ?? "").slice(0, 400)));
     if (body.action === "book" && /^\d{4}-\d{2}$/.test(body.month ?? "")) return json(await book(db, KEY, body.month, Number(body.photos) || 0));
+    if (body.action === "story" && /^\d{4}-\d{2}-\d{2}$/.test(body.date ?? "")) return json(await story(db, KEY, body.date, String(body.lang ?? "en"), body.day ?? {}));
     return json({ error: "Unknown request." }, 400);
   } catch (e) { console.error(e); return json({ error: (e as Error).message || "Something went wrong." }, 502); }
 });

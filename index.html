@@ -457,6 +457,39 @@ body.phone .jform{grid-template-columns:1fr}
 .swctl{display:flex;gap:22px;align-items:center}
 body.phone .swc h2{font-size:22px}
 .rc .swbtn{width:46px;height:46px;font-size:19px}
+/* bedtime story */
+#storyOv{background:#07090d}
+#storyOv .bar h1{color:#e9dcc4}
+.st-wrap{max-width:760px;padding-bottom:120px}
+#stBody .st-t{font-family:Georgia,"Times New Roman",serif;font-size:38px;line-height:1.15;color:#f1e3c8;margin:10px 0 22px;font-weight:400}
+#stBody p{font-family:Georgia,"Times New Roman",serif;font-size:25px;line-height:1.7;color:#d9ccb5;margin-bottom:20px}
+#stBody p.on{color:#fff3da}
+#stBody .st-empty{font-size:20px;color:#9b917f;line-height:1.6;margin-top:30px}
+#stPast{margin-top:30px;border-top:1px solid rgba(255,255,255,.08);padding-top:16px}
+#stPast h3{font-size:14px;color:#8d8472;font-weight:700;margin-bottom:8px}
+#stPast button{display:block;width:100%;text-align:left;padding:10px 0;color:#bfb39d;font-size:16px;border-bottom:1px solid rgba(255,255,255,.06)}
+#stPast button small{color:#7b7363;margin-left:8px}
+.st-ctl{position:fixed;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom));display:flex;gap:10px;justify-content:center;z-index:5}
+body.phone .st-ctl{bottom:calc(150px + env(safe-area-inset-bottom))}body.phone .seg{margin-left:0}
+.seg{display:flex;background:rgba(255,255,255,.06);border-radius:99px;padding:3px;margin-left:auto}
+.seg button{padding:.45em 1em;border-radius:99px;color:#a99f8c;font-size:14px;font-weight:600}
+.seg button.on{background:#e9dcc4;color:#1a160f}
+.stchip{display:inline-flex;align-items:center;gap:10px;padding:.7em 1.2em;border-radius:99px;border:1px solid rgba(var(--accent-rgb),.5);background:rgba(var(--accent-rgb),.12);color:var(--fg);font-size:16px;font-weight:600}
+.ni .stchip{margin-top:14px;color:rgba(var(--fg-rgb),.75);border-color:rgba(var(--fg-rgb),.2);background:rgba(var(--fg-rgb),.05)}
+/* vaccines */
+.vx-sum{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 14px}
+.vx-sum span{padding:.4em .9em;border-radius:99px;background:var(--s1);font-size:14px;color:var(--fg2)}
+.vx-sum span b{color:var(--fg)}
+.vx-g h4{font-size:14px;color:var(--fg3);font-weight:700;margin:16px 0 4px}
+.vx{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.vx .ck{width:26px;height:26px;border-radius:8px;border:1.5px solid var(--line2);display:grid;place-items:center;font-size:15px}
+.vx.done .ck{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.vx b{font-weight:600;font-size:16px;display:block}.vx small{font-size:13px;color:var(--fg3)}
+.vx.done b{color:var(--fg3)}
+.vx.late small.w{color:var(--warn)}
+.vx.soon small.w{color:var(--accent);font-weight:600}
+.vx .bk{font-size:13px;padding:.35em .8em;border-radius:99px;border:1px solid var(--line2);color:var(--fg2)}
+.vx-catch{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(var(--accent-rgb),.10);border:1px solid rgba(var(--accent-rgb),.35);font-size:14px;margin:8px 0}
 /* ask the wall */
 .askbox{width:min(640px,94vw);height:min(720px,90vh);display:flex;flex-direction:column;gap:10px}
 .askhead{display:flex;align-items:center;justify-content:space-between}
@@ -477,7 +510,7 @@ body.phone .swc h2{font-size:22px}
 .askfab{display:none;position:fixed;right:16px;bottom:calc(92px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;background:var(--accent);color:var(--accent-ink);box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:30;place-items:center}
 .askfab svg{width:26px;height:26px}
 body.phone .askfab{display:grid}
-body.cooking .askfab,body.helper .askfab{display:none!important}
+body.cooking .askfab,body.helper .askfab,body:has(#storyOv.open) .askfab{display:none!important}
 /* autopilot */
 .apday{padding:10px 0;border-bottom:1px solid var(--line)}
 .apday h4{font-size:14px;color:var(--fg3);font-weight:700;margin-bottom:6px}
@@ -865,6 +898,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
       <button data-open="timerOv">Timer</button>
       <button id="bAuto">Plan next week with Claude</button>
       <button id="bBookMem">Memory book</button>
+      <button id="bStory">Story time</button>
       <button id="bKid" data-kid>Kid</button>
       <button data-swipe="">Swipe for a meal</button>
       <button id="bPhotos">Photos</button>
@@ -1022,7 +1056,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <section class="ov" id="kidOv">
   <div class="bar"><h1 class="serif" data-kid>Kid</h1><button class="pill dark" id="kidNew">Add</button><button class="pill" data-close>Close</button></div>
   <div class="scroll"><div class="wrapc">
-    <div class="rtabs" role="tablist"><button data-rtab="cal" class="on">Calendar</button><button data-rtab="grow">Growth</button><button data-rtab="dev">Development</button><button data-rtab="log">Journal</button></div>
+    <div class="rtabs" role="tablist"><button data-rtab="cal" class="on">Calendar</button><button data-rtab="grow">Growth</button><button data-rtab="dev">Development</button><button data-rtab="log">Journal</button><button data-rtab="vax">Vaccines</button></div>
     <div id="rtCal">
     <div class="mnav"><button id="rmPrev" aria-label="Previous month">‹</button><h2 id="rmTitle"></h2><button id="rmNext" aria-label="Next month">›</button></div>
     <div class="mgrid" id="rmGrid"></div>
@@ -1043,6 +1077,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
       <p class="hint2" style="margin-top:14px">Percentiles compare <span data-kid>your child</span> with the WHO Child Growth Standards for girls up to 5 years. 50th means right in the middle: half of girls her age are bigger and half smaller. One reading doesn't say much; the trend over several months does. Ask her doctor about anything that worries you.</p>
     </div>
     <div id="rtDev" hidden></div>
+    <div id="rtVax" hidden><div id="vaxBody"></div></div>
     <div id="rtLog" hidden>
       <p class="hint2">Firsts and new skills, with the date and a photo. You can also tick milestones on the Development tab.</p>
       <div class="jform">
@@ -1105,6 +1140,13 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 </section>
 
 <section class="ov sheet" id="trOv"><div class="sheetbox"><h2 class="serif" id="trTitle">Resep</h2><div class="scroll" id="trBody"></div><div class="row"><button class="pill" data-close>Tutup</button></div></div></section>
+
+<!-- bedtime story -->
+<section class="ov" id="storyOv">
+  <div class="bar"><h1 class="serif">Story time</h1><div class="seg" id="stLang"><button data-stl="en">English</button><button data-stl="id">Bahasa</button></div><button class="pill" data-close>Close</button></div>
+  <div class="scroll"><div class="wrapc st-wrap"><div id="stBody"></div><div id="stPast"></div></div></div>
+  <div class="st-ctl"><button class="pill dark" id="stNew">Write tonight's story</button><button class="pill" id="stRead">Read aloud</button></div>
+</section>
 
 <!-- timers -->
 <div id="timerBar" class="tbar" aria-live="polite"></div>
@@ -1363,6 +1405,7 @@ const api = DEMO ? (() => {
       if(body.action==="ask") return {reply:/tonight|cook/i.test(body.text)?"You have chicken thighs and spinach that need using. Soto Ayam would use both, and it's the family's top-rated dish. Want me to put it on for tonight?":"Done. I've added that.",actions:/add|milk|egg/i.test(body.text)?["Added milk, eggs to the shopping list."]:[]};
       if(body.action==="autopilot"){ const d=[...Array(7)].map((_,i)=>addDays(body.start,i)), ids=recipes.map(r=>r.id); const v={week:body.start,created:new Date().toISOString(),summary:"Quick dinners on your busy Tuesday and Thursday, spinach used early in the week before it wilts, and Soto Ayam on Sunday since everyone rated it highest.",meals:d.map((x,i)=>({day:x,meal:"dinner",recipe_id:ids[i%ids.length],why:["Uses the spinach","Quick: late call","Top rated","Rie-friendly","Light after a busy day","Weekend treat","Family favourite"][i]})),status:"draft"}; mem.state.autopilot=v; return v }
       if(body.action==="translate"){ const r=recipes.find(x=>x.id===body.recipe_id)||{}; return {title:r.title,ingredients:(r.ingredients||[]).map(i=>i.replace(/chicken/i,"ayam").replace(/water/i,"air")),steps:(r.steps||[]).map(x=>"(Bahasa) "+x),notes:""} }
+      if(body.action==="story"){ await new Promise(r=>setTimeout(r,600)); const id=body.lang==="id"; const v={id:uuid(),d:body.date,lang:body.lang,title:id?`${KID} dan Ikan Biru Kecil`:`${KID} and the Little Blue Fish`,text:id?`Hari ini ${KID} pergi berenang.\n\nAir kolam berkilau seperti bintang. Seekor ikan biru kecil berenang di sampingnya dan berkata, "Halo, ${KID}!"\n\nMereka menendang air, cipratan, cipratan, cipratan.\n\nSekarang ikan biru kecil sudah mengantuk. ${KID} juga mengantuk. Selamat tidur, ${KID}.`:`Today ${KID} went swimming.\n\nThe pool sparkled like a sky full of stars. A little blue fish swam up beside her and said, "Hello, ${KID}!"\n\nThey kicked their feet together. Splash, splash, splash.\n\nAfter swimming, ${KID} ate her favourite mango, slice by slice, and said "more mango please" in her biggest voice.\n\nNow the little blue fish is getting sleepy in his little blue pool. ${KID} is getting sleepy too. Her eyes are heavy, like soft warm towels.\n\nGoodnight, little fish. Goodnight, ${KID}.`}; mem.state.stories={items:[...((mem.state.stories&&mem.state.stories.items)||[]),v]}; return v }
       if(body.action==="book"){ const v={month:body.month,title:"The month of mango and first sentences",story:`${KID} spent this month talking up a storm. Her favourite new phrase was "Mama, more mango please", which she now says at every meal.
 
 We measured her in the middle of the month and she's growing right along her curve. Weekends were for swimming lessons and long walks in the park.
@@ -1486,7 +1529,7 @@ At home, Soto Ayam was the dinner everyone asked for again and again.`,highlight
 
 /* ======================== STATE ======================== */
 let reviews={}, rvEdit=null, stockRows=[], stEdit=null, tsRecipe=null, tsSel=[];
-let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, kidCal=null, wordsCfg=null, kidBags=null, kidBagDone=null, kidProfile=null, kidGrowth=null, kidJournal=null, timersCfg=null, autoCfg=null, icloudCfg=null, helperLog=null, calendars=[], events=[], eventsFailed=[], calIds=null;
+let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, kidCal=null, wordsCfg=null, kidBags=null, kidBagDone=null, kidProfile=null, kidGrowth=null, kidJournal=null, timersCfg=null, autoCfg=null, icloudCfg=null, helperLog=null, kidVax=null, storiesCfg=null, calendars=[], events=[], eventsFailed=[], calIds=null;
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
 const MODES=["auto","morning","day","dinner","night"];
@@ -1526,7 +1569,7 @@ async function refreshAll(){
   try{
     let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
     planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[pk(p.day,p.meal||"dinner"),p.recipe_id]));
-    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, kidCal, wordsCfg, kidBags, kidBagDone, kidProfile, kidGrowth, familyCfg, kidJournal, timersCfg, autoCfg, icloudCfg, helperLog] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("kid_cal"), api.state("words"), api.state("kid_bags"), api.state("kid_bag_done"), api.state("kid_profile"), api.state("kid_growth"), api.state("family"), api.state("kid_journal"), api.state("timers"), api.state("autopilot"), api.state("icloud"), api.state("helper_log")]); renderTimers(); applyFamily();
+    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, kidCal, wordsCfg, kidBags, kidBagDone, kidProfile, kidGrowth, familyCfg, kidJournal, timersCfg, autoCfg, icloudCfg, helperLog, kidVax, storiesCfg] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("kid_cal"), api.state("words"), api.state("kid_bags"), api.state("kid_bag_done"), api.state("kid_profile"), api.state("kid_growth"), api.state("family"), api.state("kid_journal"), api.state("timers"), api.state("autopilot"), api.state("icloud"), api.state("helper_log"), api.state("kid_vax"), api.state("stories")]); renderTimers(); applyFamily();
     reviews={}; (rvs||[]).forEach(x=>{ (reviews[x.recipe_id] ||= {})[x.reviewer]=x });
     if(th && th.theme && th.theme!==theme) applyTheme(th.theme);
     stockRows = pan||[]; pantrySet = new Set(stockRows.map(x=>x.name));
@@ -1621,7 +1664,7 @@ function renderWall0(){
         ${wordsHTML()}
         <div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
         ${wxChips(19)}</div>
-      <div class="m2-r">${apBanner()}${rt}${kid}${ag}${useSoonHTML()}</div>
+      <div class="m2-r">${apBanner()}${storyChip()}${rt}${kid}${ag}${useSoonHTML()}</div>
       <div class="m2-b"><div class="fc">${fcHTML()}</div>
         <div class="m-foot"><span class="muted">${esc(CONFIG.place)}${wxDemo?" (sample weather)":""}</span>${tChip}</div></div></div>`;
   } else if(m==="day"){
@@ -1652,7 +1695,7 @@ function renderWall0(){
         ${ol?`<span class="otd">${ol}</span>`:""}
         <div class="pw-wx">${w.ic}<div><div class="pw-temp">${w.t}°</div><div class="pw-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
         ${wxChips(14)}
-        ${apBanner()}
+        ${apBanner()}${storyChip()}
         ${wordsHTML()}
         ${routineHTML("row")}
         ${kidHTML("row",4)}${devTip()&&!kidNudge()?`<div class="kid-dev" data-kidto="dev" style="margin-top:-8px">This week for ${KID}: <b>${esc(devTip())}</b></div>`:""}
@@ -1665,14 +1708,14 @@ function renderWall0(){
     }
     const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : kidHTML("row",bagNow().length?1:2);
     if(m!=="phone") h=`<div class="n-wrap"><div class="n-left"><div><div class="t-big n-time js-time">${timeStr()}</div><div class="n-date">${dateStr()}</div></div>
-      <div class="n-mid">${nrt}${nrt?kidLine():""}${nrie}${agendaHTML(nrt?1:(nrie?(bagNow().length?1:2):4))}${wordsHTML("n-words")}</div>
+      <div class="n-mid">${nrt}${nrt?kidLine():""}${nrie}${agendaHTML(nrt?1:(nrie?(bagNow().length?1:2):4))}${storyChip()?`<div style="margin-top:10px">${storyChip()}</div>`:wordsHTML("n-words")}</div>
       <div style="display:flex;flex-direction:column;gap:15px"><div class="n-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${wxChips(16)}${fc3}
       ${ol?`<span class="otd" style="font-size:15px;align-self:flex-start">${ol}</span>`:""}
       ${ph&&ph.uploaded_by_name?`<div class="muted" style="font-size:15px">Photo by ${esc(ph.uploaded_by_name)}</div>`:""}</div></div>${card}</div>`;
   } else {
     const d1=wx.daily; h=`<div class="ni"><div class="t-big js-time">${timeStr()}</div><div class="s">${dateStr()}</div>
       <div class="s">Tomorrow ${Math.round(d1.temperature_2m_max[1])}° to ${Math.round(d1.temperature_2m_min[1])}°, ${wmo(d1.weather_code[1])[1].toLowerCase()}</div>
-      ${(()=>{const e=tomorrowFirst();return e?`<div class="s">First thing tomorrow: ${e.allDay?"":evTime(e)+" "}${esc(e.title)}</div>`:""})()}</div>`;
+      ${(()=>{const e=tomorrowFirst();return e?`<div class="s">First thing tomorrow: ${e.allDay?"":evTime(e)+" "}${esc(e.title)}</div>`:""})()}${storyChip()}</div>`;
   }
   $("wall").innerHTML=h; $("wall").scrollTop=scrollY;
   document.body.classList.toggle("phone", m==="phone");
@@ -2010,8 +2053,8 @@ $("rtDev").onclick=async e=>{ const li=e.target.closest("[data-ms]"); if(!li) re
   if(msGot(t)){ kidTab("log"); return }
   await addJournal({d:today(),text:t,area:li.dataset.msa,ref:t}, null) };
 document.querySelector(".rtabs").onclick=e=>{ const b=e.target.closest("[data-rtab]"); if(b) kidTab(b.dataset.rtab) };
-function kidTab(t){ document.querySelectorAll(".rtabs button").forEach(x=>x.classList.toggle("on",x.dataset.rtab===t)); $("rtCal").hidden=t!=="cal"; $("rtGrow").hidden=t!=="grow"; $("rtDev").hidden=t!=="dev"; $("rtLog").hidden=t!=="log"; $("kidNew").style.display=t==="cal"?"":"none";
-  if(t==="grow") renderGrowth(); if(t==="dev") renderDev(); if(t==="log") renderJournal() }
+function kidTab(t){ document.querySelectorAll(".rtabs button").forEach(x=>x.classList.toggle("on",x.dataset.rtab===t)); $("rtCal").hidden=t!=="cal"; $("rtGrow").hidden=t!=="grow"; $("rtDev").hidden=t!=="dev"; $("rtLog").hidden=t!=="log"; $("rtVax").hidden=t!=="vax"; $("kidNew").style.display=t==="cal"?"":"none";
+  if(t==="grow") renderGrowth(); if(t==="dev") renderDev(); if(t==="log") renderJournal(); if(t==="vax") renderVax() }
 document.addEventListener("click", e=>{ const b=e.target.closest("[data-kidto]"); if(!b) return; e.stopPropagation(); open("kidOv"); kidTab(b.dataset.kidto) }, true);
 
 /* ======================== KID'S JOURNAL ======================== */
@@ -2043,6 +2086,7 @@ $("jList").onclick=async e=>{ const b=e.target.closest("[data-jdel]"); if(!b) re
 const msGot = t => journal().find(j=>j.ref===t);
 // monthly measuring reminder and fresh milestones for the wall
 function kidNudge(){
+  { const v=vaxNext(); if(v && !isHelper()) return `<div class="kid-new" data-kidto="vax">💉 ${esc(v.name)}${v.dose?" "+v.dose:""} ${v.days<0?"is due now":v.days===0?"is due today":`due ${v.days<14?"in "+v.days+" days":"in "+Math.round(v.days/7)+" weeks"}`}</div>` }
   if(!isHelper() && +today().slice(8)<=5 && journal().some(j=>j.d.slice(0,7)===lastMonth())) { const lm=lastMonth(); if(!memCache[lm]) return `<div class="kid-new" id="memNudge">📖 ${monthName(lm).split(" ")[0]}'s memory book is ready to make</div>` }
   const j=journal()[0]; if(j && daysTo(j.d)>=-3) return `<div class="kid-new" data-kidto="log">🎉 New: <b>${esc(j.text)}</b>, ${daysTo(j.d)===0?"today":daysTo(j.d)===-1?"yesterday":dayShort(j.d)}</div>`;
   if(birth()){ const g=growth(), last=g[g.length-1], ago=last?-daysTo(last.d):null;
@@ -2349,6 +2393,99 @@ async function openTranslated(id){
 }
 // parents see the helper's latest note on the wall
 function helperNoteHTML(){ const l=((helperLog&&helperLog.items)||[]).slice(-1)[0]; if(!l || Date.now()-new Date(l.t).getTime()>8*3600e3) return ""; return `<div class="hpnote">💬 <b>${esc(l.by)}</b>, ${new Date(l.t).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"})}: ${esc(l.text)}</div>` }
+
+/* ======================== BEDTIME STORY ======================== */
+let stLang=LS.get("stlang")||"en", stShown=null, stSpeaking=false;
+const stories = () => (storiesCfg && storiesCfg.items) || [];
+function storyChip(){ if(isHelper()||!me) return ""; const h=hourNow(), mi=+new Intl.DateTimeFormat("en-GB",{timeZone:CONFIG.tz,minute:"numeric"}).format(new Date()); if(!((h===18&&mi>=30)||h>=19||h<1)) return "";
+  const t=stories().find(x=>x.d===today()); return `<div><button class="stchip" data-story>🌙 ${t?`Read “${esc(t.title)}” again`:"Story time"}</button></div>` }
+function openStory(){ if($("menuOv").classList.contains("open")) close("menuOv"); stShown=stories().filter(x=>x.d===today()).slice(-1)[0]||null; renderStory(); open("storyOv") }
+function renderStory(){
+  document.querySelectorAll("#stLang button").forEach(b=>b.classList.toggle("on",b.dataset.stl===stLang));
+  const s=stShown;
+  $("stBody").innerHTML = s ? `<h2 class="st-t">${esc(s.title)}</h2>${esc(s.text).split(/\n\s*\n/).map((p,i)=>`<p data-sp="${i}">${p}</p>`).join("")}`
+    : `<p class="st-empty">Claude writes a short, calm story with ${esc(KID)} as the hero, woven from her real day: her schedule, what she ate, and any new firsts in the journal. It takes about 20 seconds. Then read it to her yourself, or let the wall read it aloud.</p>`;
+  const past=stories().slice().reverse().filter(x=>!s||x.id!==s.id).slice(0,10);
+  $("stPast").innerHTML = past.length ? `<h3>Earlier stories</h3>${past.map(x=>`<button data-stold="${x.id}">${esc(x.title)}<small>${dayShort(x.d)}${x.lang==="id"?", Bahasa":""}</small></button>`).join("")}` : "";
+  $("stNew").textContent = s && s.d===today() ? "Write a new one" : "Write tonight's story";
+  $("stRead").style.display = s ? "" : "none"; $("stRead").textContent = stSpeaking ? "Stop reading" : "Read aloud";
+}
+function stDay(){ const t=today();
+  return { schedule: occOn(t).map(x=>`${x.t?fmtT(x.t)+" ":""}${x.title}`), meals: MEALS.map(([m])=>{ const r=plannedFor(t,m); return r?`${m}: ${r.title}`:"" }).filter(Boolean),
+    weather: (()=>{ try{ const w=wxNow(); return `${w.t}°, ${w.desc}` }catch(e){ return "" } })(),
+    notes: ((helperLog&&helperLog.items)||[]).filter(l=>fmtDay(l.t)===t).map(l=>l.text) } }
+$("stNew").onclick=async()=>{ const b=$("stNew"); stStop(); b.disabled=true; b.textContent="Writing…";
+  try{ const v=await api.ai({action:"story",date:today(),lang:stLang,day:stDay()}); storiesCfg={items:[...stories(),v].slice(-30)}; stShown=v; $("storyOv").querySelector(".scroll").scrollTop=0 }
+  catch(err){ toast(err.message) } finally{ b.disabled=false; renderStory() } };
+$("stLang").onclick=e=>{ const b=e.target.closest("[data-stl]"); if(!b) return; stLang=b.dataset.stl; LS.set("stlang",stLang); renderStory() };
+$("stPast").onclick=e=>{ const b=e.target.closest("[data-stold]"); if(!b) return; stStop(); stShown=stories().find(x=>x.id===b.dataset.stold)||null; renderStory(); $("storyOv").querySelector(".scroll").scrollTop=0 };
+function stStop(){ if(window.speechSynthesis) speechSynthesis.cancel(); stSpeaking=false; document.querySelectorAll("#stBody p.on").forEach(p=>p.classList.remove("on")) }
+function stVoice(lang){ const vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[]; const want=lang==="id"?/^id/i:/^en/i;
+  return vs.filter(v=>want.test(v.lang)).sort((a,b)=>(/samantha|karen|moira|siri|damayanti|female/i.test(b.name)?1:0)-(/samantha|karen|moira|siri|damayanti|female/i.test(a.name)?1:0))[0]||null }
+$("stRead").onclick=()=>{
+  if(!window.speechSynthesis){ toast("Reading aloud isn't available on this device"); return }
+  if(stSpeaking){ stStop(); renderStory(); return }
+  const ps=[...document.querySelectorAll("#stBody p[data-sp]")]; if(!ps.length) return; stSpeaking=true; renderStory();
+  const v=stVoice(stShown.lang); let i=0;
+  const next=()=>{ document.querySelectorAll("#stBody p.on").forEach(p=>p.classList.remove("on")); if(!stSpeaking||i>=ps.length){ stSpeaking=false; renderStory(); return }
+    const p=ps[i++]; p.classList.add("on"); p.scrollIntoView({block:"center",behavior:"smooth"});
+    const u=new SpeechSynthesisUtterance(p.textContent); u.lang=stShown.lang==="id"?"id-ID":"en-US"; if(v) u.voice=v; u.rate=.82; u.pitch=1.05; u.onend=()=>setTimeout(next,700); u.onerror=()=>{ stSpeaking=false; renderStory() }; speechSynthesis.speak(u) };
+  next() };
+document.addEventListener("click",e=>{ if(e.target.closest("[data-story]")){ e.stopPropagation(); openStory() } }, true);
+$("bStory").onclick=openStory;
+
+/* ======================== VACCINES AND CHECKUPS ======================== */
+// IDAI immunisation schedule 2024 (Satgas Imunisasi IDAI), ages in months. Checkups follow routine well-child visit ages.
+const VAX0=[
+  ["hb0","Hepatitis B","0",0],["polio0","Polio","0",0],["bcg","BCG","",0.5],
+  ["dtp1","DTP","1",2],["polio1","Polio","1",2],["hb1","Hepatitis B","1",2],["hib1","Hib","1",2],["pcv1","PCV","1",2],["rv1","Rotavirus","1",2],
+  ["dtp2","DTP","2",3],["polio2","Polio","2",3],["hb2","Hepatitis B","2",3],["hib2","Hib","2",3],
+  ["dtp3","DTP","3",4],["polio3","Polio","3",4],["hb3","Hepatitis B","3",4],["hib3","Hib","3",4],["pcv2","PCV","2",4],["rv2","Rotavirus","2",4],
+  ["pcv3","PCV","3",6],["rv3","Rotavirus","3",6],["flu1","Influenza","1",6],["hfmd1","HFMD (EV71)","1",6],
+  ["flu2","Influenza","2",7],["hfmd2","HFMD (EV71)","2",7],
+  ["mr1","MR","1",9],["je1","Japanese encephalitis","1",9],
+  ["pcv4","PCV","booster",12],["var1","Varicella","1",12],["hepa1","Hepatitis A","1",12],
+  ["var2","Varicella","2",14],
+  ["dtp4","DTP","4",18],["polio4","Polio","4",18],["hb4","Hepatitis B","4",18],["hib4","Hib","4",18],["mmr1","MMR","1",18],["hepa2","Hepatitis A","2",18],
+  ["je2","Japanese encephalitis","2",24],["ty1","Typhoid","",24],
+  ["dtp5","DTP","5",60],["polio5","Polio","5",60],["mmr2","MMR","2",60],
+  ["den1","Dengue","1",72],["den2","Dengue","2",75],
+  ["hpv1","HPV","1",108],["hpv2","HPV","2",114],["tdap","Tdap","",120]];
+function vaxList(){
+  const L=VAX0.map(([id,name,dose,m])=>({id,name,dose,m,kind:"vax"}));
+  for(let y=2;y<=18;y++) L.push({id:"flu_y"+y,name:"Influenza",dose:"yearly",m:y*12,kind:"vax"});
+  for(let y=5;y<=18;y+=3) L.push({id:"ty_y"+y,name:"Typhoid",dose:"booster",m:y*12,kind:"vax"});
+  [1,2,4,6,9,12,15,18,24,30,36,48,60,72].forEach(m=>L.push({id:"chk"+m,name:"Checkup",dose:"",m,kind:"chk"}));
+  return L.sort((a,b)=>a.m-b.m||(a.kind==="chk")-(b.kind==="chk"));
+}
+const vaxDone = () => (kidVax && kidVax.done) || {};
+function addMonthsISO(b,m){ const d=new Date(b+"T12:00:00Z"), whole=Math.floor(m), day=d.getUTCDate(); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth()+whole); const dim=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate(); d.setUTCDate(Math.min(day,dim)); if(m%1) d.setUTCDate(d.getUTCDate()+Math.round((m%1)*30.4)); return d.toISOString().slice(0,10) }
+function vaxRows(){ const b=birth(); if(!b) return []; const dn=vaxDone(), t=today();
+  return vaxList().map(v=>{ const due=addMonthsISO(b,v.m); return {...v,due,done:dn[v.id]||null,days:Math.round((new Date(due+"T12:00:00Z")-new Date(t+"T12:00:00Z"))/864e5)} }) }
+function vaxNext(){ if(!kidVax || !kidVax.started) return null; const r=vaxRows().filter(v=>!v.done && v.kind==="vax" && v.days<=30 && v.days>=-45); return r[0]||null }
+function vaxAge(m){ if(m<1) return "Birth"; if(m<24) return `${m} month${m===1?"":"s"}`; const y=Math.floor(m/12), r=m%12; return `${y} years${r?` ${r} months`:""}` }
+function renderVax(){
+  const b=birth();
+  if(!b){ $("vaxBody").innerHTML=`<p class="hint2">Add ${esc(KID)}'s birthday on the Growth tab first, and the schedule fills in from there.</p>`; return }
+  const R=vaxRows(), t=today(), maxM=ageMonths(b)+30, shown=R.filter(v=>v.m<=maxM || !v.done&&v.days<=0);
+  const late=R.filter(v=>!v.done&&v.days<-45), soon=R.filter(v=>!v.done&&v.days>=-45&&v.days<=30), done=R.filter(v=>v.done);
+  const groups={}; shown.forEach(v=>{ (groups[vaxAge(v.m)] ||= []).push(v) });
+  $("vaxBody").innerHTML=`<p class="hint2">IDAI's 2024 immunisation schedule for Indonesia, plus routine checkups. Tick what ${esc(KID)} has had; the next one shows on her card a month ahead. Your paediatrician may time things differently. Follow their plan.</p>
+    <div class="vx-sum"><span><b>${done.filter(v=>v.kind==="vax").length}</b> vaccines done</span><span><b>${soon.length}</b> due soon</span>${late.length?`<span><b>${late.length}</b> not ticked yet</span>`:""}</div>
+    ${!(kidVax&&kidVax.started) && late.length ? `<div class="vx-catch"><span style="flex:1">Starting now? If ${esc(KID)} is up to date, mark everything due before today as done in one go, then fix any she missed.</span><button class="pill dark" id="vxAll" style="min-height:36px;font-size:14px">Mark past ones done</button></div>`:""}
+    <div class="vx-g">${Object.entries(groups).map(([g,vs])=>`<h4>${g}</h4>${vs.map(v=>{ const st=v.done?"done":v.days<-45?"late":v.days<=30?"soon":""; const booked=(kidVax&&kidVax.booked||{})[v.id];
+      return `<div class="vx ${st}"><button class="ck" data-vxt="${v.id}" aria-label="Done">${v.done?"✓":""}</button><div><b>${v.kind==="chk"?"🩺 Checkup":"💉 "+esc(v.name)}${v.dose?` <span style="font-weight:400;color:var(--fg3)">${esc(v.dose)}</span>`:""}</b><small class="w">${v.done?`Done ${dayShort(v.done)}`:v.days<-45?`Due ${dayShort(v.due)}`:v.days<0?"Due now":v.days===0?"Due today":`Due ${dayShort(v.due)}${v.days<=60?`, in ${v.days} days`:""}`}</small></div>${!v.done&&v.days<=60?`<button class="bk" data-vxb="${v.id}">${booked?"Booked "+dayShort(booked):"Add to calendar"}</button>`:""}</div>` }).join("")}`).join("")}</div>`;
+}
+async function saveVax(){ renderVax(); renderWall(); try{ await api.setState("kid_vax",kidVax) }catch(e){ toast("Couldn't save. Check your connection") } }
+$("vaxBody").onclick=async e=>{
+  kidVax=kidVax||{done:{},booked:{}}; kidVax.done=kidVax.done||{}; kidVax.booked=kidVax.booked||{};
+  if(e.target.id==="vxAll"){ vaxRows().filter(v=>v.days<0&&!v.done).forEach(v=>kidVax.done[v.id]=v.due); kidVax.started=true; await saveVax(); toast("Marked as done. Untick any she missed"); return }
+  const t=e.target.closest("[data-vxt]"); if(t){ const id=t.dataset.vxt; if(kidVax.done[id]) delete kidVax.done[id]; else { const v=vaxRows().find(x=>x.id===id); kidVax.done[id]= v && v.days<-45 ? v.due : today() } kidVax.started=true; await saveVax(); return }
+  const bk=e.target.closest("[data-vxb]"); if(bk){ const v=vaxRows().find(x=>x.id===bk.dataset.vxb); if(!v) return; const same=vaxRows().filter(x=>!x.done&&x.due===v.due);
+    const d=v.days<1?addDays(today(),7):v.due, title=v.kind==="chk"?"Checkup":"Vaccines: "+[...new Set(same.filter(x=>x.kind==="vax").map(x=>x.name))].join(", ");
+    same.forEach(x=>kidVax.booked[x.id]=d); kidVax.started=true;
+    await saveKid([...kidItems(),{id:uuid(),kind:"doctor",title:title.slice(0,60),date:d,days:[],t:"",end:"",note:"Change the date to the real appointment"}], `Added to ${KID}'s calendar on ${dayShort(d)}. Tap it there to set the real time`); await saveVax() }
+};
 
 /* ======================== DAILY WORDS ======================== */
 const MAMA_NOTES=()=>["Thank you for the hundred small things you do before anyone else wakes up.",`${KID} is lucky to have you. So am I.`,"You make our house feel like home.","Thank you for your patience, even on the long days.",`Every hug you give ${KID} is shaping who she'll be.`,"You're doing a wonderful job, even when it doesn't feel like it.","Thank you for the good food, the good talks and the good mornings.",`${KID} learned that smile from you.`,"Today, let us take care of you for a change.","Your kindness is the best thing in this house.","Thank you for always knowing where everything is.","You turn ordinary days into good memories.","We notice everything you do. Thank you.",`${KID}'s favourite place is wherever you are.`,"You're a great mom and an even better friend.","Thank you for the bedtime songs and the early wake-ups.",`The way you love us is the way ${KID} will love the world.`,"Take a slow coffee today. You've earned it.","Thank you for making our home so beautiful, inside and out.","You make hard things look easy. We know they aren't.","Thank you for staying calm when we're not.",`From ${KID}: Mama, I love you. (She'd write it herself if she could.)`,"Thank you for every meal, every bath and every story.","You are enough, exactly as you are today.","Thank you for choosing us every day.","The best part of our mornings is you.",`Thank you for teaching ${KID} to be curious and kind.`,"Whatever today brings, we've got your back.","Thank you for the love you put into everything.",`Thank you, ${MOM}. For everything, always.`];
@@ -3109,7 +3246,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.30";
+const APP_VERSION="2026-11-13.31";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const t=await (await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"})).text();
