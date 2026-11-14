@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net blob:; worker-src 'self' blob: https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://oetspavwjsfzfgfdeukk.supabase.co https://i.ytimg.com https://*.ytimg.com; connect-src 'self' https://oetspavwjsfzfgfdeukk.supabase.co wss://oetspavwjsfzfgfdeukk.supabase.co https://api.open-meteo.com https://air-quality-api.open-meteo.com https://cdn.jsdelivr.net https://tessdata.projectnaptha.com; media-src 'self' blob: data:; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'none'; form-action 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net blob:; worker-src 'self' blob: https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://oetspavwjsfzfgfdeukk.supabase.co https://i.ytimg.com https://*.ytimg.com; connect-src 'self' https://oetspavwjsfzfgfdeukk.supabase.co wss://oetspavwjsfzfgfdeukk.supabase.co https://api.open-meteo.com https://air-quality-api.open-meteo.com https://cdn.jsdelivr.net https://tessdata.projectnaptha.com https://api.bigdatacloud.net; media-src 'self' blob: data:; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'none'; form-action 'self'; manifest-src 'self'">
 <meta name="referrer" content="no-referrer">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1004,6 +1004,9 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <p class="hint2">Give your helper or nanny their own sign-in. They see today's meals with recipes in Bahasa Indonesia, the child's schedule and packing list, the shopping list and a notes page. They can't see the journal, growth, notes for Mama, calendars or settings.</p>
     <div id="hpList"></div>
     <div class="r3" style="grid-template-columns:1fr 1.4fr auto;align-items:end"><div class="f"><label>Name<input id="hpName" maxlength="30" placeholder="Their name"></label></div><div class="f"><label>Email<input id="hpEmail" type="email" placeholder="their@email.com"></label></div><button class="pill dark" id="hpAdd" style="margin-bottom:2px">Add</button></div>
+    <h2 class="sh">Weather location</h2>
+    <label class="hint2" style="display:flex;gap:10px;align-items:center;cursor:pointer"><input type="checkbox" id="geoOn" style="width:22px;height:22px;accent-color:var(--accent)"> Use this device's location</label>
+    <p class="hint2" id="geoStat" style="margin-top:4px"></p>
     <h2 class="sh">Health</h2>
     <p class="hint2" id="diag"></p>
     <h2 class="sh">Family names</h2>
@@ -1703,9 +1706,29 @@ let wxAt=0;
 function trimWx(w){ try{ const t=today(), i=w.daily.time.findIndex(d=>d>=t); if(i>0) Object.keys(w.daily).forEach(k=>w.daily[k]=w.daily[k].slice(i)); }catch(e){} return w }
 const wxFake = () => wxDemo && !DEMO;
 const wxNote = () => wxFake() ? " (weather offline)" : wxDemo ? " (sample weather)" : (Date.now()-wxAt>3*3600e3 && wxAt ? ` (weather from ${new Date(wxAt).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"})})` : "");
+/* Weather location: this device's position (rounded to about 1 km, kept only on this device), else central Jakarta */
+const WX = () => { const g=LS.get("geo",null); return (g && g.on!==false && g.lat!=null) ? {lat:g.lat, lon:g.lon, place:g.place||"Your area"} : {lat:CONFIG.lat, lon:CONFIG.lon, place:CONFIG.place} };
+function geoOn(){ const g=LS.get("geo",null); return !g || g.on!==false }
+function locate(force){
+  if(DEMO || !navigator.geolocation || !geoOn()) return;
+  const g=LS.get("geo",null)||{};
+  if(!force && g.lat!=null && Date.now()-(g.t||0) < 6*3600e3) return;
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const lat=Math.round(pos.coords.latitude*100)/100, lon=Math.round(pos.coords.longitude*100)/100;
+    const moved = g.lat==null || Math.abs(lat-g.lat)>0.02 || Math.abs(lon-g.lon)>0.02;
+    let place=moved ? null : g.place;
+    if(!place){ try{ const r=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`,{signal:tmo(10e3),referrerPolicy:"no-referrer"}); const j=await r.json(); place=(j.locality||j.city||j.principalSubdivision||"").replace(/^Kecamatan\s+/i,"").slice(0,40) || null }catch(e){} }
+    LS.set("geo",{on:true,lat,lon,place:place||"Your area",t:Date.now()});
+    if(moved){ wxAt=0; loadWeather(); loadAir() } else renderWall();
+    if($("setOv").classList.contains("open")) renderGeo();
+  }, err=>{ if(err.code===1){ LS.set("geo",{...g,on:true,denied:true,t:Date.now()}) } if($("setOv").classList.contains("open")) renderGeo() },
+  {enableHighAccuracy:false, timeout:20e3, maximumAge:6*3600e3});
+}
+function renderGeo(){ const g=LS.get("geo",null)||{}, on=geoOn(); $("geoOn").checked=on;
+  $("geoStat").textContent = !on ? "Using central Jakarta." : g.denied && g.lat==null ? "Location access is off for this app. Turn it on in the iPhone or iPad Settings (Privacy → Location Services), or the wall uses central Jakarta." : g.lat!=null ? `Using ${g.place&&g.place!=="Your area"?g.place:"this device's location"} (checked ${new Date(g.t).toLocaleString(CONFIG.locale,{weekday:"short",hour:"2-digit",minute:"2-digit"})}).` : "Finding this device…" }
 async function loadWeather(){
   try{
-    const u=`https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=precipitation_probability,precipitation&forecast_hours=12&timezone=${encodeURIComponent(CONFIG.tz)}&temperature_unit=${CONFIG.units}&forecast_days=5`;
+    const u=`https://api.open-meteo.com/v1/forecast?latitude=${WX().lat}&longitude=${WX().lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=precipitation_probability,precipitation&forecast_hours=12&timezone=${encodeURIComponent(CONFIG.tz)}&temperature_unit=${CONFIG.units}&forecast_days=5`;
     const r=await fetch(u,{signal:tmo(15000)}); if(!r.ok) throw 0; const j=await r.json(); if(!j||!j.current||!j.daily) throw 0; wx=j; wxDemo=false; wxAt=Date.now(); LS.set("wx_cache",{t:wxAt,wx:j});
   }catch(e){
     if(wx && !wxDemo){ renderWall(); return }
@@ -1719,7 +1742,7 @@ async function loadWeather(){
 }
 let aq=null;
 async function loadAir(){
-  try{ const u=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&current=us_aqi,pm2_5&hourly=us_aqi&forecast_hours=12&timezone=${encodeURIComponent(CONFIG.tz)}`;
+  try{ const u=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${WX().lat}&longitude=${WX().lon}&current=us_aqi,pm2_5&hourly=us_aqi&forecast_hours=12&timezone=${encodeURIComponent(CONFIG.tz)}`;
     const r=await fetch(u); if(!r.ok) throw 0; aq=await r.json() }
   catch(e){ if(!aq && DEMO) aq={current:{us_aqi:128,pm2_5:46},hourly:{us_aqi:[128,135,140,120,95,80,70,60,58,60,70,90]}} }
   renderWall();
@@ -1778,7 +1801,7 @@ function renderWall0(){
         ${wxChips(19)}</div>
       <div class="m2-r">${apBanner()}${storyChip()}${rt}${kid}${ag}${useSoonHTML()}</div>
       <div class="m2-b"><div class="fc">${fcHTML()}</div>
-        <div class="m-foot"><span class="muted">${esc(CONFIG.place)}${wxNote()}</span>${tChip}</div></div></div>`;
+        <div class="m-foot"><span class="muted">${esc(WX().place)}${wxNote()}</span>${tChip}</div></div></div>`;
   } else if(m==="day"){
     const ph=currentPhoto();
     const ol=otdLabel(ph);
@@ -1815,7 +1838,7 @@ function renderWall0(){
         ${useSoonHTML()}
         <div class="fc">${fcHTML()}</div>
         ${card}
-        <div class="pw-foot"><span>${esc(CONFIG.place)}${wxNote()}</span><span style="display:flex;gap:6px"><button data-open="timerOv">Timer</button><button data-open="kidOv">${KID}</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
+        <div class="pw-foot"><span>${esc(WX().place)}${wxNote()}</span><span style="display:flex;gap:6px"><button data-open="timerOv">Timer</button><button data-open="kidOv">${KID}</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
       </div>`;
     }
     const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : kidHTML("row",bagNow().length?1:2);
@@ -2599,6 +2622,7 @@ $("vaxBody").onclick=async e=>{
     await saveKid([...kidItems(),{id:uuid(),kind:"doctor",title:title.slice(0,60),date:d,days:[],t:"",end:"",note:"Change the date to the real appointment"}], `Added to ${KID}'s calendar on ${dayShort(d)}. Tap it there to set the real time`); await saveVax() }
 };
 
+$("geoOn").onchange=()=>{ const g=LS.get("geo",null)||{}; LS.set("geo",{...g,on:$("geoOn").checked}); if($("geoOn").checked) locate(true); else { wxAt=0; loadWeather(); loadAir() } renderGeo() };
 /* ======================== DAILY WORDS ======================== */
 const MAMA_NOTES=()=>["Thank you for the hundred small things you do before anyone else wakes up.",`${KID} is lucky to have you. So am I.`,"You make our house feel like home.","Thank you for your patience, even on the long days.",`Every hug you give ${KID} is shaping who she'll be.`,"You're doing a wonderful job, even when it doesn't feel like it.","Thank you for the good food, the good talks and the good mornings.",`${KID} learned that smile from you.`,"Today, let us take care of you for a change.","Your kindness is the best thing in this house.","Thank you for always knowing where everything is.","You turn ordinary days into good memories.","We notice everything you do. Thank you.",`${KID}'s favourite place is wherever you are.`,"You're a great mom and an even better friend.","Thank you for the bedtime songs and the early wake-ups.",`The way you love us is the way ${KID} will love the world.`,"Take a slow coffee today. You've earned it.","Thank you for making our home so beautiful, inside and out.","You make hard things look easy. We know they aren't.","Thank you for staying calm when we're not.",`From ${KID}: Mama, I love you. (She'd write it herself if she could.)`,"Thank you for every meal, every bath and every story.","You are enough, exactly as you are today.","Thank you for choosing us every day.","The best part of our mornings is you.",`Thank you for teaching ${KID} to be curious and kind.`,"Whatever today brings, we've got your back.","Thank you for the love you put into everything.",`Thank you, ${MOM}. For everything, always.`];
 const MOTTOS=["Small steps still count.","Do the next right thing.","Progress over perfection.","Be kind, starting with yourself.","One thing at a time.","Today is a fresh page.","Breathe. You've got this.","Make today a little lighter.","Choose patience today.","Start where you are.","Good things take time.","Show up, then keep going.","Rest is part of the work.","Be curious today.","Smile at someone first.","Focus on what you can control.","A calm mind finds a way.","Celebrate the small wins.","Try once more.","Listen more than you speak.","Let today be easy.","You've done hard things before.","Begin again, as often as you need.","Leave things a little better than you found them.","Plan less, do more.","Choose courage over comfort.","Gratitude turns enough into plenty.","Keep it simple.","Be the calm in the room.","Finish one thing well."];
@@ -3181,7 +3205,7 @@ $("wSave").onclick=async()=>{
   try{ await api.setState("words",wordsCfg); toast(note?"Today's note for Mama saved":"Saved") }catch(e){ toast("Couldn't save that") }
 };
 function renderDiag(){ const e=ERRS.slice(-3).reverse(); $("diag").innerHTML=`Version ${esc(APP_VERSION)}. ${offline?"<b>Offline right now.</b> ":""}Last synced ${lastOk?new Date(lastOk).toLocaleString(CONFIG.locale,{weekday:"short",hour:"2-digit",minute:"2-digit"}):"not yet"}.${e.length?`<br>Recent problems: ${e.map(x=>esc(new Date(x.t).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"})+" "+x.where+": "+x.m)).join("; ")}`:" No problems logged."}` }
-function openSettings(){ renderDiag(); renderHelpers(); $("icUrl").value=(icloudCfg&&icloudCfg.url)||""; renderIcStat(); $("famKid").value=(familyCfg&&familyCfg.kid)||""; $("famMom").value=(familyCfg&&familyCfg.mom)||""; renderThemes(); rtDraft=JSON.parse(JSON.stringify(routine())); $("wOn").checked=wordsOn(); $("mamaNote").value=(wordsCfg&&wordsCfg.note_date===today()&&wordsCfg.note)||""; renderCalList(); renderRoutineEditor(); $("who2").textContent = DEMO ? "Demo mode." : `Signed in as ${me.name} (${me.email}).`; }
+function openSettings(){ renderDiag(); renderGeo(); renderHelpers(); $("icUrl").value=(icloudCfg&&icloudCfg.url)||""; renderIcStat(); $("famKid").value=(familyCfg&&familyCfg.kid)||""; $("famMom").value=(familyCfg&&familyCfg.mom)||""; renderThemes(); rtDraft=JSON.parse(JSON.stringify(routine())); $("wOn").checked=wordsOn(); $("mamaNote").value=(wordsCfg&&wordsCfg.note_date===today()&&wordsCfg.note)||""; renderCalList(); renderRoutineEditor(); $("who2").textContent = DEMO ? "Demo mode." : `Signed in as ${me.name} (${me.email}).`; }
 $("calColor").onclick=e=>{ const b=e.target.closest("[data-col]"); if(b){ calColor=b.dataset.col; renderCalList() } };
 $("calList").onclick=async e=>{ const b=e.target.closest("[data-delcal]"); if(!b) return; if(!twoTap("c"+b.dataset.delcal,b,"Tap to confirm")) return; try{ await api.deleteCalendar(b.dataset.delcal); await refreshAll() }catch(err){ toast("Couldn't remove it") } };
 $("calAdd").onsubmit=async e=>{
@@ -3351,7 +3375,7 @@ async function start(){
 }
 (async()=>{
   if(DEMO){ const b=document.createElement("div"); b.className="demo-badge"; b.textContent="DEMO DATA"; document.body.appendChild(b) }
-  renderWall(); loadWeather(); loadAir(); setInterval(loadWeather,15*60e3); setInterval(loadAir,30*60e3); setInterval(tick,1000); nextPhoto();
+  renderWall(); loadWeather(); loadAir(); locate(); setInterval(()=>locate(),3*3600e3); setInterval(loadWeather,15*60e3); setInterval(loadAir,30*60e3); setInterval(tick,1000); nextPhoto();
   let ok=false; try{ ok=await api.session() }catch(e){ ok=false; logErr("session",e) }
   if(ok){ if(usedSnap) setOffline(true); start() } else open("login");
   document.addEventListener("visibilitychange",()=>{
@@ -3369,7 +3393,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-14.37";
+const APP_VERSION="2026-11-14.38";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
