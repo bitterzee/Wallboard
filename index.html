@@ -1001,7 +1001,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <h2 class="sh">Household helper</h2>
     <p class="hint2">Give your helper or nanny their own sign-in. They see today's meals with recipes in Bahasa Indonesia, the child's schedule and packing list, the shopping list and a notes page. They can't see the journal, growth, notes for Mama, calendars or settings.</p>
     <div id="hpList"></div>
-    <div class="r3" style="grid-template-columns:1fr 1.4fr auto;align-items:end"><div class="f"><label>Name<input id="hpName" maxlength="30" placeholder="Mbak Sri"></label></div><div class="f"><label>Email<input id="hpEmail" type="email" placeholder="sri@gmail.com"></label></div><button class="pill dark" id="hpAdd" style="margin-bottom:2px">Add</button></div>
+    <div class="r3" style="grid-template-columns:1fr 1.4fr auto;align-items:end"><div class="f"><label>Name<input id="hpName" maxlength="30" placeholder="Their name"></label></div><div class="f"><label>Email<input id="hpEmail" type="email" placeholder="their@email.com"></label></div><button class="pill dark" id="hpAdd" style="margin-bottom:2px">Add</button></div>
     <h2 class="sh">Health</h2>
     <p class="hint2" id="diag"></p>
     <h2 class="sh">Family names</h2>
@@ -3360,7 +3360,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-13.33";
+const APP_VERSION="2026-11-14.34";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
