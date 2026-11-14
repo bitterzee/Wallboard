@@ -1786,7 +1786,7 @@ function renderWall0(){
   } else if(m==="dinner"||m==="split"||m==="phone"){
     let card; const tmr=plannedFor(addDays(today(),1));
     if(tn){ const r=tn.r, pu=photoUrl(r.photo_path), ing=r.ingredients||[], show=ing.slice(0,10);
-      card=`<div class="rc ${tn.picked?"":"swipeable"}" ${tn.picked?"":`data-swipe-id="${esc(r.id)}"`}><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span><div class="ph" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":`<span class="mono">${mono(r)}</span>`}</div><div class="b">
+      card=`<div class="rc ${tn.picked?"":"swipeable"}" ${tn.picked?"":`data-swipe-id="${esc(r.id)}"`}><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span>${pu?`<div class="ph" style="background-image:url('${pu}')"></div>`:""}<div class="b">
         <div class="eyebrow">${tn.picked?"Tonight's dinner":(m==="split"?"Recipe of the day":"Dinner idea")}</div><h2 class="serif">${esc(r.title)}</h2>
         <div class="meta">${metaHTML(r)}</div>
         ${rvMini(r)}
@@ -3367,7 +3367,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-14.35";
+const APP_VERSION="2026-11-14.36";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
