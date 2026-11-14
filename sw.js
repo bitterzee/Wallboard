@@ -1,6 +1,6 @@
 // Wallboard service worker: keeps a copy of the app itself so the wall still opens when the internet is down.
 // Network first (so updates arrive straight away), cached copy only as a fallback. Household data is never cached here.
-const CACHE = "wallboard-shell-v1";
+const CACHE = "wallboard-shell-v2";
 const SHELL = ["./", "./index.html", "./vendor/supabase-js-2.119.0.js", "./manifest.json", "./icon.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
