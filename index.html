@@ -1469,7 +1469,7 @@ At home, Soto Ayam was the dinner everyone asked for again and again.`,highlight
 })() : (() => {
   // every request gets a time limit, so a stuck connection can't freeze the wall (uploads get longer)
   const tfetch = (u,o={}) => { if(o.signal) return fetch(u,o); const big=o.body && typeof o.body!=="string"; return fetch(u,{...o,signal:tmo(big?120e3:/\/functions\/v1\//.test(String(u))?150e3:25e3)}) };
-  sb = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey, { auth:{ persistSession:true, autoRefreshToken:true }, global:{ fetch:tfetch } });
+  sb = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey, { auth:{ persistSession:true, autoRefreshToken:true, lock:(name,timeout,fn)=>fn() }, global:{ fetch:tfetch } });
   sb.auth.onAuthStateChange(ev=>{ if(ev==="SIGNED_OUT" && me){ clearLocalData(); location.reload() } });
   const cache = (SNAP.urls && typeof SNAP.urls==="object") ? SNAP.urls : {}; // path -> {url, exp}
   const sVer={}, sBase={}; let sAll=null;
@@ -1649,11 +1649,13 @@ function rankFor(meal){
 }
 const photoUrl = p => p ? urlMap[p] : null;
 
-let refreshing=null, refreshAgain=false, lastOk=0, failN=0, retryT=null, offline=false;
+let hungN=0, hiddenAt=0, refreshing=null, refreshAgain=false, lastOk=0, failN=0, retryT=null, offline=false;
 async function refreshAll(){
   if(refreshing){ refreshAgain=true; return refreshing }
-  refreshing=refreshAll0();
-  try{ await refreshing } finally{ refreshing=null; if(refreshAgain){ refreshAgain=false; setTimeout(refreshAll,50) } }
+  let hung=false;
+  refreshing=Promise.race([refreshAll0(), new Promise(r=>setTimeout(()=>{ hung=true; r() },60e3))]);
+  try{ await refreshing } finally{
+    if(hung){ logErr("refresh","timed out"); hungN++; if(hungN>=2 && navigator.onLine) location.reload() } else hungN=0; refreshing=null; if(refreshAgain){ refreshAgain=false; setTimeout(refreshAll,50) } }
 }
 function setOffline(on){ offline=on; document.body.classList.toggle("offline",on); const b=$("offBadge"); if(b) b.textContent = on ? `Offline${lastOk?`, showing info from ${new Date(lastOk).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"})}`:""}` : "" }
 async function primeFromSnap(){ if(DEMO || !SNAP.state) return; forceSnap=true; try{ await refreshAll0(true) }catch(e){} finally{ forceSnap=false } }
@@ -3350,7 +3352,12 @@ async function start(){
   renderWall(); loadWeather(); loadAir(); setInterval(loadWeather,15*60e3); setInterval(loadAir,30*60e3); setInterval(tick,1000); nextPhoto();
   let ok=false; try{ ok=await api.session() }catch(e){ ok=false; logErr("session",e) }
   if(ok){ if(usedSnap) setOffline(true); start() } else open("login");
-  document.addEventListener("visibilitychange",()=>{ if(!document.hidden && started){ refreshAll(); loadWeather(); loadAir() } });
+  document.addEventListener("visibilitychange",()=>{
+    if(document.hidden){ hiddenAt=Date.now(); return }
+    if(!started) return;
+    if(hiddenAt && Date.now()-hiddenAt>20*60e3 && navigator.onLine && !document.querySelector(".ov.open:not(#login)")){ location.reload(); return }
+    refreshAll(); loadWeather(); loadAir() });
+  addEventListener("pageshow", e=>{ if(e.persisted && started) refreshAll() });
   // fresh start twice a day for a long-running kiosk, but only when the internet is up and nobody is mid-task
   setTimeout(function again(){ if(navigator.onLine && Date.now()-lastOk<10*60e3 && !document.querySelector(".ov.open:not(#login)")) location.reload(); else setTimeout(again, 10*60e3) }, 12*3600e3);
   addEventListener("online", ()=>{ if(started){ refreshAll(); loadWeather(); loadAir() } });
@@ -3360,7 +3367,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-14.34";
+const APP_VERSION="2026-11-14.35";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
