@@ -37,6 +37,7 @@
 <title>Wallboard</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* Wallboard — "after the rain" theme.
    Deep teal-ink surfaces, one turmeric accent, one type family (Plus Jakarta Sans).
@@ -489,6 +490,27 @@ body.phone .jform{grid-template-columns:1fr}
 .swctl{display:flex;gap:22px;align-items:center}
 body.phone .swc h2{font-size:22px}
 .rc .swbtn{width:46px;height:46px;font-size:19px}
+/* layout E: fridge door */
+body[data-mode=fridge] .shade{background:radial-gradient(120% 90% at 50% 45%,rgba(0,0,0,0) 45%,rgba(0,0,0,.42)),linear-gradient(0deg,rgba(0,0,0,.35),rgba(0,0,0,0) 30%)}
+.fr{position:relative;height:100%;color:#2b2420}
+.fr-clock{position:absolute;left:34px;bottom:30px;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.45)}
+.fr-clock .t-big{font-size:110px;line-height:.9}.fr-clock .d{font-size:21px;margin-top:6px;opacity:.92}
+.fr-clock .w{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:19px}.fr-clock .w svg{width:34px;height:34px}
+.fr-note,.fr-st{position:absolute;box-shadow:0 14px 28px -10px rgba(0,0,0,.55),0 2px 4px rgba(0,0,0,.18);text-align:left}
+.fr-note::before,.fr-st::before{content:"";position:absolute;left:50%;top:-11px;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8,transparent 45%),var(--mag,#d4537e);box-shadow:0 3px 6px rgba(0,0,0,.35)}
+.fr-note{left:50px;top:64px;width:410px;padding:30px 34px 28px;background:#fbf6ec;transform:rotate(-3deg);--mag:#d4537e}
+.fr-note .k{font:700 15px/1 var(--fb,inherit);color:#b4446c;letter-spacing:.02em}
+.fr-note q{display:block;quotes:none;font-family:var(--fd);font-size:34px;line-height:1.2;margin-top:12px;color:#2b2420;text-wrap:balance}
+.fr-note .m{font-family:Caveat,cursive;font-size:24px;color:#6b5b4b;margin-top:14px}
+.fr-st{width:250px;min-height:200px;padding:26px 22px 20px;font-family:Caveat,cursive;color:#2f2a22;cursor:pointer}
+.fr-st h4{font:700 14px/1 var(--fb,inherit);letter-spacing:.03em;opacity:.65;margin-bottom:10px}
+.fr-st b{display:block;font-size:36px;line-height:1.05;font-weight:700}
+.fr-st small{display:block;font-size:23px;line-height:1.2;margin-top:8px;opacity:.85}
+.fr-st ul{list-style:none;font-size:25px;line-height:1.25}.fr-st li::before{content:"□ ";opacity:.55}
+.st-din{right:292px;top:78px;background:#ffe08a;transform:rotate(2.5deg);--mag:#2e7d6b}
+.st-shop{right:30px;top:150px;background:#c9edc3;transform:rotate(-2deg);--mag:#c4572f}
+.st-kid{right:250px;bottom:40px;background:#cfe1ff;transform:rotate(-3.5deg);--mag:#7f5ad1}
+.fr-alerts{position:absolute;left:34px;bottom:250px;max-width:430px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 #sleepOv{position:fixed;inset:0;z-index:9000;background:#000;display:none;align-items:flex-end;justify-content:center;padding-bottom:40px;cursor:pointer}
 #sleepOv span{color:#1c1c1c;font-size:14px}
 body.sleeping #sleepOv{display:flex}
@@ -1297,6 +1319,10 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
         <div class="lprev" style="display:grid;grid-template-columns:1fr 1fr;gap:3px;background:#0F1B1D"><div style="background:#253B40;color:#EDF1EC;padding:8px;font-size:11px;display:flex;flex-direction:column;justify-content:space-between"><span style="opacity:.75">Morning</span><span style="font-size:14px;font-weight:600">Weather</span></div><div style="background:#1D3034;color:#EDF1EC;padding:8px;font-size:11px;display:flex;flex-direction:column;justify-content:space-between"><span style="opacity:.75">Day</span><span style="font-size:14px;font-weight:600">Photos</span></div><div style="background:#E5B13A;color:#231904;padding:8px;font-size:11px;display:flex;flex-direction:column;justify-content:space-between"><span style="opacity:.75">From 4 pm</span><span style="font-size:14px;font-weight:600">Dinner</span></div><div style="background:#050A0B;color:#6D8582;padding:8px;font-size:11px;display:flex;flex-direction:column;justify-content:space-between"><span style="opacity:.75">Night</span><span style="font-size:14px;font-weight:600">Dim clock</span></div></div>
         <b>C, changes through the day</b><span>Weather in the morning, family photos in the day, dinner from 4 pm, a dim clock at night.</span>
       </button>
+      <button class="lc" data-layout="E">
+        <div class="lprev" style="position:relative;background:linear-gradient(135deg,#6d8a7c,#3c5560);overflow:hidden"><div style="position:absolute;left:10%;top:14%;width:42%;padding:6px 7px;background:#fbf6ec;color:#2b2420;font-size:10px;transform:rotate(-3deg);box-shadow:0 4px 8px rgba(0,0,0,.35)">For Mama ♥<br><span style="font-size:12px">You make our home warm</span></div><div style="position:absolute;right:30%;top:12%;width:20%;height:30%;background:#ffe08a;transform:rotate(3deg)"></div><div style="position:absolute;right:6%;top:20%;width:20%;height:34%;background:#c9edc3;transform:rotate(-2deg)"></div><div style="position:absolute;right:18%;bottom:8%;width:20%;height:30%;background:#cfe1ff;transform:rotate(-3deg)"></div><div style="position:absolute;left:8%;bottom:8%;color:#fff;font-size:20px;font-weight:200">19:40</div></div>
+        <b>E, fridge door</b><span>A family photo with a note for Mama pinned on it, and sticky notes for dinner, shopping and your child's day.</span>
+      </button>
     </div>
   </div>
 </section>
@@ -1666,7 +1692,7 @@ const MODES=["auto","morning","day","dinner","night"];
 function autoMode(){ const h=hourNow(), c=CONFIG;
   if(h>=c.nightFrom || h<c.morningFrom) return "night";
   if(h>=c.dinnerFrom) return "dinner"; if(h>=c.dayFrom) return "day"; return "morning"; }
-const mode = () => isPhone() ? "phone" : layout==="B" ? "split" : (modeOverride==="auto" ? autoMode() : modeOverride);
+const mode = () => isPhone() ? "phone" : layout==="B" ? "split" : layout==="E" ? ((modeOverride==="auto" ? autoMode() : modeOverride)==="night" ? "night" : "fridge") : (modeOverride==="auto" ? autoMode() : modeOverride);
 
 const MEALS=[["breakfast","Breakfast"],["lunch","Lunch"],["dinner","Dinner"]], mealName=m=>(MEALS.find(x=>x[0]===m)||MEALS[2])[1];
 const pk=(day,meal="dinner")=>day+"|"+meal;
@@ -1848,6 +1874,16 @@ function renderWall0(){
     h=`<div class="d-credit" style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">${ol?`<span class="otd" style="font-size:20px">${ol}</span>`:""}${ph&&ph.uploaded_by_name?`<span>Added by ${esc(ph.uploaded_by_name)}</span>`:""}</div>
       <div class="d-strip"><div><div class="t-big d-time js-time">${timeStr()}</div><div class="d-date">${dateStr()}</div>${wordsHTML("d-words")}</div>
       <div class="d-right">${wxChips(18)}${kidLine()}${(()=>{const e=nextEvent();return e?`<div class="d-next"><span>Next</span> ${evTime(e)} ${esc(e.title)}</div>`:""})()}<div class="d-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${tChip}</div></div>`;
+  } else if(m==="fridge"){
+    const tn2=tonightRecipe(), r=tn2&&tn2.r, todo=shopping.filter(x=>!x.checked), ko=occOn(today()), ne=nextEvent(), bag=bagNow()[0];
+    h=`<div class="fr">
+      ${wordsOn()?`<div class="fr-note"><span class="k">FOR ${esc(MOM).toUpperCase()} ♥</span><q>${esc(mamaNote())}</q><div class="m">Today: ${esc(motto())}</div></div>`:""}
+      <button class="fr-st st-din" ${r?`data-openbook="${esc(r.id)}"`:`data-open="planOv"`}><h4>${tn2&&tn2.picked?"TONIGHT":"DINNER IDEA"}</h4><b>${r?esc(r.title):"Pick tonight's dinner"}</b>${r&&r.cook_time?`<small>${esc(r.cook_time)}${r.serves?`, serves ${esc(r.serves)}`:""}</small>`:""}</button>
+      <button class="fr-st st-shop" data-open="shopOv"><h4>SHOPPING${todo.length?` · ${todo.length}`:""}</h4>${todo.length?`<ul>${todo.slice(0,5).map(x=>`<li>${esc(x.name)}</li>`).join("")}</ul>${todo.length>5?`<small>and ${todo.length-5} more</small>`:""}`:`<b>All bought</b>`}</button>
+      <button class="fr-st st-kid" data-open="kidOv"><h4>${esc(KID).toUpperCase()} TODAY</h4>${ko.length?ko.slice(0,3).map(x=>`<small>${x.t?fmtT(x.t)+" ":""}${esc(x.title)}</small>`).join(""):`<small>Nothing planned</small>`}${bag?`<small>Pack: ${esc(bag.items.slice(0,2).join(", "))}${bag.items.length>2?"…":""}</small>`:""}${ne?`<small style="opacity:.7">Next: ${evTime(ne)} ${esc(ne.title)}</small>`:""}</button>
+      <div class="fr-alerts">${wxChips(16)}</div>
+      <div class="fr-clock"><div class="t-big js-time">${timeStr()}</div><div class="d">${dateStr()}</div><div class="w">${w.ic}<span>${w.t}° ${esc(w.desc)}${wxNote()}</span></div></div>
+    </div>`;
   } else if(m==="dinner"||m==="split"||m==="phone"){
     let card; const tmr=plannedFor(addDays(today(),1));
     if(tn){ const r=tn.r, pu=photoUrl(r.photo_path), ing=r.ingredients||[], show=ing.slice(0,10);
@@ -1895,7 +1931,7 @@ ${wxFake()?"":`<div class="s">Tomorrow ${Math.round(d1.temperature_2m_max[1])}°
   $("wall").innerHTML=h; $("wall").scrollTop=scrollY;
   document.body.classList.toggle("phone", m==="phone");
   $("bMode").textContent = modeOverride==="auto" ? `Mode: auto (${m})` : `Mode: ${m}`;
-  $("bMode").style.display = layout==="B" ? "none" : "";
+  $("bMode").style.display = (layout==="B"||layout==="E") ? "none" : "";
   $("bLayout").textContent = `Wall layout: ${layout}`;
 }
 const WHO=[["mom","Mom"],["dad","Dad"],["baby","Baby"]];
@@ -2740,7 +2776,7 @@ function nextPhoto(){
   const o=otdSet(); slide++;
   const ph = (o.list.length && slide%2===0) ? o.list[otdI++ % o.list.length] : photos.find(p=>p.id===order[pi++%order.length]); if(!ph) return;
   const url=photoUrl(ph.path), img=new Image();
-  img.onload=()=>{ back.style.background=`#15171b url("${url}") center/cover no-repeat`; shown=ph; swap(); if(["day","split","phone"].includes(mode())) renderWall() };
+  img.onload=()=>{ back.style.background=`#15171b url("${url}") center/cover no-repeat`; shown=ph; swap(); if(["day","split","phone","fridge"].includes(mode())) renderWall() };
   img.src=url;
 }
 function swap(){ back.classList.add("on"); front.classList.remove("on"); [front,back]=[back,front] }
@@ -3402,7 +3438,7 @@ $("bMode").onclick=()=>{ modeOverride=MODES[(MODES.indexOf(modeOverride)+1)%MODE
 function openLayout(){ document.querySelectorAll(".lc").forEach(b=>b.classList.toggle("on", layoutChosen && b.dataset.layout===layout)); open("layoutOv") }
 async function chooseLayout(l){
   layout=l; layoutChosen=true; LS.set("layout",l); renderWall(); nextPhoto(); close("layoutOv");
-  toast(l==="B"?"Wall set to layout B":"Wall set to layout C");
+  toast(`Wall set to layout ${l}`);
   try{ await api.setLayout(l) }catch(e){ toast("Saved on this screen only — couldn't reach Supabase") }
 }
 $("bLayout").onclick=openLayout;
@@ -3460,7 +3496,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-15.42";
+const APP_VERSION="2026-11-15.43";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
