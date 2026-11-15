@@ -482,6 +482,9 @@ body.phone .jform{grid-template-columns:1fr}
 .swctl{display:flex;gap:22px;align-items:center}
 body.phone .swc h2{font-size:22px}
 .rc .swbtn{width:46px;height:46px;font-size:19px}
+#sleepOv{position:fixed;inset:0;z-index:9000;background:#000;display:none;align-items:flex-end;justify-content:center;padding-bottom:40px;cursor:pointer}
+#sleepOv span{color:#1c1c1c;font-size:14px}
+body.sleeping #sleepOv{display:flex}
 .rfbtn svg{transition:transform .2s}.rfbtn.spin svg{animation:rfspin .8s linear infinite}@keyframes rfspin{to{transform:rotate(360deg)}}
 #offBadge{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 8px);transform:translateX(-50%);z-index:45;display:none;padding:.35em .9em;border-radius:99px;background:rgba(var(--warn-rgb,200,120,60),.92);color:#fff;font-size:13px;font-weight:600;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
 body.offline #offBadge{display:block}
@@ -917,6 +920,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <main id="wall"></main>
 
 <div id="offBadge" aria-live="polite"></div>
+<div id="sleepOv" aria-hidden="true"><span>Tap to wake</span></div>
 <div class="ctl"><button id="bRefresh" class="rfbtn" aria-label="Refresh" style="margin-right:8px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button><button id="bAsk" aria-label="Ask the wall" style="margin-right:8px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>Ask</button><button id="bMenu" aria-label="Open menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Menu</button></div>
 
 <!-- wall menu -->
@@ -1025,6 +1029,13 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <p class="hint2">Give your helper or nanny their own sign-in. They see today's meals with recipes in Bahasa Indonesia, the child's schedule and packing list, the shopping list and a notes page. They can't see the journal, growth, notes for Mama, calendars or settings.</p>
     <div id="hpList"></div>
     <div class="r3" style="grid-template-columns:1fr 1.4fr auto;align-items:end"><div class="f"><label>Name<input id="hpName" maxlength="30" placeholder="Their name"></label></div><div class="f"><label>Email<input id="hpEmail" type="email" placeholder="their@email.com"></label></div><button class="pill dark" id="hpAdd" style="margin-bottom:2px">Add</button></div>
+    <h2 class="sh">Sleep hours (this device)</h2>
+    <p class="hint2">The screen goes black during these hours, so it's nearly dark at night and runs cooler. Tap it to wake for 2 minutes. A ringing kitchen timer wakes it too. Turn on Auto-Brightness in the iPad's Settings for the darkest result.</p>
+    <div class="r3" style="grid-template-columns:auto 1fr 1fr;align-items:end">
+      <label class="hint2" style="display:flex;gap:10px;align-items:center;cursor:pointer;margin:0 0 12px"><input type="checkbox" id="slOn" style="width:22px;height:22px;accent-color:var(--accent)"> On</label>
+      <div class="f"><label>From<input type="time" id="slFrom" value="22:00"></label></div>
+      <div class="f"><label>Until<input type="time" id="slTo" value="06:00"></label></div>
+    </div>
     <h2 class="sh">Weather location</h2>
     <label class="hint2" style="display:flex;gap:10px;align-items:center;cursor:pointer"><input type="checkbox" id="geoOn" style="width:22px;height:22px;accent-color:var(--accent)"> Use this device's location</label>
     <p class="hint2" id="geoStat" style="margin-top:4px"></p>
@@ -2645,6 +2656,24 @@ $("vaxBody").onclick=async e=>{
 };
 
 $("geoOn").onchange=()=>{ const g=LS.get("geo",null)||{}; LS.set("geo",{...g,on:$("geoOn").checked}); if($("geoOn").checked) locate(true); else { wxAt=0; loadWeather(); loadAir() } renderGeo() };
+/* ======================== SLEEP HOURS ======================== */
+const sleepCfg = () => LS.get("sleep",null) || {on:false, from:"22:00", to:"06:00"};
+let wakeUntil=0, sleeping=false;
+function inSleepHours(){ const c=sleepCfg(); if(!c.on || !c.from || !c.to || c.from===c.to) return false;
+  const n=toMin(new Intl.DateTimeFormat("en-GB",{timeZone:CONFIG.tz,hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(new Date())), f=toMin(c.from), t=toMin(c.to);
+  return f<t ? (n>=f && n<t) : (n>=f || n<t) }
+function sleepCheck(){
+  const ringing = timers().some(t=>t.end<=Date.now() && Date.now()-t.end<15*60e3);
+  const busy = document.body.classList.contains("cooking") || !!document.querySelector(".ov.open");
+  const want = started && inSleepHours() && Date.now()>wakeUntil && !ringing && !busy;
+  if(want!==sleeping){ sleeping=want; document.body.classList.toggle("sleeping",want); if(!want){ refreshAll(); loadWeather() } }
+}
+$("sleepOv").addEventListener("click",()=>{ wakeUntil=Date.now()+2*60e3; sleepCheck() });
+addEventListener("pointerdown",()=>{ if(!sleeping && inSleepHours()) wakeUntil=Math.max(wakeUntil, Date.now()+2*60e3) }, true);
+setInterval(sleepCheck, 15e3);
+function renderSleep(){ const c=sleepCfg(); $("slOn").checked=!!c.on; $("slFrom").value=c.from||"22:00"; $("slTo").value=c.to||"06:00" }
+["slOn","slFrom","slTo"].forEach(id=>$(id).addEventListener("change",()=>{ LS.set("sleep",{on:$("slOn").checked, from:$("slFrom").value||"22:00", to:$("slTo").value||"06:00"}); wakeUntil=Date.now()+2*60e3; sleepCheck() }));
+
 /* ======================== REFRESH BUTTON ======================== */
 async function manualRefresh(btn){
   if(btn) btn.classList.add("spin");
@@ -3235,7 +3264,7 @@ $("wSave").onclick=async()=>{
   try{ await api.setState("words",wordsCfg); toast(note?"Today's note for Mama saved":"Saved") }catch(e){ toast("Couldn't save that") }
 };
 function renderDiag(){ const e=ERRS.slice(-3).reverse(); $("diag").innerHTML=`Version ${esc(APP_VERSION)}. ${offline?"<b>Offline right now.</b> ":""}Last synced ${lastOk?new Date(lastOk).toLocaleString(CONFIG.locale,{weekday:"short",hour:"2-digit",minute:"2-digit"}):"not yet"}.${e.length?`<br>Recent problems: ${e.map(x=>esc(new Date(x.t).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"})+" "+x.where+": "+x.m)).join("; ")}`:" No problems logged."}` }
-function openSettings(){ renderDiag(); renderGeo(); renderHelpers(); $("icUrl").value=(icloudCfg&&icloudCfg.url)||""; renderIcStat(); $("famKid").value=(familyCfg&&familyCfg.kid)||""; $("famMom").value=(familyCfg&&familyCfg.mom)||""; renderThemes(); rtDraft=JSON.parse(JSON.stringify(routine())); $("wOn").checked=wordsOn(); $("mamaNote").value=(wordsCfg&&wordsCfg.note_date===today()&&wordsCfg.note)||""; renderCalList(); renderRoutineEditor(); $("who2").textContent = DEMO ? "Demo mode." : `Signed in as ${me.name} (${me.email}).`; }
+function openSettings(){ renderDiag(); renderGeo(); renderSleep(); renderHelpers(); $("icUrl").value=(icloudCfg&&icloudCfg.url)||""; renderIcStat(); $("famKid").value=(familyCfg&&familyCfg.kid)||""; $("famMom").value=(familyCfg&&familyCfg.mom)||""; renderThemes(); rtDraft=JSON.parse(JSON.stringify(routine())); $("wOn").checked=wordsOn(); $("mamaNote").value=(wordsCfg&&wordsCfg.note_date===today()&&wordsCfg.note)||""; renderCalList(); renderRoutineEditor(); $("who2").textContent = DEMO ? "Demo mode." : `Signed in as ${me.name} (${me.email}).`; }
 $("calColor").onclick=e=>{ const b=e.target.closest("[data-col]"); if(b){ calColor=b.dataset.col; renderCalList() } };
 $("calList").onclick=async e=>{ const b=e.target.closest("[data-delcal]"); if(!b) return; if(!twoTap("c"+b.dataset.delcal,b,"Tap to confirm")) return; try{ await api.deleteCalendar(b.dataset.delcal); await refreshAll() }catch(err){ toast("Couldn't remove it") } };
 $("calAdd").onsubmit=async e=>{
@@ -3399,7 +3428,7 @@ async function start(){
   await refreshAll(); api.subscribe(refreshAll); if(!isHelper()) syncShopping({quiet:true});
   setTimeout(autoDraftSunday, 20e3); setInterval(autoDraftSunday, 30*60e3);
   // check for changes every 2 minutes while the screen is on (live updates usually arrive within seconds anyway)
-  setInterval(()=>{ if(!document.hidden) refreshAll() }, 2*60e3);
+  setInterval(()=>{ if(!document.hidden && !sleeping) refreshAll() }, 2*60e3);
   setInterval(loadEvents, 15*60e3);
   setInterval(nextPhoto, Math.max(8,CONFIG.photoSeconds)*1000);
   setTimeout(()=>{ if(!layoutChosen && !isPhone()) openLayout() }, 900); // wait for the screen size to settle
@@ -3424,7 +3453,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-15.40";
+const APP_VERSION="2026-11-15.41";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
