@@ -15,6 +15,25 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="icon.png?v=2">
 <link rel="manifest" href="manifest.json">
+<script>
+/* Plain old JavaScript on purpose, so it runs on any iPad: shows a message if the wall can't start */
+(function(){
+  var shown=false;
+  function show(msg){
+    if(shown||window.__wbStarted) return; shown=true;
+    var m=navigator.userAgent.match(/(?:OS|Version\/)\s?(\d+)[._](\d+)/), v=m?(m[1]+"."+m[2]):"unknown";
+    var d=document.createElement("div");
+    d.setAttribute("style","position:fixed;inset:0;z-index:99999;background:#0f1b1d;color:#dfe6e3;font:18px -apple-system,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px");
+    d.innerHTML='<div style="max-width:560px"><div style="font-size:26px;margin-bottom:12px">The wall couldn\'t start on this device</div>'+
+      '<div style="opacity:.75;line-height:1.5">Safari version '+v+'. If this is below 16.4, update in Settings → General → Software Update.<br><br><span style="font-size:14px;opacity:.7">'+String(msg||"").replace(/[<>&]/g,"").slice(0,200)+'</span></div>'+
+      '<button onclick="location.reload()" style="margin-top:22px;font:inherit;padding:.6em 1.4em;border-radius:99px;border:0;background:#f0a9bd;color:#2a1018">Try again</button></div>';
+    (document.body||document.documentElement).appendChild(d);
+  }
+  window.addEventListener("error",function(e){ if(!window.__wbStarted) show(e.message); });
+  window.addEventListener("load",function(){ setTimeout(function(){ if(!window.__wbStarted) show("The app script didn't run."); }, 8000); });
+})();
+</script>
+
 <title>Wallboard</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1287,6 +1306,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 
 <script src="vendor/supabase-js-2.119.0.js"></script>
 <script>
+window.__wbStarted = 1; // the main script parsed and is running on this device
 /* ======================== CONFIG ======================== */
 const CONFIG = {
   // From Supabase → Project Settings → API (the Capcus project).
@@ -2911,7 +2931,7 @@ function sumQty(qs){
   qs=qs.filter(Boolean); if(!qs.length) return ""; if(qs.length===1) return qs[0];
   const groups=new Map(), other=[];
   for(const q of qs){ const m=q.match(/^(\d+(?:[.,]\d+)?)\s*(.*)$/); if(!m){ other.push(q); continue }
-    const u=m[2].trim(), k=u.toLowerCase().replace(/(?<=ch|sh|x)es$|s$/,""); const g=groups.get(k)||{n:0,u}; g.n+=parseFloat(m[1].replace(",",".")); if(u.length>g.u.length) g.u=u; groups.set(k,g) }
+    const u=m[2].trim(), k=u.toLowerCase().replace(/(ch|sh|x)es$/,"$1").replace(/s$/,""); const g=groups.get(k)||{n:0,u}; g.n+=parseFloat(m[1].replace(",",".")); if(u.length>g.u.length) g.u=u; groups.set(k,g) }
   return [...[...groups.values()].map(g=>`${+g.n.toFixed(2)}${g.u?" "+g.u:""}`), ...other].join(" + ");
 }
 /* The shopping list follows the dinner plan: planned dinners add their ingredients
@@ -3393,7 +3413,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-14.38";
+const APP_VERSION="2026-11-15.39";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
