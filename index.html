@@ -1424,7 +1424,17 @@ try{ applyTheme(JSON.parse(localStorage.getItem("wb.theme"))||"rain") }catch(e){
 const isPhone = () => innerWidth < 700 || innerHeight < 500;
 const hourNow = () => +new Intl.DateTimeFormat("en-GB",{timeZone:CONFIG.tz,hour:"numeric",hourCycle:"h23"}).format(new Date());
 
-function shrink(file,max,q=.85){
+// Resize a picture before upload. Tries the browser's image decoder first, then an <img>, and as a last resort sends the original.
+async function shrink(file,max,q=.85){
+  const toJpeg = (src,w,h) => new Promise((res,rej)=>{ const k=Math.min(1,max/Math.max(w,h)), c=document.createElement("canvas");
+    c.width=Math.max(1,Math.round(w*k)); c.height=Math.max(1,Math.round(h*k)); c.getContext("2d").drawImage(src,0,0,c.width,c.height);
+    c.toBlob(b=>{ c.width=c.height=0; b?res(b):rej(new Error("resize")) },"image/jpeg",q) });
+  if(window.createImageBitmap){ try{ const bm=await createImageBitmap(file); try{ return await toJpeg(bm,bm.width,bm.height) } finally{ bm.close&&bm.close() } }catch(e){ logErr("photo decode",e) } }
+  try{ return await shrinkImg(file,max,q) }catch(e){ logErr("photo img",e) }
+  if(/^image\/(jpeg|png|webp)$/.test(file.type) && file.size<12e6) return file;
+  throw new Error(file.type ? `this picture type (${file.type}) can't be read` : "this picture can't be read");
+}
+function shrinkImg(file,max,q=.85){
   return new Promise((res,rej)=>{
     const img=new Image(),url=URL.createObjectURL(file);
     img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");
@@ -2789,8 +2799,9 @@ function renderPhotoGrid(){
 $("photoIn").onchange=async e=>{
   const files=[...e.target.files]; e.target.value=""; if(!files.length) return;
   let n=0; toast(`Uploading ${files.length}…`);
-  for(const f of files){ try{ await api.addPhoto(f); n++ }catch(err){ console.error(err) } }
-  toast(n===files.length?`Added ${n} photo${n>1?"s":""}`:`Added ${n} of ${files.length} — some failed`); refreshAll();
+  let why="";
+  for(const f of files){ try{ await api.addPhoto(f); n++ }catch(err){ logErr("photo upload",err); why=err.message||String(err) } }
+  toast(n===files.length?`Added ${n} photo${n>1?"s":""}`:`Added ${n} of ${files.length}. ${why?`Problem: ${why.slice(0,90)}`:"Try again"}`); refreshAll();
 };
 let armed={};
 function twoTap(key,btn,label){ if(armed[key]&&Date.now()-armed[key]<3000) return true; armed[key]=Date.now(); btn.textContent=label; setTimeout(()=>{ if(btn.isConnected) btn.textContent=btn.dataset.label||btn.textContent },3000); return false }
@@ -3496,7 +3507,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-15.44";
+const APP_VERSION="2026-11-16.45";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
