@@ -2821,10 +2821,12 @@ async function loadEvents(){
   renderWall(); if($("setOv").classList.contains("open")) renderCalList();
 }
 const evTime = e => e.allDay ? "All day" : fmt({hour:"2-digit",minute:"2-digit",hour12:CONFIG.hour12}, new Date(e.start));
-function todaysEvents(){ const t=today(), now=Date.now(); return events.filter(e=> e.allDay ? (e.start<=t && e.end>t) : (fmtDay(e.start)===t && new Date(e.end||e.start).getTime()>now)) }
+const AGENDA_ON=false; // family calendar events hidden on the wall and phones for now (set true to bring them back)
+function todaysEvents(){ if(!AGENDA_ON) return []; const t=today(), now=Date.now(); return events.filter(e=> e.allDay ? (e.start<=t && e.end>t) : (fmtDay(e.start)===t && new Date(e.end||e.start).getTime()>now)) }
 const nextEvent = () => todaysEvents().find(e=>!e.allDay);
 const tomorrowFirst = () => { const d=addDays(today(),1); return events.find(e=> e.allDay ? (e.start<=d && e.end>d) : fmtDay(e.start)===d) };
 function agendaHTML(max){
+  if(!AGENDA_ON) return "";
   if(!calendars.length) return "";
   const list=todaysEvents(), shown=list.slice(0,max);
   return `<div class="ag"><div class="ag-h">Today</div>${shown.length?shown.map(e=>`<div class="ag-r"><i style="background:${esc(e.color||"#86C6D9")}"></i><span class="ag-t">${evTime(e)}</span><span class="ag-n">${esc(e.title)}</span></div>`).join(""):`<div class="ag-r ag-none">Nothing else on today</div>`}${list.length>max?`<div class="ag-more">${list.length-max} more later</div>`:""}</div>`;
@@ -3584,7 +3586,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.62";
+const APP_VERSION="2026-11-16.63";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
