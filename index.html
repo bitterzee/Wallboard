@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net blob:; worker-src 'self' blob: https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://oetspavwjsfzfgfdeukk.supabase.co https://i.ytimg.com https://*.ytimg.com; connect-src 'self' https://oetspavwjsfzfgfdeukk.supabase.co wss://oetspavwjsfzfgfdeukk.supabase.co https://api.open-meteo.com https://air-quality-api.open-meteo.com https://cdn.jsdelivr.net https://tessdata.projectnaptha.com https://api.bigdatacloud.net; media-src 'self' blob: data:; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'none'; form-action 'self'; manifest-src 'self'">
 <meta name="referrer" content="no-referrer">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -901,6 +901,10 @@ body.phone #menuOv .sheetbox{position:relative}body.phone #menuOv [data-close]{d
 body.phone :is(#photosOv,#storyOv,#memOv) .bar [data-close]{display:none}
 body.phone #memOv .memctl #memPrint{font-size:0;padding:12px 14px;line-height:1}body.phone #memOv .memctl #memPrint::after{content:"Save PDF";font-size:14px}
 body.phone .ov.tabov.open{animation:none}
+/* keep phone pages from sliding sideways: no horizontal panning, and no iOS zoom when a field is tapped */
+html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
+body.phone .ov:not(#menuOv){overflow:hidden}body.phone #menuOv,body.phone .ov .scroll,body.phone .detail,body.phone .sheetbox{overflow-x:hidden;overscroll-behavior-x:none}
+body.phone input,body.phone select,body.phone textarea{font-size:16px!important}
 .famsel{display:none;padding:12px 20px 0}body.phone .famsel{display:block}.famsel .rtabs{margin:0}
 .ksel{display:block;padding:14px 20px 0}body.phone #kidOv:not(.km-grow) .ksel{display:none}
 .memctl{display:flex;gap:8px;align-items:center;padding:12px 20px 0;flex-wrap:wrap}.memctl .pill{font-size:14px}body.phone .memctl #memMonth{max-width:150px}
@@ -3586,7 +3590,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.63";
+const APP_VERSION="2026-11-16.64";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
