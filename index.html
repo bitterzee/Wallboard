@@ -916,8 +916,9 @@ body.phone #menuOv .sheetbox h2{font-size:28px;margin:0 -20px 4px;padding:calc(e
 
 .pw-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .pw-head{display:flex;flex-direction:column;gap:10px}
-.pw-now{display:flex;flex-direction:column;align-items:flex-end;text-align:right;margin-top:12px;flex:none;max-width:120px}
-.pw-now svg{width:44px;height:auto}.pw-now .pw-temp{font-size:40px;margin-top:2px}.pw-now .pw-desc{font-size:12.5px;line-height:1.35;margin-top:4px}
+.pw-now{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1;min-width:0;align-self:stretch;padding-bottom:4px}
+.pw-nowr{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+.pw-now svg{width:46px;height:auto}.pw-now .pw-temp{font-size:44px}.pw-now .pw-desc{font-size:12.5px;line-height:1.35;margin-top:4px}
 .pw-head .fc{margin-top:2px}.pw-head .wxc,.pw-head .chip,.pw-head [class*=chip]{font-size:13px}
 .pw-more{display:flex;align-items:center;gap:6px;color:var(--fg2);font-size:14px;font-weight:600;border:1px solid var(--line2);border-radius:99px;padding:8px 14px;margin-top:10px;background:rgba(var(--s1-rgb),.6);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .pw-more svg{width:18px;height:18px;fill:currentColor}
@@ -1973,7 +1974,7 @@ function renderWall0(){
     const ph = m==="split"||m==="phone" ? currentPhoto() : null, ol=otdLabel(ph);
     if(m==="phone"){
       h=`<div class="pw">
-        <div class="pw-head"><div class="pw-top"><div><div class="t-big pw-time js-time">${timeStr()}</div><div class="pw-date">${dateStr()}</div></div><div class="pw-now">${w.ic}<div class="pw-temp">${w.t}°</div><div class="pw-desc">${w.desc}<br>feels ${w.feels}°</div></div></div>
+        <div class="pw-head"><div class="pw-top"><div><div class="t-big pw-time js-time">${timeStr()}</div><div class="pw-date">${dateStr()}</div></div><div class="pw-now"><div class="pw-nowr">${w.ic}<div class="pw-temp">${w.t}°</div></div><div class="pw-desc">${w.desc}<br>feels like ${w.feels}°</div></div></div>
         ${wxChips(13)}<div class="fc">${fcHTML()}</div></div>
         ${wordsHTML()}
         <div class="pw-kid">${kidHTML("row",4)}${devTip()&&!kidNudge()?`<div class="kid-dev" data-kidto="dev">This week for ${esc(KID)}: <b>${esc(devTip())}</b></div>`:""}</div>
@@ -3583,7 +3584,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.60";
+const APP_VERSION="2026-11-16.61";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
