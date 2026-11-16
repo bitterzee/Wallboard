@@ -2628,25 +2628,29 @@ let stLang=LS.get("stlang")||"en", stShown=null, stSpeaking=false;
 const stories = () => (storiesCfg && storiesCfg.items) || [];
 function storyChip(){ if(isHelper()||!me) return ""; const h=hourNow(), mi=+new Intl.DateTimeFormat("en-GB",{timeZone:CONFIG.tz,minute:"numeric"}).format(new Date()); if(!((h===18&&mi>=30)||h>=19||h<1)) return "";
   const t=stories().find(x=>x.d===today()); return `<div><button class="stchip" data-story>🌙 ${t?`Read “${esc(t.title)}” again`:"Story time"}</button></div>` }
-function openStory(){ if($("menuOv").classList.contains("open")) close("menuOv"); stShown=stories().filter(x=>x.d===today()).slice(-1)[0]||null; renderStory(); open("storyOv") }
+function openStory(){ if($("menuOv").classList.contains("open")) close("menuOv"); stShown=stToday(stLang)||stToday()||null; if(stShown) stLang=stShown.lang||"en"; renderStory(); open("storyOv") }
+const stToday=l=>stories().filter(x=>x.d===today()&&(!l||(x.lang||"en")===l)).slice(-1)[0];
 function renderStory(){
   document.querySelectorAll("#stLang button").forEach(b=>b.classList.toggle("on",b.dataset.stl===stLang));
   const s=stShown;
   $("stBody").innerHTML = s ? `<h2 class="st-t">${esc(s.title)}</h2>${esc(s.text).split(/\n\s*\n/).map((p,i)=>`<p data-sp="${i}">${p}</p>`).join("")}`
+    : stLang==="id" ? `<p class="st-empty">Claude menulis cerita pendek yang tenang dengan ${esc(KID)} sebagai tokohnya, dari harinya yang sebenarnya: jadwalnya, apa yang ia makan, dan hal-hal baru di jurnal. Butuh sekitar 20 detik. Lalu bacakan sendiri, atau biarkan layar membacakannya.</p>`
     : `<p class="st-empty">Claude writes a short, calm story with ${esc(KID)} as the hero, woven from her real day: her schedule, what she ate, and any new firsts in the journal. It takes about 20 seconds. Then read it to her yourself, or let the wall read it aloud.</p>`;
   const past=stories().slice().reverse().filter(x=>!s||x.id!==s.id).slice(0,10);
   $("stPast").innerHTML = past.length ? `<h3>Earlier stories</h3>${past.map(x=>`<button data-stold="${esc(x.id)}">${esc(x.title)}<small>${dayShort(x.d)}${x.lang==="id"?", Bahasa":""}</small></button>`).join("")}` : "";
-  $("stNew").textContent = s && s.d===today() ? "Write a new one" : "Write tonight's story";
-  $("stRead").style.display = s ? "" : "none"; $("stRead").textContent = stSpeaking ? "Stop reading" : "Read aloud";
+  const ID=stLang==="id"; if(!$("stNew").disabled) $("stNew").textContent = s && s.d===today() && (s.lang||"en")===stLang ? (ID?"Tulis cerita baru":"Write a new one") : (ID?"Tulis cerita malam ini":"Write tonight's story");
+  const rl=s&&s.lang==="id"; $("stRead").style.display = s ? "" : "none"; $("stRead").textContent = stSpeaking ? (rl?"Berhenti":"Stop reading") : (rl?"Bacakan":"Read aloud");
 }
 function stDay(){ const t=today();
   return { schedule: occOn(t).map(x=>`${x.t?fmtT(x.t)+" ":""}${x.title}`), meals: MEALS.map(([m])=>{ const r=plannedFor(t,m); return r?`${m}: ${r.title}`:"" }).filter(Boolean),
     weather: (()=>{ try{ const w=wxNow(); return `${w.t}°, ${w.desc}` }catch(e){ return "" } })(),
     notes: ((helperLog&&helperLog.items)||[]).filter(l=>fmtDay(l.t)===t).map(l=>l.text) } }
-$("stNew").onclick=async()=>{ const b=$("stNew"); stStop(); b.disabled=true; b.textContent="Writing…";
+$("stNew").onclick=async()=>{ const b=$("stNew"); stStop(); b.disabled=true; b.textContent=stLang==="id"?"Sedang menulis…":"Writing…";
   try{ const v=await api.ai({action:"story",date:today(),lang:stLang,day:stDay()}); storiesCfg={items:[...stories(),v].slice(-30)}; stShown=v; $("storyOv").querySelector(".scroll").scrollTop=0 }
   catch(err){ toast(err.message) } finally{ b.disabled=false; renderStory() } };
-$("stLang").onclick=e=>{ const b=e.target.closest("[data-stl]"); if(!b) return; stLang=b.dataset.stl; LS.set("stlang",stLang); renderStory() };
+$("stLang").onclick=e=>{ const b=e.target.closest("[data-stl]"); if(!b) return; if(b.dataset.stl===stLang) return; stStop(); stLang=b.dataset.stl; LS.set("stlang",stLang);
+  // show today's story in that language, or write one now if tonight's story was in the other language
+  const t=stToday(stLang); if(t){ stShown=t; renderStory() } else if(stShown&&stShown.d===today()&&!$("stNew").disabled){ stShown=null; renderStory(); $("stNew").click() } else { stShown=null; renderStory() } };
 $("stPast").onclick=e=>{ const b=e.target.closest("[data-stold]"); if(!b) return; stStop(); stShown=stories().find(x=>x.id===b.dataset.stold)||null; renderStory(); $("storyOv").querySelector(".scroll").scrollTop=0 };
 function stStop(){ if(window.speechSynthesis) speechSynthesis.cancel(); stSpeaking=false; document.querySelectorAll("#stBody p.on").forEach(p=>p.classList.remove("on")) }
 function stVoice(lang){ const vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[]; const want=lang==="id"?/^id/i:/^en/i;
@@ -2656,6 +2660,7 @@ $("stRead").onclick=()=>{
   if(stSpeaking){ stStop(); renderStory(); return }
   const ps=[...document.querySelectorAll("#stBody p[data-sp]")]; if(!ps.length) return; stSpeaking=true; renderStory();
   const v=stVoice(stShown.lang); let i=0;
+  if(!v && stShown.lang==="id" && speechSynthesis.getVoices().length) toast("No Indonesian voice on this device. On iPhone or iPad add one in Settings, Accessibility, Spoken Content, Voices, Indonesian.");
   const next=()=>{ document.querySelectorAll("#stBody p.on").forEach(p=>p.classList.remove("on")); if(!stSpeaking||i>=ps.length){ stSpeaking=false; renderStory(); return }
     const p=ps[i++]; p.classList.add("on"); p.scrollIntoView({block:"center",behavior:"smooth"});
     const u=new SpeechSynthesisUtterance(p.textContent); u.lang=stShown.lang==="id"?"id-ID":"en-US"; if(v) u.voice=v; u.rate=.82; u.pitch=1.05; u.onend=()=>setTimeout(next,700); u.onerror=()=>{ stSpeaking=false; renderStory() }; speechSynthesis.speak(u) };
@@ -3515,7 +3520,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.49";
+const APP_VERSION="2026-11-16.50";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
