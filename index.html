@@ -909,7 +909,12 @@ body.phone .bar h1{font-size:28px}
 .pw-wx{display:flex;align-items:center;gap:14px}.pw-wx svg{width:56px;height:auto}
 .pw-temp{font-size:48px;font-weight:200;line-height:1;letter-spacing:-.04em}
 .pw-desc{font-size:14px;color:var(--fg2);margin-top:4px}
-.pw .fc{font-size:12px}.pw .fc>div{padding:10px 0 2px 8px}.pw .fc>div:first-child{padding-left:0}.pw .fc svg{width:28px;margin:6px 0}
+.pw .fc{font-size:12px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);border-top:0}
+.pw .fc>div:nth-child(n+6){display:none}
+.pw .fc .pp{font-size:11px;white-space:nowrap}
+.pw-kid{border-radius:22px;padding:16px 18px 14px;background:rgba(var(--s1-rgb),.72);border:1px solid rgba(var(--rain-rgb),.45);box-shadow:0 14px 40px -26px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:10px}
+.pw-kid:empty{display:none}
+.pw-kid .kid-dev{margin:0}.pw .fc>div{padding:8px 0 2px 6px;min-width:0}.pw .fc>div:first-child{padding-left:0}.pw .fc svg{width:28px;margin:6px 0}
 .pw .rc{border-radius:var(--r-lg);background:rgba(var(--s1-rgb),.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .pw .rc .ph{height:170px;min-height:0}
 .pw .mono{font-size:80px}
@@ -1914,16 +1919,17 @@ function renderWall0(){
       h=`<div class="pw">
         <div><div class="t-big pw-time js-time">${timeStr()}</div><div class="pw-date">${dateStr()}</div></div>
         ${wordsHTML()}
+        <div class="pw-kid">${kidHTML("row",4)}${devTip()&&!kidNudge()?`<div class="kid-dev" data-kidto="dev">This week for ${esc(KID)}: <b>${esc(devTip())}</b></div>`:""}</div>
         ${ol?`<span class="otd">${ol}</span>`:""}
         <div class="pw-wx">${w.ic}<div><div class="pw-temp">${w.t}°</div><div class="pw-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
         ${wxChips(14)}
-        ${apBanner()}${storyChip()}
+        <div class="fc">${fcHTML()}</div>
+        ${apBanner()}
         ${routineHTML("row")}
-        ${kidHTML("row",4)}${devTip()&&!kidNudge()?`<div class="kid-dev" data-kidto="dev" style="margin-top:-8px">This week for ${KID}: <b>${esc(devTip())}</b></div>`:""}
         ${agendaHTML(6)}
         ${useSoonHTML()}
-        <div class="fc">${fcHTML()}</div>
         ${card}
+        ${storyChip()}
         <div class="pw-foot"><span>${esc(WX().place)}${wxNote()}</span><span style="display:flex;gap:6px"><button data-refresh>Refresh</button><button data-open="timerOv">Timer</button><button data-open="kidOv">${KID}</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
       </div>`;
     }
@@ -3507,7 +3513,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.46";
+const APP_VERSION="2026-11-16.47";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
