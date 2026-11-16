@@ -912,6 +912,8 @@ body.phone .bar h1{font-size:28px}
 .pw .fc{font-size:12px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);border-top:0}
 .pw .fc>div:nth-child(n+6){display:none}
 .pw .fc .pp{font-size:11px;white-space:nowrap}
+.k-frame{border-radius:22px;padding:16px 18px 14px;background:rgba(var(--s1-rgb),.72);border:1px solid rgba(var(--rain-rgb),.45);box-shadow:0 14px 40px -26px rgba(0,0,0,.6)}
+.k-frame>*{margin-top:0!important}.d-kf{margin-top:12px;max-width:440px;padding:10px 16px;background:rgba(var(--shade-rgb),.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .pw-kid{border-radius:22px;padding:16px 18px 14px;background:rgba(var(--s1-rgb),.72);border:1px solid rgba(var(--rain-rgb),.45);box-shadow:0 14px 40px -26px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:10px}
 .pw-kid:empty{display:none}
 .pw-kid .kid-dev{margin:0}.pw .fc>div{padding:8px 0 2px 6px;min-width:0}.pw .fc>div:first-child{padding-left:0}.pw .fc svg{width:28px;margin:6px 0}
@@ -1878,17 +1880,17 @@ function renderWall0(){
     h=`<div class="m2">
       <div class="m2-l"><div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}</div></div>
         ${wordsHTML()}
-        <div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
-        ${wxChips(19)}</div>
-      <div class="m2-r">${apBanner()}${storyChip()}${rt}${kid}${ag}${useSoonHTML()}</div>
+        ${kid?`<div class="k-frame">${kid}</div>`:""}</div>
+      <div class="m2-r"><div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
+        ${wxChips(17)}${apBanner()}${rt}${ag}${useSoonHTML()}${storyChip()}</div>
       <div class="m2-b"><div class="fc">${fcHTML()}</div>
         <div class="m-foot"><span class="muted">${esc(WX().place)}${wxNote()}</span>${tChip}</div></div></div>`;
   } else if(m==="day"){
     const ph=currentPhoto();
     const ol=otdLabel(ph);
     h=`<div class="d-credit" style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">${ol?`<span class="otd" style="font-size:20px">${ol}</span>`:""}${ph&&ph.uploaded_by_name?`<span>Added by ${esc(ph.uploaded_by_name)}</span>`:""}</div>
-      <div class="d-strip"><div><div class="t-big d-time js-time">${timeStr()}</div><div class="d-date">${dateStr()}</div>${wordsHTML("d-words")}</div>
-      <div class="d-right">${wxChips(18)}${kidLine()}${(()=>{const e=nextEvent();return e?`<div class="d-next"><span>Next</span> ${evTime(e)} ${esc(e.title)}</div>`:""})()}<div class="d-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${tChip}</div></div>`;
+      <div class="d-strip"><div><div class="t-big d-time js-time">${timeStr()}</div><div class="d-date">${dateStr()}</div>${wordsHTML("d-words")}${kidLine()?`<div class="k-frame d-kf">${kidLine()}</div>`:""}</div>
+      <div class="d-right">${wxChips(18)}${(()=>{const e=nextEvent();return e?`<div class="d-next"><span>Next</span> ${evTime(e)} ${esc(e.title)}</div>`:""})()}<div class="d-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${tChip}</div></div>`;
   } else if(m==="fridge"){
     const tn2=tonightRecipe(), r=tn2&&tn2.r, todo=shopping.filter(x=>!x.checked), ko=occOn(today()), ne=nextEvent(), bag=bagNow()[0];
     h=`<div class="fr">
@@ -1935,7 +1937,7 @@ function renderWall0(){
     }
     const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : kidHTML("row",bagNow().length?1:2);
     if(m!=="phone") h=`<div class="n-wrap"><div class="n-left"><div><div class="t-big n-time js-time">${timeStr()}</div><div class="n-date">${dateStr()}</div></div>
-      <div class="n-mid">${wordsHTML("n-words")}${nrt}${nrt?kidLine():""}${nrie}${agendaHTML(wordsOn()?(nrt?1:(nrie?1:3)):(nrt?1:(nrie?(bagNow().length?1:2):4)))}${storyChip()?`<div style="margin-top:10px">${storyChip()}</div>`:""}</div>
+      <div class="n-mid">${wordsHTML("n-words")}${(nrie||(nrt&&kidLine()))?`<div class="k-frame">${nrie||kidLine()}</div>`:""}${nrt}${agendaHTML(wordsOn()?(nrt?1:(nrie?1:3)):(nrt?1:(nrie?(bagNow().length?1:2):4)))}${storyChip()?`<div style="margin-top:10px">${storyChip()}</div>`:""}</div>
       <div style="display:flex;flex-direction:column;gap:15px"><div class="n-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${wxChips(16)}${fc3}
       ${ol?`<span class="otd" style="font-size:15px;align-self:flex-start">${ol}</span>`:""}
       ${ph&&ph.uploaded_by_name?`<div class="muted" style="font-size:15px">Photo by ${esc(ph.uploaded_by_name)}</div>`:""}</div></div>${card}</div>`;
@@ -3513,7 +3515,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.47";
+const APP_VERSION="2026-11-16.48";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
