@@ -1894,7 +1894,7 @@ function renderWall0(){
   } else if(m==="fridge"){
     const tn2=tonightRecipe(), r=tn2&&tn2.r, todo=shopping.filter(x=>!x.checked), ko=occOn(today()), ne=nextEvent(), bag=bagNow()[0];
     h=`<div class="fr">
-      ${wordsOn()?`<div class="fr-note"><span class="k">FOR MAMA ♥</span><q>${esc(mamaNote())}</q><div class="m">Today: ${esc(motto())}</div></div>`:""}
+      ${wordsOn()?`<div class="fr-note"><span class="k">FOR MAMA ♥</span><q>${esc(mamaNote())}</q></div>`:""}
       <button class="fr-st st-din" ${r?`data-openbook="${esc(r.id)}"`:`data-open="planOv"`}><h4>${tn2&&tn2.picked?"TONIGHT":"DINNER IDEA"}</h4><b>${r?esc(r.title):"Pick tonight's dinner"}</b>${r&&r.cook_time?`<small>${esc(r.cook_time)}${r.serves?`, serves ${esc(r.serves)}`:""}</small>`:""}</button>
       <button class="fr-st st-shop" data-open="shopOv"><h4>SHOPPING${todo.length?` · ${todo.length}`:""}</h4>${todo.length?`<ul>${todo.slice(0,5).map(x=>`<li>${esc(x.name)}</li>`).join("")}</ul>${todo.length>5?`<small>and ${todo.length-5} more</small>`:""}`:`<b>All bought</b>`}</button>
       <button class="fr-st st-kid" data-open="kidOv"><h4>${esc(KID).toUpperCase()} TODAY</h4>${ko.length?ko.slice(0,3).map(x=>`<small>${x.t?fmtT(x.t)+" ":""}${esc(x.title)}</small>`).join(""):`<small>Nothing planned</small>`}${bag?`<small>Pack: ${esc(bag.items.slice(0,2).join(", "))}${bag.items.length>2?"…":""}</small>`:""}${ne?`<small style="opacity:.7">Next: ${evTime(ne)} ${esc(ne.title)}</small>`:""}</button>
@@ -2752,7 +2752,7 @@ function mamaNote(){ return (wordsCfg && wordsCfg.note && wordsCfg.note_date===t
 const motto = () => MOTTOS[(dayNo()*7+3)%MOTTOS.length];
 function wordsHTML(cls=""){
   if(!wordsOn()) return "";
-  return `<div class="words ${cls}"><div class="w-mama"><span class="w-for">For Mama <i>♥</i></span><q>${esc(mamaNote())}</q></div><div class="w-mot"><b>Today:</b> ${esc(motto())}</div></div>`;
+  return `<div class="words ${cls}"><div class="w-mama"><span class="w-for">For Mama <i>♥</i></span><q>${esc(mamaNote())}</q></div></div>`;
 }
 
 /* ======================== CALENDAR ======================== */
@@ -3515,7 +3515,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.48";
+const APP_VERSION="2026-11-16.49";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
