@@ -1975,7 +1975,7 @@ function renderWall0(){
     if(m==="phone"){
       h=`<div class="pw">
         <div class="pw-head"><div class="pw-top"><div><div class="t-big pw-time js-time">${timeStr()}</div><div class="pw-date">${dateStr()}</div></div><div class="pw-now"><div class="pw-nowr">${w.ic}<div class="pw-temp">${w.t}°</div></div><div class="pw-desc">${w.desc}<br>feels like ${w.feels}°</div></div></div>
-        ${wxChips(13)}<div class="fc">${fcHTML()}</div></div>
+        ${wxChips(13)}</div>
         ${wordsHTML()}
         <div class="pw-kid">${kidHTML("row",4)}${devTip()&&!kidNudge()?`<div class="kid-dev" data-kidto="dev">This week for ${esc(KID)}: <b>${esc(devTip())}</b></div>`:""}</div>
         ${ol?`<span class="otd">${ol}</span>`:""}
@@ -3584,7 +3584,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.61";
+const APP_VERSION="2026-11-16.62";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
