@@ -898,6 +898,9 @@ body.phone #menuOv .sheetbox{position:relative}body.phone #menuOv [data-close]{d
 #kidOv input[type=date]{width:100%;-webkit-appearance:none;appearance:none;display:block;min-height:3em;text-align:left}
 #kidOv input[type=date]::-webkit-date-and-time-value{text-align:left}
 #kidOv .grform>*,#kidOv .jform>*{min-width:0}
+body.phone :is(#photosOv,#storyOv,#memOv) .bar [data-close]{display:none}
+body.phone #memOv .bar{flex-wrap:wrap;row-gap:10px}body.phone #memOv .bar h1{flex-basis:100%}body.phone #memOv .bar .pill{font-size:14px}body.phone #memOv .bar #memPrint{font-size:0;padding:12px 14px;line-height:1}body.phone #memOv .bar #memPrint::after{content:"Save PDF";font-size:14px}
+.famsel{display:none;padding:12px 20px 0}body.phone .famsel{display:block}.famsel .rtabs{margin:0}
 .pw-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .pw-more{display:flex;align-items:center;gap:6px;color:var(--fg2);font-size:14px;font-weight:600;border:1px solid var(--line2);border-radius:99px;padding:8px 14px;margin-top:10px;background:rgba(var(--s1-rgb),.6);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .pw-more svg{width:18px;height:18px;fill:currentColor}
@@ -1033,10 +1036,11 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <!-- photos -->
 <section class="ov" id="photosOv">
   <div class="bar">
-    <h1 class="serif">Family photos</h1>
+    <h1 class="serif"><span class="m-wall">Family photos</span><span class="m-ph">Family</span></h1>
     <label class="pill dark">+ Add photos<input type="file" id="photoIn" accept="image/*,image/heic,image/heif" multiple hidden></label>
     <button class="pill" data-close>Close</button>
   </div>
+  <div class="famsel"><div class="rtabs"><button data-fam="photos" class="on">Photos</button><button data-fam="story">Story time</button><button data-fam="mem">Memory book</button></div></div>
   <div class="pgrid" id="pgrid"></div>
   <div style="padding:10px 16px 18px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap">
     <span style="color:var(--ink2);font-size:14px;margin-right:auto" id="who"></span>
@@ -1245,7 +1249,8 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 
 <!-- memory book -->
 <section class="ov" id="memOv">
-  <div class="bar"><h1 class="serif">Memory book</h1><select class="pill" id="memMonth"></select><button class="pill dark" id="memMake">Make it</button><button class="pill" id="memPrint">Print or save PDF</button><button class="pill" data-close>Close</button></div>
+  <div class="bar"><h1 class="serif"><span class="m-wall">Memory book</span><span class="m-ph">Family</span></h1><select class="pill" id="memMonth"></select><button class="pill dark" id="memMake">Make it</button><button class="pill" id="memPrint">Print or save PDF</button><button class="pill" data-close>Close</button></div>
+  <div class="famsel"><div class="rtabs"><button data-fam="photos">Photos</button><button data-fam="story">Story time</button><button data-fam="mem" class="on">Memory book</button></div></div>
   <div class="scroll"><div class="wrapc"><div id="memBook"></div></div></div>
 </section>
 
@@ -1253,7 +1258,8 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 
 <!-- bedtime story -->
 <section class="ov" id="storyOv">
-  <div class="bar"><h1 class="serif">Story time</h1><div class="seg" id="stLang"><button data-stl="en">English</button><button data-stl="id">Bahasa</button></div><button class="pill" data-close>Close</button></div>
+  <div class="bar"><h1 class="serif"><span class="m-wall">Story time</span><span class="m-ph">Family</span></h1><div class="seg" id="stLang"><button data-stl="en">English</button><button data-stl="id">Bahasa</button></div><button class="pill" data-close>Close</button></div>
+  <div class="famsel"><div class="rtabs"><button data-fam="photos">Photos</button><button data-fam="story" class="on">Story time</button><button data-fam="mem">Memory book</button></div></div>
   <div class="scroll"><div class="wrapc st-wrap"><div id="stBody"></div><div id="stPast"></div></div></div>
   <div class="st-ctl"><button class="pill dark" id="stNew">Write tonight's story</button><button class="pill" id="stRead">Read aloud</button></div>
 </section>
@@ -3395,13 +3401,16 @@ $("shopWA").onclick=()=>{
 /* ======================== TABS (iPhone) ======================== */
 // Today, Calendar (the child's page), Meals (plan and recipe book), Shopping (list and stock), More (everything else)
 // Calendar and Grow are two views of the child's page
-const TAB_OV={cal:"kidOv",grow:"kidOv",fam:"menuOv",meals:"planOv",shop:"shopOv",more:"menuOv"};
+const TAB_OV={cal:"kidOv",grow:"kidOv",meals:"planOv",shop:"shopOv",more:"menuOv"};
 const TAB_EXTRA={bookOv:"meals",stockOv:"shop",photosOv:"fam",storyOv:"fam",memOv:"fam"};
-const TAB_ALL=[...new Set([...Object.values(TAB_OV),...Object.keys(TAB_EXTRA)])], tabOf=id=>id==="menuOv"?($("menuOv").classList.contains("mo-fam")?"fam":"more"):id==="kidOv"?($("kidOv").classList.contains("km-grow")?"grow":"cal"):TAB_EXTRA[id]||Object.keys(TAB_OV).find(k=>TAB_OV[k]===id);
-let growLast="grow";
+const TAB_ALL=[...new Set([...Object.values(TAB_OV),...Object.keys(TAB_EXTRA)])], tabOf=id=>id==="kidOv"?($("kidOv").classList.contains("km-grow")?"grow":"cal"):TAB_EXTRA[id]||Object.keys(TAB_OV).find(k=>TAB_OV[k]===id);
+let growLast="grow", famLast=LS.get("famLast")||"photos";
+// Family: Photos, Story time and Memory book, switched with the selector at the top of each
+function famGo(k){ famLast=k; LS.set("famLast",k); if(k==="story") openStory(); else if(k==="mem") openMem(); else open("photosOv") }
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-fam]"); if(!b) return; e.stopPropagation(); if(b.classList.contains("on")) return; famGo(b.dataset.fam) }, true);
 function tab(name){
   TAB_ALL.forEach(id=>$(id).classList.remove("open"));
-  if(name==="fam"||name==="more") $("menuOv").classList.toggle("mo-fam",name==="fam");
+  if(name==="fam"){ TAB_ALL.forEach(id=>$(id).classList.remove("open")); return famGo(famLast) }
   if(TAB_OV[name]){ open(TAB_OV[name]); if(name==="grow"||name==="cal") kidTab(name==="grow"?growLast:"cal") } else markTab("today");
 }
 function markTab(name){ document.querySelectorAll("#tabs [data-tab]").forEach(b=>b.classList.toggle("on",b.dataset.tab===name)) }
@@ -3552,7 +3561,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.56";
+const APP_VERSION="2026-11-16.57";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
