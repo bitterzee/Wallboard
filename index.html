@@ -896,7 +896,7 @@ body.phone.cooking #tabs,body.phone.signin #tabs{display:none}
 #tabs .tmid.on{background:var(--accent);color:var(--on-accent,#231904)}#tabs .tmid.on svg{stroke:currentColor}
 body.phone .menu-grid .dup,body.phone .menu-grid .wallonly,body.phone #menuOv [data-close]{display:none}
 .mg-h{grid-column:1/-1;font-size:13px;font-weight:600;color:var(--fg3);margin:8px 2px 0}.mg-h:first-child{margin-top:0}
-body:not(.phone) .mg-h,body:not(.phone) .m-ph,body.phone .m-wall{display:none}
+body:not(.phone) .mg-h,body:not(.phone) .phoneonly,body:not(.phone) .m-ph,body.phone .m-wall{display:none}
 body.phone #menuOv{background:var(--bg);z-index:10;align-items:stretch;justify-content:flex-start;overflow-y:auto}
 body.phone #menuOv .sheetbox{width:auto;max-height:none;border:0;border-radius:0;background:none;padding:calc(18px + env(safe-area-inset-top)) 20px 20px}
 .kid-go{color:var(--accent);font-size:14px;font-weight:600;white-space:nowrap}
@@ -988,7 +988,8 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
       <button id="bBookMem">Memory book</button>
       <h3 class="mg-h">Wall</h3>
       <button id="bSettings">Settings</button>
-      <button class="wallonly" id="bLayout">Layout</button>
+      <button class="phoneonly" data-refresh>Refresh now</button>
+      <button id="bLayout">Layout</button>
       <button class="wallonly" id="bMode">Mode</button>
     </div>
     <button class="pill" data-close style="align-self:flex-end">Close</button>
@@ -1943,7 +1944,7 @@ function renderWall0(){
         ${useSoonHTML()}
         ${card}
         ${storyChip()}
-        <div class="pw-foot"><span>${esc(WX().place)}${wxNote()}</span><span style="display:flex;gap:6px"><button data-refresh>Refresh</button><button data-open="timerOv">Timer</button><button data-open="kidOv">${KID}</button><button data-layoutpick>iPad layout ${layout}</button><button data-open="setOv">Settings</button></span></div>
+        <div class="pw-foot"><span>${esc(WX().place)}${wxNote()}</span></div>
       </div>`;
     }
     const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : kidHTML("row",bagNow().length?1:2);
@@ -3533,7 +3534,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.52";
+const APP_VERSION="2026-11-16.53";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
