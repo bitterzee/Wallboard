@@ -899,13 +899,25 @@ body.phone #menuOv .sheetbox{position:relative}body.phone #menuOv [data-close]{d
 #kidOv input[type=date]::-webkit-date-and-time-value{text-align:left}
 #kidOv .grform>*,#kidOv .jform>*{min-width:0}
 body.phone :is(#photosOv,#storyOv,#memOv) .bar [data-close]{display:none}
-body.phone #memOv .bar{flex-wrap:wrap;row-gap:10px}body.phone #memOv .bar h1{flex-basis:100%}body.phone #memOv .bar .pill{font-size:14px}body.phone #memOv .bar #memPrint{font-size:0;padding:12px 14px;line-height:1}body.phone #memOv .bar #memPrint::after{content:"Save PDF";font-size:14px}
+body.phone #memOv .memctl #memPrint{font-size:0;padding:12px 14px;line-height:1}body.phone #memOv .memctl #memPrint::after{content:"Save PDF";font-size:14px}
 body.phone .ov.tabov.open{animation:none}
 .famsel{display:none;padding:12px 20px 0}body.phone .famsel{display:block}.famsel .rtabs{margin:0}
+.ksel{display:block;padding:14px 20px 0}body.phone #kidOv:not(.km-grow) .ksel{display:none}
+.memctl{display:flex;gap:8px;align-items:center;padding:12px 20px 0;flex-wrap:wrap}.memctl .pill{font-size:14px}body.phone .memctl #memMonth{max-width:150px}
+body.phone .famsel .rtabs{display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:1fr;width:100%;max-width:none}
+body.phone .famsel .rtabs button{padding:.6em .3em;font-size:14px;text-align:center;width:100%;justify-content:center}
+body.phone .famsel .rtabs .sm{display:inline}
+body.phone .tabov .bar{height:calc(env(safe-area-inset-top) + 74px);min-height:0;padding-top:calc(env(safe-area-inset-top) + 12px);padding-bottom:12px;flex-wrap:nowrap;box-sizing:border-box;flex:none}
+body.phone .tabov .bar .seg button{padding-top:.45em;padding-bottom:.45em}
+body.phone .tabov .bar [data-close],body.phone #shopOv .bar .seg,body.phone #stockOv .bar .seg,body.phone #planOv .bar .pill,body.phone #shopWA span{display:none}
+body.phone #shopOv .bar .pill,body.phone #photosOv .bar .pill,body.phone #kidOv .bar .pill{font-size:14px;padding:.6em 1em}
+body.phone #menuOv.ov .sheetbox{padding-top:0}
+body.phone #menuOv .sheetbox h2{font-size:28px;margin:0 -20px 4px;padding:calc(env(safe-area-inset-top) + 12px) 20px 12px;height:calc(env(safe-area-inset-top) + 74px);box-sizing:border-box;flex:none;border-bottom:1px solid var(--line);display:flex;align-items:center;background:rgba(var(--shade-rgb),.86)}
+
 .pw-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .pw-more{display:flex;align-items:center;gap:6px;color:var(--fg2);font-size:14px;font-weight:600;border:1px solid var(--line2);border-radius:99px;padding:8px 14px;margin-top:10px;background:rgba(var(--s1-rgb),.6);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .pw-more svg{width:18px;height:18px;fill:currentColor}
-body.phone #kidOv:not(.km-grow) .rtabs,body.phone #kidOv.km-grow [data-rtab=cal],body.phone #kidOv.km-grow #kidNew{display:none}
+body.phone #kidOv.km-grow [data-rtab=cal],body.phone #kidOv.km-grow #kidNew{display:none}
 body.phone #kidOv h1::after{content:"\2019s calendar"}body.phone #kidOv.km-grow h1::after{content:" growing up"}
 #tabs{left:8px;right:8px}#tabs{left:6px;right:6px}#tabs button{font-size:10px;letter-spacing:-.02em;white-space:nowrap;min-width:0}#tabs svg{width:22px;height:22px}
 body.phone #menuOv:not(.mo-fam) .g-fam,body.phone #menuOv.mo-fam .menu-grid>:not(.g-fam),body.phone #menuOv.mo-fam .mg-h,body.phone #menuOv:not(.mo-fam) .m-fam,body.phone #menuOv.mo-fam .m-more{display:none}#tabs .tmid svg{width:26px;height:26px}#tabs .tmid{color:var(--fg2)}
@@ -1015,11 +1027,12 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <!-- recipe book -->
 <section class="ov" id="bookOv">
   <div class="bar">
-    <h1 class="serif">Recipe book</h1>
+    <h1 class="serif"><span class="m-wall">Recipe book</span><span class="m-ph">Meals</span></h1>
     <button class="pill" id="bookLayout">Wall layout</button>
     <button class="pill" data-open="planOv">Meal plan</button>
     <button class="pill" data-close id="bookClose">Close</button>
   </div>
+  <div class="famsel"><div class="rtabs"><button data-go="planOv">Meal plan</button><button data-go="bookOv" class="on">Recipes</button></div></div>
   <div class="book" id="book">
     <aside class="list">
       <div class="top">
@@ -1122,13 +1135,15 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 
 <!-- meal plan -->
 <section class="ov" id="planOv">
-  <div class="bar"><h1 class="serif">Meal plan</h1><button class="pill" data-open="bookOv">Recipes</button><button class="pill dark" id="planShop">Shopping list</button><button class="pill" data-close>Close</button></div>
+  <div class="bar"><h1 class="serif"><span class="m-wall">Meal plan</span><span class="m-ph">Meals</span></h1><button class="pill" data-open="bookOv">Recipes</button><button class="pill dark" id="planShop">Shopping list</button><button class="pill" data-close>Close</button></div>
+  <div class="famsel"><div class="rtabs"><button data-go="planOv" class="on">Meal plan</button><button data-go="bookOv">Recipes</button></div></div>
   <div class="scroll"><div class="wrapc"><div class="row" style="margin:0 0 10px"><button class="pill dark" data-swipe="">Swipe for ideas</button></div><p class="hint2">Tap breakfast, lunch or dinner to choose a recipe. Today's meals show on the wall, and every planned meal's ingredients go on the shopping list automatically, minus what's in stock.</p><div id="planList"></div></div></div>
 </section>
 
 <!-- shopping list -->
 <section class="ov" id="shopOv">
-  <div class="bar"><div class="seg" role="tablist"><button class="on" aria-selected="true">Shopping list</button><button data-open="stockOv" aria-selected="false">In stock</button></div><button class="pill bar-i" id="shopWA" aria-label="Send to WhatsApp"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.2-4.3A8.5 8.5 0 1 1 20.5 12z"/><path d="M9 8.6c.2-.4.5-.5.8-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.2 0 .5-.1.6l-.5.6c-.1.1-.1.3 0 .5.6 1 1.4 1.8 2.4 2.4.2.1.4.1.5 0l.6-.6c.2-.2.4-.2.6-.1l1.6.7c.3.1.4.3.4.5v.5c0 .3-.2.6-.5.8-.8.4-1.8.5-2.7.1a9.6 9.6 0 0 1-4.6-4.6c-.4-.9-.3-1.9.2-2.9z" stroke-width="1.2"/></svg><span>WhatsApp</span></button><button class="pill" id="shopBuild">Update from plan</button><button class="pill" data-close>Close</button></div>
+  <div class="bar"><h1 class="serif m-ph">Shopping</h1><div class="seg" role="tablist"><button class="on" aria-selected="true">Shopping list</button><button data-open="stockOv" aria-selected="false">In stock</button></div><button class="pill bar-i" id="shopWA" aria-label="Send to WhatsApp"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.2-4.3A8.5 8.5 0 1 1 20.5 12z"/><path d="M9 8.6c.2-.4.5-.5.8-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.2 0 .5-.1.6l-.5.6c-.1.1-.1.3 0 .5.6 1 1.4 1.8 2.4 2.4.2.1.4.1.5 0l.6-.6c.2-.2.4-.2.6-.1l1.6.7c.3.1.4.3.4.5v.5c0 .3-.2.6-.5.8-.8.4-1.8.5-2.7.1a9.6 9.6 0 0 1-4.6-4.6c-.4-.9-.3-1.9.2-2.9z" stroke-width="1.2"/></svg><span>WhatsApp</span></button><button class="pill" id="shopBuild">Update from plan</button><button class="pill" data-close>Close</button></div>
+  <div class="famsel"><div class="rtabs"><button data-go="shopOv" class="on">List</button><button data-go="stockOv">In stock</button></div></div>
   <div class="scroll"><div class="wrapc">
     <form class="shopadd" id="shopAdd"><input id="shopItem" placeholder="Add something extra, like dish soap" autocomplete="off"><button class="pill dark" type="submit">Add</button></form>
     <div id="shopList"></div>
@@ -1137,7 +1152,8 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 
 <!-- in stock -->
 <section class="ov" id="stockOv">
-  <div class="bar"><div class="seg" role="tablist"><button data-open="shopOv" aria-selected="false">Shopping list</button><button class="on" aria-selected="true">In stock</button></div><button class="pill" data-close>Close</button></div>
+  <div class="bar"><h1 class="serif m-ph">Shopping</h1><div class="seg" role="tablist"><button data-open="shopOv" aria-selected="false">Shopping list</button><button class="on" aria-selected="true">In stock</button></div><button class="pill" data-close>Close</button></div>
+  <div class="famsel"><div class="rtabs"><button data-go="shopOv">List</button><button data-go="stockOv" class="on">In stock</button></div></div>
   <div class="scroll"><div class="wrapc">
     <form class="stockadd" id="stockAdd"><input id="stockItem" placeholder="Add something, like 1 kg rice" autocomplete="off"><select id="stockLoc" aria-label="Where it's kept"><option value="">Auto</option><option>Fridge</option><option>Freezer</option><option>Cupboard</option></select><button class="pill dark" type="submit">Add</button></form>
     <div class="scanbar"><p>Take photos of the fridge or cupboards and AI lists what it sees. You check the list before anything is saved.</p><button class="pill dark" id="scanBtn"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Scan photos</span></button><input type="file" id="scanFile" accept="image/*,image/heic,image/heif" multiple hidden></div>
@@ -1170,8 +1186,8 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <!-- child's calendar -->
 <section class="ov" id="kidOv">
   <div class="bar"><h1 class="serif" data-kid>Kid</h1><button class="pill dark" id="kidNew">Add</button><button class="pill" data-close>Close</button></div>
+  <div class="famsel ksel"><div class="rtabs" role="tablist"><button data-rtab="cal" class="on">Calendar</button><button data-rtab="grow">Growth</button><button data-rtab="dev"><span class="lg">Development</span><span class="sm">Skills</span></button><button data-rtab="log">Journal</button><button data-rtab="vax">Vaccines</button></div></div>
   <div class="scroll"><div class="wrapc">
-    <div class="rtabs" role="tablist"><button data-rtab="cal" class="on">Calendar</button><button data-rtab="grow">Growth</button><button data-rtab="dev"><span class="lg">Development</span><span class="sm">Skills</span></button><button data-rtab="log">Journal</button><button data-rtab="vax">Vaccines</button></div>
     <div id="rtCal">
     <div class="mnav"><button id="rmPrev" aria-label="Previous month">‹</button><h2 id="rmTitle"></h2><button id="rmNext" aria-label="Next month">›</button></div>
     <div class="mgrid" id="rmGrid"></div>
@@ -1250,8 +1266,9 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 
 <!-- memory book -->
 <section class="ov" id="memOv">
-  <div class="bar"><h1 class="serif"><span class="m-wall">Memory book</span><span class="m-ph">Family</span></h1><select class="pill" id="memMonth"></select><button class="pill dark" id="memMake">Make it</button><button class="pill" id="memPrint">Print or save PDF</button><button class="pill" data-close>Close</button></div>
+  <div class="bar"><h1 class="serif"><span class="m-wall">Memory book</span><span class="m-ph">Family</span></h1><button class="pill" data-close>Close</button></div>
   <div class="famsel"><div class="rtabs"><button data-fam="photos">Photos</button><button data-fam="story">Story time</button><button data-fam="mem" class="on">Memory book</button></div></div>
+  <div class="memctl"><select class="pill" id="memMonth"></select><button class="pill dark" id="memMake">Make it</button><button class="pill" id="memPrint">Print or save PDF</button></div>
   <div class="scroll"><div class="wrapc"><div id="memBook"></div></div></div>
 </section>
 
@@ -3406,6 +3423,7 @@ const TAB_OV={cal:"kidOv",grow:"kidOv",meals:"planOv",shop:"shopOv",more:"menuOv
 const TAB_EXTRA={bookOv:"meals",stockOv:"shop",photosOv:"fam",storyOv:"fam",memOv:"fam"};
 const TAB_ALL=[...new Set([...Object.values(TAB_OV),...Object.keys(TAB_EXTRA)])], tabOf=id=>id==="kidOv"?($("kidOv").classList.contains("km-grow")?"grow":"cal"):TAB_EXTRA[id]||Object.keys(TAB_OV).find(k=>TAB_OV[k]===id);
 TAB_ALL.forEach(id=>$(id).classList.add("tabov"));
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(!b||b.classList.contains("on")) return; e.stopPropagation(); open(b.dataset.go) }, true);
 let growLast="grow", famLast=LS.get("famLast")||"photos";
 // Family: Photos, Story time and Memory book, switched with the selector at the top of each
 function famGo(k){ famLast=k; LS.set("famLast",k); if(k==="story") openStory(); else if(k==="mem") openMem(); else open("photosOv") }
@@ -3563,7 +3581,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.58";
+const APP_VERSION="2026-11-16.59";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
