@@ -930,6 +930,9 @@ body.phone #menuOv .sheetbox h2{font-size:28px;margin:0 -20px 4px;padding:calc(e
 .m2-b .fc svg{width:28px;margin:0}.m2-b .fc .pp{margin:0;flex-basis:100%}.m2-b .fc{font-size:16px}.m-foot{font-size:15px}
 .m2-r{min-height:0}.m2-r .rt{flex:1 1 0;min-height:110px}.m2-r .rt-g{flex:1;grid-auto-rows:1fr;min-height:0}.m2-r .rt-i{justify-content:center}.m2-r .rt-e{font-size:clamp(34px,5vh,46px)}
 .m-idea{display:flex;gap:6px;min-width:0}.m-idea .chip{cursor:pointer;margin:0!important;font-size:14px;padding:7px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+.pw-timer{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 14px 7px 11px;border-radius:99px;border:1px solid var(--line2);background:rgba(var(--s1-rgb),.6);color:var(--fg);font-size:14px;font-weight:600}
+.pw-timer svg{width:17px;height:17px;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round}
+.ph-rate{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 20px 0;font-size:15px;color:var(--fg2)}.ph-rate .pill{font-size:15px}.ph-rate .hint2{margin:0}
 .pw-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .pw-head{display:flex;flex-direction:column;gap:10px}
 .pw-now{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1;min-width:0;align-self:stretch;padding-bottom:4px}
@@ -1029,7 +1032,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
       <button id="bStock">In stock</button>
       <button data-swipe="">Swipe for a meal</button>
       <button id="bAuto">Plan next week with Claude</button>
-      <button data-open="timerOv">Timer</button>
+      <button class="dup" data-open="timerOv">Timer</button>
       <h3 class="mg-h g-fam">Family</h3>
       <button class="dup" id="bKid" data-kid>Kid</button>
       <button class="g-fam" id="bPhotos">Photos</button>
@@ -1076,6 +1079,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <button class="pill" data-close>Close</button>
   </div>
   <div class="famsel"><div class="rtabs"><button data-fam="photos" class="on">Photos</button><button data-fam="story">Story time</button><button data-fam="mem">Memory book</button></div></div>
+  <div class="ph-rate"><label for="phRate">Change the background photo every</label><select class="pill" id="phRate"><option value="15">15 seconds</option><option value="30">30 seconds</option><option value="60">1 minute</option><option value="300">5 minutes</option><option value="900">15 minutes</option><option value="3600">1 hour</option><option value="0">Never</option></select><span class="hint2">On this device</span></div>
   <div class="pgrid" id="pgrid"></div>
   <div style="padding:10px 16px 18px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap">
     <span style="color:var(--ink2);font-size:14px;margin-right:auto" id="who"></span>
@@ -1999,7 +2003,7 @@ function renderWall0(){
     const ph = m==="split"||m==="phone" ? currentPhoto() : null, ol=otdLabel(ph);
     if(m==="phone"){
       h=`<div class="pw">
-        <div class="pw-head"><div class="pw-top"><div><div class="t-big pw-time js-time">${timeStr()}</div><div class="pw-date">${dateStr()}</div></div><div class="pw-now"><div class="pw-nowr">${w.ic}<div class="pw-temp">${w.t}°</div></div><div class="pw-desc">${w.desc}<br>feels like ${w.feels}°</div></div></div>
+        <div class="pw-head"><div class="pw-top"><div><div class="t-big pw-time js-time">${timeStr()}</div><div class="pw-date">${dateStr()}</div><button class="pw-timer" data-open="timerOv"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>Timer</button></div><div class="pw-now"><div class="pw-nowr">${w.ic}<div class="pw-temp">${w.t}°</div></div><div class="pw-desc">${w.desc}<br>feels like ${w.feels}°</div></div></div>
         ${wxChips(13)}</div>
         ${wordsHTML()}
         <div class="pw-kid">${kidHTML("row",4)}${devTip()&&!kidNudge()?`<div class="kid-dev" data-kidto="dev">This week for ${esc(KID)}: <b>${esc(devTip())}</b></div>`:""}</div>
@@ -2884,6 +2888,12 @@ function nextPhoto(){
   img.onload=()=>{ back.style.background=`#15171b url("${url}") center/cover no-repeat`; shown=ph; swap(); if(["day","split","phone","fridge"].includes(mode())) renderWall() };
   img.src=url;
 }
+// how often the background photo changes, chosen per device (LS "photoSecs"; 0 = never)
+let phTimer=null;
+const phSecs = () => { const v=LS.get("photoSecs"); return v==null ? CONFIG.photoSeconds : +v };
+function phRateStart(){ clearInterval(phTimer); const s=phSecs(); if(s>0) phTimer=setInterval(nextPhoto, Math.max(8,s)*1000) }
+$("phRate").value=String(phSecs()); if(!$("phRate").value) $("phRate").value="30";
+$("phRate").onchange=e=>{ LS.set("photoSecs",+e.target.value); phRateStart(); toast(+e.target.value?`Photos change every ${e.target.selectedOptions[0].textContent}`:"Photos stay put until you change them") };
 function swap(){ back.classList.add("on"); front.classList.remove("on"); [front,back]=[back,front] }
 
 function renderPhotoGrid(){
@@ -3589,7 +3599,7 @@ async function start(){
   // check for changes every 2 minutes while the screen is on (live updates usually arrive within seconds anyway)
   setInterval(()=>{ if(!document.hidden && !sleeping) refreshAll() }, 2*60e3);
   setInterval(loadEvents, 15*60e3);
-  setInterval(nextPhoto, Math.max(8,CONFIG.photoSeconds)*1000);
+  phRateStart();
   setTimeout(()=>{ if(!layoutChosen && !isPhone()) openLayout() }, 900); // wait for the screen size to settle
 }
 (async()=>{
@@ -3612,7 +3622,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-17.69";
+const APP_VERSION="2026-11-17.70";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
