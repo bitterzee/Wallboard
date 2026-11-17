@@ -172,6 +172,11 @@ body[data-mode=night]{background:var(--night)}
 .bag-c button.on::before{background:var(--accent);border-color:var(--accent)}
 .kid-row .bag-c button{font-size:13px;padding:.3em .7em}
 .bag-x{flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px}.bag-x .bag-c{display:contents}.bag-x .bag-h{font-size:13px}
+/* wall: bigger packing checkboxes too */
+body:not(.phone) .bag-x{gap:8px}body:not(.phone) .bag-x .bag-h{flex-basis:100%;font-size:15px}
+body:not(.phone) .bag-c button{min-height:44px;padding:8px 14px 8px 10px;border-radius:13px;font-size:16px;gap:9px}
+body:not(.phone) .bag-c button::before{width:20px;height:20px;border-radius:6px;flex:none;border-width:2px}
+body:not(.phone) .bag-c button.on::before{background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23231904' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/14px no-repeat}
 /* phone: big, easy-to-tap packing checkboxes in a two-column grid */
 body.phone .pw-kid .bag-x{flex-direction:column;align-items:stretch;gap:10px}
 body.phone .pw-kid .bag-x .bag-c{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -929,7 +934,7 @@ body.phone #menuOv .sheetbox h2{font-size:28px;margin:0 -20px 4px;padding:calc(e
 /* morning wall: everything fits one screen; the dinner card takes whatever height is left */
 .m2{overflow:hidden}.m2-l{min-height:0;gap:14px}.m2 .m-time{font-size:132px}.m2 .m-date{font-size:24px;margin-top:8px}
 .m2 .w-mama{font-size:24px;padding:14px 20px 16px}.m2 .w-mama .w-for{margin-bottom:4px}
-.m-rc{flex:1 1 0;min-height:150px}.m-rc .b{padding:16px 20px 16px;gap:10px}
+.m-rc{flex:1 1 0;min-height:96px}.m-rc .b{padding:16px 20px 16px;gap:10px}
 .m-rch{display:flex;justify-content:space-between;align-items:center;gap:12px;flex:none}.m-rct{min-width:0}.m-rct h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .m-rc h2{font-size:30px}.m-rc ul{font-size:15.5px}.m-rc li{padding:.16em 0}
 .m-rc .acts{flex-wrap:nowrap;flex:none}.m-rc .acts button{font-size:15px;padding:.6em 1em}.m-rc .acts .swbtn{width:42px;height:42px;padding:0}
@@ -3631,7 +3636,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-17.72";
+const APP_VERSION="2026-11-17.73";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
