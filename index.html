@@ -172,6 +172,13 @@ body[data-mode=night]{background:var(--night)}
 .bag-c button.on::before{background:var(--accent);border-color:var(--accent)}
 .kid-row .bag-c button{font-size:13px;padding:.3em .7em}
 .bag-x{flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px}.bag-x .bag-c{display:contents}.bag-x .bag-h{font-size:13px}
+/* phone: big, easy-to-tap packing checkboxes in a two-column grid */
+body.phone .pw-kid .bag-x{flex-direction:column;align-items:stretch;gap:10px}
+body.phone .pw-kid .bag-x .bag-c{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+body.phone .pw-kid .bag-x .bag-h{font-size:15px}
+body.phone .pw-kid .bag-c button{min-height:50px;padding:10px 12px;border-radius:14px;font-size:16px;gap:10px;justify-content:flex-start;text-align:left;line-height:1.2}
+body.phone .pw-kid .bag-c button::before{width:22px;height:22px;border-radius:6px;flex:none;border-width:2px}
+body.phone .pw-kid .bag-c button.on::before{background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23231904' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/16px no-repeat}
 .bagedit{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .bagedit label{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
 .bagedit textarea{min-height:120px;padding:.7em .9em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--s1);color:var(--fg);font:inherit;font-size:15px;font-weight:400;resize:vertical}
@@ -3624,7 +3631,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-17.71";
+const APP_VERSION="2026-11-17.72";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
