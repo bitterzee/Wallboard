@@ -1142,6 +1142,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     <h2 class="sh">Weather location</h2>
     <label class="hint2" style="display:flex;gap:10px;align-items:center;cursor:pointer"><input type="checkbox" id="geoOn" style="width:22px;height:22px;accent-color:var(--accent)"> Use this device's location</label>
     <p class="hint2" id="geoStat" style="margin-top:4px"></p>
+    <button class="pill" id="geoNow" style="margin-bottom:8px">Update location now</button>
     <h2 class="sh">Health</h2>
     <p class="hint2" id="diag"></p>
     <h2 class="sh">Family names</h2>
@@ -1870,7 +1871,7 @@ function geoOn(){ const g=LS.get("geo",null); return !g || g.on!==false }
 function locate(force){
   if(DEMO || !navigator.geolocation || !geoOn()) return;
   const g=LS.get("geo",null)||{};
-  if(!force && g.lat!=null && Date.now()-(g.t||0) < 6*3600e3) return;
+  if(!force && (g.lat!=null || g.denied) && Date.now()-(g.t||0) < 30*864e5) return; // iOS asks every time, so only re-check monthly (or from Settings)
   navigator.geolocation.getCurrentPosition(async pos=>{
     const lat=Math.round(pos.coords.latitude*100)/100, lon=Math.round(pos.coords.longitude*100)/100;
     const moved = g.lat==null || Math.abs(lat-g.lat)>0.02 || Math.abs(lon-g.lon)>0.02;
@@ -1882,8 +1883,8 @@ function locate(force){
   }, err=>{ if(err.code===1){ LS.set("geo",{...g,on:true,denied:true,t:Date.now()}) } if($("setOv").classList.contains("open")) renderGeo() },
   {enableHighAccuracy:false, timeout:20e3, maximumAge:6*3600e3});
 }
-function renderGeo(){ const g=LS.get("geo",null)||{}, on=geoOn(); $("geoOn").checked=on;
-  $("geoStat").textContent = !on ? "Using central Jakarta." : g.denied && g.lat==null ? "Location access is off for this app. Turn it on in the iPhone or iPad Settings (Privacy → Location Services), or the wall uses central Jakarta." : g.lat!=null ? `Using ${g.place&&g.place!=="Your area"?g.place:"this device's location"} (checked ${new Date(g.t).toLocaleString(CONFIG.locale,{weekday:"short",hour:"2-digit",minute:"2-digit"})}).` : "Finding this device…" }
+function renderGeo(){ const g=LS.get("geo",null)||{}, on=geoOn(); $("geoOn").checked=on; $("geoNow").style.display=on?"":"none";
+  $("geoStat").textContent = !on ? "Using central Jakarta." : g.denied && g.lat==null ? "Location access is off for this app. Turn it on in the iPhone or iPad Settings (Privacy → Location Services), or the wall uses central Jakarta." : g.lat!=null ? `Using ${g.place&&g.place!=="Your area"?g.place:"this device's location"} (checked ${new Date(g.t).toLocaleDateString(CONFIG.locale,{day:"numeric",month:"short"})}). It re-checks once a month, so you're not asked every time.` : "Finding this device…" }
 async function loadWeather(){
   try{
     const u=`https://api.open-meteo.com/v1/forecast?latitude=${WX().lat}&longitude=${WX().lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=precipitation_probability,precipitation&forecast_hours=12&timezone=${encodeURIComponent(CONFIG.tz)}&temperature_unit=${CONFIG.units}&forecast_days=5`;
@@ -2805,6 +2806,7 @@ $("vaxBody").onclick=async e=>{
     await saveKid([...kidItems(),{id:uuid(),kind:"doctor",title:title.slice(0,60),date:d,days:[],t:"",end:"",note:"Change the date to the real appointment"}], `Added to ${KID}'s calendar on ${dayShort(d)}. Tap it there to set the real time`); await saveVax() }
 };
 
+$("geoNow").onclick=()=>{ if(!geoOn()){ $("geoOn").checked=true; $("geoOn").onchange() } else { locate(true); $("geoStat").textContent="Finding this device…" } };
 $("geoOn").onchange=()=>{ const g=LS.get("geo",null)||{}; LS.set("geo",{...g,on:$("geoOn").checked}); if($("geoOn").checked) locate(true); else { wxAt=0; loadWeather(); loadAir() } renderGeo() };
 /* ======================== SLEEP HOURS ======================== */
 const sleepCfg = () => LS.get("sleep",null) || {on:false, from:"22:00", to:"06:00"};
@@ -3604,7 +3606,7 @@ async function start(){
 }
 (async()=>{
   if(DEMO){ const b=document.createElement("div"); b.className="demo-badge"; b.textContent="DEMO DATA"; document.body.appendChild(b) }
-  renderWall(); loadWeather(); loadAir(); locate(); setInterval(()=>locate(),3*3600e3); setInterval(loadWeather,15*60e3); setInterval(loadAir,30*60e3); setInterval(tick,1000); nextPhoto();
+  renderWall(); loadWeather(); loadAir(); locate(); setInterval(loadWeather,15*60e3); setInterval(loadAir,30*60e3); setInterval(tick,1000); nextPhoto();
   let ok=false; try{ ok=await api.session() }catch(e){ ok=false; logErr("session",e) }
   if(ok){ if(usedSnap) setOffline(true); start() } else open("login");
   document.addEventListener("visibilitychange",()=>{
@@ -3622,7 +3624,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-17.70";
+const APP_VERSION="2026-11-17.71";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
