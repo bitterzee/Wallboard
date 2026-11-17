@@ -1934,7 +1934,7 @@ function renderWall0(){
   const scrollY=$("wall").scrollTop;
   const w=wxNow(), tn=tonightRecipe();
   const bf=plannedFor(today(),"breakfast"), lu=plannedFor(today(),"lunch");
-  const tChip = (m=>`${m==="morning"&&bf&&hourNow()<10?`<span class="chip" style="margin-right:6px">Breakfast: ${esc(bf.title)}</span>`:""}${m==="morning"&&lu&&!(bf&&hourNow()<10)?`<span class="chip" style="margin-right:6px">Lunch: ${esc(lu.title)}</span>`:""}${tn?`<span class="chip">${tn.picked?"Tonight":"Idea"}: ${esc(tn.r.title)}</span>`:""}`)(mode());
+  const tChip = (m=>`${m==="morning"&&bf&&hourNow()<10?`<span class="chip" style="margin-right:6px" data-showrec="${esc(bf.id)}">Breakfast: ${esc(bf.title)}</span>`:""}${m==="morning"&&lu&&!(bf&&hourNow()<10)?`<span class="chip" style="margin-right:6px" data-showrec="${esc(lu.id)}">Lunch: ${esc(lu.title)}</span>`:""}${tn?(tn.picked?`<span class="chip" data-showrec="${esc(tn.r.id)}">Tonight: ${esc(tn.r.title)}</span>`:`<span class="chip" data-swipe="dinner">Idea: ${esc(tn.r.title)} ›</span>`):""}`)(mode());
   let h="";
   if(m==="morning"){
     const rt=routineHTML("wall"), hasBag=bagNow().length>0, kid=kidHTML("card", rt?1:(hasBag?2:3)), ag=agendaHTML(rt?(kid?1:2):(kid?(hasBag?2:3):6));
@@ -2449,6 +2449,7 @@ async function wallYes(c){ c=c||document.querySelector("#wall .rc.swipeable"); c
 document.addEventListener("click",async e=>{
   if(e.target.closest("[data-ideano]")){ e.stopPropagation(); wallNo(document.querySelector("#wall .rc.swipeable")); return }
   const y=e.target.closest("[data-ideayes]"); if(y){ e.stopPropagation(); wallYes(document.querySelector("#wall .rc.swipeable")); return }
+  const sr=e.target.closest("[data-showrec]"); if(sr){ e.stopPropagation(); open("bookOv"); showRecipe(sr.dataset.showrec); return }
   const sw=e.target.closest("[data-swipe]"); if(sw){ e.stopPropagation(); openSwipe(sw.dataset.swipe||undefined); return }
   if(e.target.closest("[data-unplan]")){ e.stopPropagation(); const tn=tonightRecipe(); if(!twoTap("unplan",e.target.closest("[data-unplan]"),"Tap to confirm")) return;
     try{ await api.setPlan(today(),null,"dinner"); if(tonightState&&tonightState.date===today()) await api.setTonight(null); if(tn) ideaSkip.push(tn.r.id); await refreshAll(); syncShopping({quiet:true}); toast("Tonight is open again. Swipe for an idea") }catch(err){ toast("Couldn't change the plan") } }
@@ -3592,7 +3593,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-17.67";
+const APP_VERSION="2026-11-17.68";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
