@@ -918,6 +918,8 @@ body.phone #shopOv .bar .pill,body.phone #photosOv .bar .pill,body.phone #kidOv 
 body.phone #menuOv.ov .sheetbox{padding-top:0}
 body.phone #menuOv .sheetbox h2{font-size:28px;margin:0 -20px 4px;padding:calc(env(safe-area-inset-top) + 12px) 20px 12px;height:calc(env(safe-area-inset-top) + 74px);box-sizing:border-box;flex:none;border-bottom:1px solid var(--line);display:flex;align-items:center;background:rgba(var(--shade-rgb),.86)}
 
+.m2-r{gap:18px}.m2-r .rt-g{grid-template-columns:repeat(4,1fr);gap:8px}.m2-r .rt-i{padding:10px 4px 9px;border-radius:16px;gap:4px}.m2-r .rt-e{font-size:34px}.m2-r .rt-l{font-size:12.5px}.m2-r .rt-i.on::after{width:18px;height:18px;top:6px;right:6px;background-size:12px}
+.m-idea{display:flex;gap:6px;min-width:0}.m-idea .chip{cursor:pointer;margin:0!important;font-size:14px;padding:7px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
 .pw-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .pw-head{display:flex;flex-direction:column;gap:10px}
 .pw-now{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1;min-width:0;align-self:stretch;padding-bottom:4px}
@@ -1941,9 +1943,9 @@ function renderWall0(){
         ${wordsHTML()}
         ${kid?`<div class="k-frame">${kid}</div>`:""}</div>
       <div class="m2-r"><div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
-        ${wxChips(17)}${apBanner()}${rt}${ag}${useSoonHTML()}${storyChip()}</div>
+        ${wxChips(17)}${apBanner()}${rt}${tChip.trim()?`<div class="m-idea">${tChip}</div>`:""}${ag}${useSoonHTML()}${storyChip()}</div>
       <div class="m2-b"><div class="fc">${fcHTML()}</div>
-        <div class="m-foot"><span class="muted">${esc(WX().place)}${wxNote()}</span>${tChip}</div></div></div>`;
+        <div class="m-foot"><span class="muted">${esc(WX().place)}${wxNote()}</span></div></div></div>`;
   } else if(m==="day"){
     const ph=currentPhoto();
     const ol=otdLabel(ph);
@@ -3590,7 +3592,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-17.66";
+const APP_VERSION="2026-11-17.67";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
