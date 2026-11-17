@@ -1935,14 +1935,14 @@ function renderWall0(){
   const tChip = (m=>`${m==="morning"&&bf&&hourNow()<10?`<span class="chip" style="margin-right:6px">Breakfast: ${esc(bf.title)}</span>`:""}${m==="morning"&&lu&&!(bf&&hourNow()<10)?`<span class="chip" style="margin-right:6px">Lunch: ${esc(lu.title)}</span>`:""}${tn?`<span class="chip">${tn.picked?"Tonight":"Idea"}: ${esc(tn.r.title)}</span>`:""}`)(mode());
   let h="";
   if(m==="morning"){
-    const rt=routineHTML("wall"), hasBag=bagNow().length>0, kid=kidHTML("card", rt?1:(hasBag?2:3)), ag=agendaHTML(rt?(kid?1:2):(kid?(hasBag?2:3):6));
+    const rt=routineHTML("wall"), hasBag=bagNow().length>0, kid=kidHTML("card", rt?2:(hasBag?3:4)), ag=agendaHTML(rt?(kid?1:2):(kid?(hasBag?2:3):6));
     h=`<div class="m2">
       <div class="m2-l"><div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}</div></div>
         ${wordsHTML()}
         ${kid?`<div class="k-frame">${kid}</div>`:""}</div>
       <div class="m2-r"><div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
         ${wxChips(17)}${apBanner()}${rt}${ag}${useSoonHTML()}${storyChip()}</div>
-      <div class="m2-b"><div class="fc">${fcHTML()}</div>
+      <div class="m2-b">
         <div class="m-foot"><span class="muted">${esc(WX().place)}${wxNote()}</span>${tChip}</div></div></div>`;
   } else if(m==="day"){
     const ph=currentPhoto();
@@ -1974,7 +1974,7 @@ function renderWall0(){
           ? `<div class="acts"><button class="btn-cook" data-cook="${esc(r.id)}">Start cooking</button><button class="btn-ghost" data-openbook="${esc(r.id)}">Recipe</button><button class="btn-ghost" data-unplan>Not tonight</button></div>`
           : `<div class="acts"><button class="swbtn no" data-ideano aria-label="Show another idea">✕</button><button class="swbtn yes" data-ideayes="${esc(r.id)}" aria-label="Cook this tonight">♥</button><button class="btn-ghost" data-swipe="dinner">See all ideas</button></div><div class="swhint">Swipe right to cook it tonight, left for another idea</div>`}</div></div>`;
     } else card=`<div class="rc"><div class="b" style="justify-content:center"><div class="eyebrow">Dinner</div><h2 class="serif">Add your first recipe</h2><div class="acts"><button class="btn-cook" data-new>Add recipe</button></div></div></div>`;
-    const fc3 = m==="split" && !(bagNow().length && aqInfo() && rainAlert()) ? `<div class="fc3">${wx.daily.time.slice(1,4).map((t,j)=>{const i=j+1;return `<div><div class="d">${new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div><span class="hi">${Math.round(wx.daily.temperature_2m_max[i])}°</span> <span class="lo">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div></div>`}).join("")}</div>` : "";
+    const fc3 = false ? `<div class="fc3">${wx.daily.time.slice(1,4).map((t,j)=>{const i=j+1;return `<div><div class="d">${new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div><span class="hi">${Math.round(wx.daily.temperature_2m_max[i])}°</span> <span class="lo">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div></div>`}).join("")}</div>` : "";
     const ph = m==="split"||m==="phone" ? currentPhoto() : null, ol=otdLabel(ph);
     if(m==="phone"){
       h=`<div class="pw">
@@ -3590,7 +3590,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-16.64";
+const APP_VERSION="2026-11-17.65";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
