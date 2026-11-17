@@ -919,6 +919,16 @@ body.phone #menuOv.ov .sheetbox{padding-top:0}
 body.phone #menuOv .sheetbox h2{font-size:28px;margin:0 -20px 4px;padding:calc(env(safe-area-inset-top) + 12px) 20px 12px;height:calc(env(safe-area-inset-top) + 74px);box-sizing:border-box;flex:none;border-bottom:1px solid var(--line);display:flex;align-items:center;background:rgba(var(--shade-rgb),.86)}
 
 .m2-r{gap:18px}.m2-r .rt-g{grid-template-columns:repeat(4,1fr);gap:8px}.m2-r .rt-i{padding:10px 4px 9px;border-radius:16px;gap:4px}.m2-r .rt-e{font-size:34px}.m2-r .rt-l{font-size:12.5px}.m2-r .rt-i.on::after{width:18px;height:18px;top:6px;right:6px;background-size:12px}
+/* morning wall: everything fits one screen; the dinner card takes whatever height is left */
+.m2{overflow:hidden}.m2-l{min-height:0;gap:14px}.m2 .m-time{font-size:132px}.m2 .m-date{font-size:24px;margin-top:8px}
+.m2 .w-mama{font-size:24px;padding:14px 20px 16px}.m2 .w-mama .w-for{margin-bottom:4px}
+.m-rc{flex:1 1 0;min-height:150px}.m-rc .b{padding:16px 20px 16px;gap:10px}
+.m-rch{display:flex;justify-content:space-between;align-items:center;gap:12px;flex:none}.m-rct{min-width:0}.m-rct h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-rc h2{font-size:30px}.m-rc ul{font-size:15.5px}.m-rc li{padding:.16em 0}
+.m-rc .acts{flex-wrap:nowrap;flex:none}.m-rc .acts button{font-size:15px;padding:.6em 1em}.m-rc .acts .swbtn{width:42px;height:42px;padding:0}
+.m2-b{gap:8px}.m2-b .fc>div{display:flex;align-items:center;gap:8px;padding:10px 0 2px 14px;flex-wrap:wrap}.m2-b .fc>div:first-child{padding-left:0}
+.m2-b .fc svg{width:28px;margin:0}.m2-b .fc .pp{margin:0;flex-basis:100%}.m2-b .fc{font-size:16px}.m-foot{font-size:15px}
+.m2-r{min-height:0}.m2-r .rt{flex:1 1 0;min-height:110px}.m2-r .rt-g{flex:1;grid-auto-rows:1fr;min-height:0}.m2-r .rt-i{justify-content:center}.m2-r .rt-e{font-size:clamp(34px,5vh,46px)}
 .m-idea{display:flex;gap:6px;min-width:0}.m-idea .chip{cursor:pointer;margin:0!important;font-size:14px;padding:7px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
 .pw-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .pw-head{display:flex;flex-direction:column;gap:10px}
@@ -1937,13 +1947,22 @@ function renderWall0(){
   const tChip = (m=>`${m==="morning"&&bf&&hourNow()<10?`<span class="chip" style="margin-right:6px" data-showrec="${esc(bf.id)}">Breakfast: ${esc(bf.title)}</span>`:""}${m==="morning"&&lu&&!(bf&&hourNow()<10)?`<span class="chip" style="margin-right:6px" data-showrec="${esc(lu.id)}">Lunch: ${esc(lu.title)}</span>`:""}${tn?(tn.picked?`<span class="chip" data-showrec="${esc(tn.r.id)}">Tonight: ${esc(tn.r.title)}</span>`:`<span class="chip" data-swipe="dinner">Idea: ${esc(tn.r.title)} ›</span>`):""}`)(mode());
   let h="";
   if(m==="morning"){
+    const mChip=tChip.replace(/<span class="chip"[^>]*>(?:Tonight|Idea):[\s\S]*?<\/span>/,"");
+    let mcard="";
+    if(tn){ const r=tn.r, ing=r.ingredients||[];
+      mcard=`<div class="rc m-rc ${tn.picked?"":"swipeable"}" ${tn.picked?"":`data-swipe-id="${esc(r.id)}"`}><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span><div class="b">
+        <div class="m-rch"><div class="m-rct"><div class="eyebrow">${tn.picked?"Tonight's dinner":"Dinner idea"}${r.cook_time?` <span class="muted">· ${esc(r.cook_time)}</span>`:""}</div><h2 class="serif">${esc(r.title)}</h2></div>
+        ${tn.picked
+          ? `<div class="acts"><button class="btn-cook" data-cook="${esc(r.id)}">Start cooking</button><button class="btn-ghost" data-openbook="${esc(r.id)}">Recipe</button></div>`
+          : `<div class="acts"><button class="swbtn no" data-ideano aria-label="Show another idea">✕</button><button class="swbtn yes" data-ideayes="${esc(r.id)}" aria-label="Cook this tonight">♥</button><button class="btn-ghost" data-swipe="dinner">More ideas</button></div>`}</div>
+        <ul>${ing.map(i=>`<li>${esc(i)}</li>`).join("")}</ul></div></div>`; }
     const rt=routineHTML("wall"), hasBag=bagNow().length>0, kid=kidHTML("card", rt?1:(hasBag?2:3)), ag=agendaHTML(rt?(kid?1:2):(kid?(hasBag?2:3):6));
     h=`<div class="m2">
       <div class="m2-l"><div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}</div></div>
         ${wordsHTML()}
-        ${kid?`<div class="k-frame">${kid}</div>`:""}</div>
+        ${kid?`<div class="k-frame">${kid}</div>`:""}${mcard}</div>
       <div class="m2-r"><div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
-        ${wxChips(17)}${apBanner()}${rt}${tChip.trim()?`<div class="m-idea">${tChip}</div>`:""}${ag}${useSoonHTML()}${storyChip()}</div>
+        ${wxChips(17)}${apBanner()}${rt}${mChip.trim()?`<div class="m-idea">${mChip}</div>`:""}${ag}${useSoonHTML()}${storyChip()}</div>
       <div class="m2-b"><div class="fc">${fcHTML()}</div>
         <div class="m-foot"><span class="muted">${esc(WX().place)}${wxNote()}</span></div></div></div>`;
   } else if(m==="day"){
@@ -3593,7 +3612,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-17.68";
+const APP_VERSION="2026-11-17.69";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
