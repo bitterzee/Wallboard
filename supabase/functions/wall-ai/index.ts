@@ -288,7 +288,7 @@ Answer only by calling draw_pictures.
 
 Story title: ${st.title}
 ${paras.map((p, i) => `[${i}] ${p}`).join("\n")}`;
-  const out = await claude(key, { max_tokens: 9000, tools: [TOOL], tool_choice: { type: "tool", name: "draw_pictures" }, messages: [{ role: "user", content: prompt.slice(0, 12000) }] });
+  const out = await claude(key, { max_tokens: 9000, tools: [TOOL], messages: [{ role: "user", content: prompt.slice(0, 12000) }] });
   const p = toolInput(out, "draw_pictures");
   const pics = ((p?.pictures ?? []) as Any[]).map((x) => ({ at: Math.max(0, Math.min(paras.length - 1, Number(x.after_paragraph) || 0)), alt: String(x.alt ?? "").slice(0, 160), svg: cleanSvg(x.svg) }))
     .filter((x) => x.svg).slice(0, 3);
