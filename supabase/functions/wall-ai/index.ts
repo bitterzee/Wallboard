@@ -3,6 +3,7 @@
 //   autopilot  - draft next week's meals
 //   translate  - a recipe in Bahasa Indonesia for the helper (cached)
 //   book       - the monthly memory book text
+//   story_pics - 3 simple SVG illustrations for a saved story
 //   story      - tonight's bedtime story about the child's day (English or Bahasa), kept in wb_state "stories"
 // Parents can use everything; the helper can only use translate. Needs the ANTHROPIC_API_KEY secret.
 import { createClient, SupabaseClient } from "jsr:@supabase/supabase-js@2";
@@ -256,6 +257,50 @@ async function story(db: SupabaseClient, key: string, date: string, lang: string
   return val;
 }
 
+// ---------- story pictures: simple storybook drawings as SVG ----------
+// The SVG is shown inside <img>, where scripts never run; this also strips anything active or external.
+function cleanSvg(raw: string): string | null {
+  let v = String(raw ?? "").trim();
+  const a = v.indexOf("<svg"), z = v.lastIndexOf("</svg>");
+  if (a < 0 || z < a) return null;
+  v = v.slice(a, z + 6);
+  v = v.replace(/<(script|foreignObject|iframe|image|use|a|style)[\s\S]*?<\/\1\s*>/gi, "").replace(/<(script|foreignObject|iframe|image|use|a|style)\b[^>]*\/?>/gi, "")
+       .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "").replace(/(href|xlink:href)\s*=\s*("[^"]*"|'[^']*')/gi, "")
+       .replace(/url\(\s*['"]?(?!#)[^)]*\)/gi, "none");
+  if (!/xmlns=/.test(v)) v = v.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
+  return v.length > 40000 ? null : v;
+}
+async function storyPics(db: SupabaseClient, key: string, id: string) {
+  const saved = (await getState(db, "stories")) ?? { items: [] };
+  const items = (saved.items ?? []) as Any[];
+  const st = items.find((x) => x.id === id);
+  if (!st) throw new Error("Story not found.");
+  if (Array.isArray(st.pics) && st.pics.length) return { id, pics: st.pics };
+  const paras = String(st.text).split(/\n\s*\n/).filter((p) => p.trim());
+  const TOOL = { name: "draw_pictures", description: "Illustrations for the story.", input_schema: { type: "object", properties: { pictures: { type: "array", minItems: 3, maxItems: 3, items: { type: "object", properties: {
+    after_paragraph: { type: "integer", description: "0-based index of the paragraph this picture goes after" },
+    alt: { type: "string", description: "Short description of the picture" },
+    svg: { type: "string", description: "A complete standalone SVG, viewBox=\"0 0 400 300\"" } }, required: ["after_paragraph", "alt", "svg"] } } }, required: ["pictures"] } };
+  const prompt = `Draw 3 illustrations for this toddler bedtime story, like pages of a gentle picture book. Spread them through the story (one near the start, one in the middle, one near the end).
+Style: flat shapes, soft rounded forms, warm calm colours suited to bedtime (dusky blues, soft golds, peach, mint), simple backgrounds that fill the whole frame, no outlines thicker than 3px. The child is a small cartoon toddler girl with a round face and simple dot eyes, the same look in every picture. Nothing scary, no text or letters in the pictures.
+Technical: each picture is a standalone SVG with viewBox="0 0 400 300" and xmlns, using only basic shapes, paths, gradients and groups. No <text>, <image>, <script>, <style>, <foreignObject>, external links or filters. Keep each one under about 4,000 characters, using few, well-chosen shapes.
+Answer only by calling draw_pictures.
+
+Story title: ${st.title}
+${paras.map((p, i) => `[${i}] ${p}`).join("\n")}`;
+  const out = await claude(key, { max_tokens: 9000, tools: [TOOL], tool_choice: { type: "tool", name: "draw_pictures" }, messages: [{ role: "user", content: prompt.slice(0, 12000) }] });
+  const p = toolInput(out, "draw_pictures");
+  const pics = ((p?.pictures ?? []) as Any[]).map((x) => ({ at: Math.max(0, Math.min(paras.length - 1, Number(x.after_paragraph) || 0)), alt: String(x.alt ?? "").slice(0, 160), svg: cleanSvg(x.svg) }))
+    .filter((x) => x.svg).slice(0, 3);
+  if (!pics.length) throw new Error("Couldn't draw pictures this time. Try again.");
+  // keep pictures only on the newest stories so the saved list stays small
+  const fresh = (await getState(db, "stories")) ?? { items: [] };
+  const list = ((fresh.items ?? []) as Any[]).map((x) => (x.id === id ? { ...x, pics } : x));
+  const withPics = list.filter((x) => x.pics).slice(-6).map((x) => x.id);
+  await setState(db, "stories", { items: list.map((x) => (x.pics && !withPics.includes(x.id) ? { ...x, pics: undefined } : x)) });
+  return { id, pics };
+}
+
 Deno.serve(withCors(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
@@ -266,7 +311,7 @@ Deno.serve(withCors(async (req) => {
   const KEY = Deno.env.get("ANTHROPIC_API_KEY");
   if (!KEY) return json({ error: "Claude isn't switched on yet. Add an ANTHROPIC_API_KEY secret in Supabase." }, 503);
   let body: Any = {}; try { body = await req.json(); } catch { /* */ }
-  if (!["translate", "ask", "autopilot", "book", "story"].includes(body.action)) return json({ error: "Unknown request." }, 400);
+  if (!["translate", "ask", "autopilot", "book", "story", "story_pics"].includes(body.action)) return json({ error: "Unknown request." }, 400);
   { const { data: allowed, error: capErr } = await db.rpc("wb_ai_tick"); if (!capErr && allowed === false) return json({ error: "You've used Claude a lot today. It'll be available again tomorrow." }, 429); }
   const { data: { user } } = await db.auth.getUser();
   const { data: who } = await db.from("wb_members").select("display_name").ilike("email", user?.email ?? "-").maybeSingle();
@@ -281,6 +326,7 @@ Deno.serve(withCors(async (req) => {
     if (body.action === "autopilot" && /^\d{4}-\d{2}-\d{2}$/.test(body.start ?? "")) return json(await autopilot(db, KEY, body.start, Array.isArray(body.busy) ? body.busy : [], String(body.notes ?? "").slice(0, 400)));
     if (body.action === "book" && /^\d{4}-\d{2}$/.test(body.month ?? "")) return json(await book(db, KEY, body.month, Number(body.photos) || 0));
     if (body.action === "story" && /^\d{4}-\d{2}-\d{2}$/.test(body.date ?? "")) return json(await story(db, KEY, body.date, String(body.lang ?? "en"), body.day ?? {}));
+    if (body.action === "story_pics" && typeof body.id === "string") return json(await storyPics(db, KEY, body.id));
     return json({ error: "Unknown request." }, 400);
   } catch (e) { console.error(e); return json({ error: (e as Error).message || "Something went wrong." }, 502); }
 }));

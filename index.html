@@ -945,6 +945,13 @@ body.phone #menuOv .sheetbox h2{font-size:28px;margin:0 -20px 4px;padding:calc(e
 .pw-timer{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 14px 7px 11px;border-radius:99px;border:1px solid var(--line2);background:rgba(var(--s1-rgb),.6);color:var(--fg);font-size:14px;font-weight:600}
 .pw-timer svg{width:17px;height:17px;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round}
 .ph-rate{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 20px 0;font-size:15px;color:var(--fg2)}.ph-rate .pill{font-size:15px}.ph-rate .hint2{margin:0}
+.fcm{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;margin-top:2px}
+.fcm>div{display:flex;align-items:center;justify-content:center;gap:4px;font-size:13px;color:var(--fg2);padding:5px 0;border-radius:10px;background:rgba(var(--s1-rgb),.45)}
+.fcm svg{width:20px;height:20px}.fcm b{color:var(--fg);font-weight:600}
+.st-pic{margin:6px 0 22px;border-radius:20px;overflow:hidden;background:rgba(var(--s2-rgb,30,40,48),.6);aspect-ratio:4/3}
+.st-pic img{display:block;width:100%;height:100%}
+.st-pic-wait{display:flex;align-items:center;justify-content:center;color:var(--fg3);font-size:15px;animation:stpulse 1.6s ease-in-out infinite}
+@keyframes stpulse{50%{opacity:.55}}.st-draw{margin:6px 0 18px}
 .pw-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .pw-head{display:flex;flex-direction:column;gap:10px}
 .pw-now{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1;min-width:0;align-self:stretch;padding-bottom:4px}
@@ -1623,6 +1630,8 @@ const api = DEMO ? (() => {
       if(body.action==="ask") return {reply:/tonight|cook/i.test(body.text)?"You have chicken thighs and spinach that need using. Soto Ayam would use both, and it's the family's top-rated dish. Want me to put it on for tonight?":"Done. I've added that.",actions:/add|milk|egg/i.test(body.text)?["Added milk, eggs to the shopping list."]:[]};
       if(body.action==="autopilot"){ const d=[...Array(7)].map((_,i)=>addDays(body.start,i)), ids=recipes.map(r=>r.id); const v={week:body.start,created:new Date().toISOString(),summary:"Quick dinners on your busy Tuesday and Thursday, spinach used early in the week before it wilts, and Soto Ayam on Sunday since everyone rated it highest.",meals:d.map((x,i)=>({day:x,meal:"dinner",recipe_id:ids[i%ids.length],why:["Uses the spinach","Quick: late call","Top rated","Rie-friendly","Light after a busy day","Weekend treat","Family favourite"][i]})),status:"draft"}; mem.state.autopilot=v; return v }
       if(body.action==="translate"){ const r=recipes.find(x=>x.id===body.recipe_id)||{}; return {title:r.title,ingredients:(r.ingredients||[]).map(i=>i.replace(/chicken/i,"ayam").replace(/water/i,"air")),steps:(r.steps||[]).map(x=>"(Bahasa) "+x),notes:""} }
+      if(body.action==="story_pics"){ await new Promise(r=>setTimeout(r,1500)); const sky=["#2b3a67","#3d4f86","#24304f"], mk=(i)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="${sky[i]}"/><circle cx="${320-i*90}" cy="70" r="34" fill="#f6d77a"/><path d="M0 230 Q100 190 200 225 T400 215 V300 H0Z" fill="#7fb7a4"/><circle cx="200" cy="185" r="34" fill="#f2c9a5"/><path d="M166 180 Q200 130 234 180 Q220 160 200 162 Q180 160 166 180Z" fill="#3b2a24"/><circle cx="188" cy="188" r="3.5" fill="#2a2a2a"/><circle cx="212" cy="188" r="3.5" fill="#2a2a2a"/><path d="M192 202 Q200 208 208 202" stroke="#a5584a" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="176" y="216" width="48" height="50" rx="20" fill="#f4b6c2"/></svg>`;
+        const st=(mem.state.stories&&mem.state.stories.items||[]).find(x=>x.id===body.id); const n=st?st.text.split(/\n\s*\n/).length:6; return {id:body.id,pics:[0,1,2].map(i=>({at:Math.min(n-1,[0,Math.floor(n/2),n-2][i]),alt:"Kiki under the moon",svg:mk(i)}))} }
       if(body.action==="story"){ await new Promise(r=>setTimeout(r,600)); const id=body.lang==="id"; const v={id:uuid(),d:body.date,lang:body.lang,title:id?`${KID} dan Ikan Biru Kecil`:`${KID} and the Little Blue Fish`,text:id?`Hari ini ${KID} pergi berenang.\n\nAir kolam berkilau seperti bintang. Seekor ikan biru kecil berenang di sampingnya dan berkata, "Halo, ${KID}!"\n\nMereka menendang air, cipratan, cipratan, cipratan.\n\nSekarang ikan biru kecil sudah mengantuk. ${KID} juga mengantuk. Selamat tidur, ${KID}.`:`Today ${KID} went swimming.\n\nThe pool sparkled like a sky full of stars. A little blue fish swam up beside her and said, "Hello, ${KID}!"\n\nThey kicked their feet together. Splash, splash, splash.\n\nAfter swimming, ${KID} ate her favourite mango, slice by slice, and said "more mango please" in her biggest voice.\n\nNow the little blue fish is getting sleepy in his little blue pool. ${KID} is getting sleepy too. Her eyes are heavy, like soft warm towels.\n\nGoodnight, little fish. Goodnight, ${KID}.`}; mem.state.stories={items:[...((mem.state.stories&&mem.state.stories.items)||[]),v]}; return v }
       if(body.action==="book"){ const v={month:body.month,title:"The month of mango and first sentences",story:`${KID} spent this month talking up a storm. Her favourite new phrase was "Mama, more mango please", which she now says at every meal.
 
@@ -1943,6 +1952,7 @@ function rainAlert(){
 }
 const rainHTML = (px) => { const r=rainAlert(); return r ? `<span class="rain ${r.heavy?"heavy":""}" style="font-size:${px}px"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5c-.3 0-.6.2-.8.5C9.4 5.6 5.5 11 5.5 14.5a6.5 6.5 0 0 0 13 0C18.5 11 14.6 5.6 12.8 3c-.2-.3-.5-.5-.8-.5z"/></svg>${esc(r.text)}</span>` : "" };
 const wxNow = () => { if(wxFake()) return {ic:I.cloud,desc:"Weather unavailable",t:"–",feels:"–",hum:"–",wind:"–",rain:0}; const c=wx.current, [ic,desc]=wmo(c.weather_code); return {ic:I[ic],desc,t:Math.round(c.temperature_2m),feels:Math.round(c.apparent_temperature),hum:c.relative_humidity_2m,wind:Math.round(c.wind_speed_10m),rain:wx.daily.precipitation_probability_max[0]??0} };
+const fcMini = () => wxFake() ? "" : `<div class="fcm">${wx.daily.time.slice(1,6).map((t,i)=>`<div><span>${new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</span>${I[wmo(wx.daily.weather_code[i+1])[0]]}<b>${Math.round(wx.daily.temperature_2m_max[i+1])}°</b></div>`).join("")}</div>`;
 const fcHTML = () => wxFake() ? "" : wx.daily.time.map((t,i)=>`<div><div class="d">${i===0?"Today":new Intl.DateTimeFormat(CONFIG.locale,{weekday:"short"}).format(new Date(t+"T12:00"))}</div>${I[wmo(wx.daily.weather_code[i])[0]]}<div><span class="hi">${Math.round(wx.daily.temperature_2m_max[i])}°</span> <span class="lo">${Math.round(wx.daily.temperature_2m_min[i])}°</span></div><div class="pp">${wx.daily.precipitation_probability_max[i]??0}% rain</div></div>`).join("");
 
 /* ======================== WALL ======================== */
@@ -2017,7 +2027,7 @@ function renderWall0(){
     if(m==="phone"){
       h=`<div class="pw">
         <div class="pw-head"><div class="pw-top"><div><div class="t-big pw-time js-time">${timeStr()}</div><div class="pw-date">${dateStr()}</div><button class="pw-timer" data-open="timerOv"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>Timer</button></div><div class="pw-now"><div class="pw-nowr">${w.ic}<div class="pw-temp">${w.t}°</div></div><div class="pw-desc">${w.desc}<br>feels like ${w.feels}°</div></div></div>
-        ${wxChips(13)}</div>
+        ${wxChips(13)}${fcMini()}</div>
         ${wordsHTML()}
         <div class="pw-kid">${kidHTML("row",4)}${devTip()&&!kidNudge()?`<div class="kid-dev" data-kidto="dev">This week for ${esc(KID)}: <b>${esc(devTip())}</b></div>`:""}</div>
         ${ol?`<span class="otd">${ol}</span>`:""}
@@ -2730,7 +2740,9 @@ const stToday=l=>stories().filter(x=>x.d===today()&&(!l||(x.lang||"en")===l)).sl
 function renderStory(){
   document.querySelectorAll("#stLang button").forEach(b=>b.classList.toggle("on",b.dataset.stl===stLang));
   const s=stShown;
-  $("stBody").innerHTML = s ? `<h2 class="st-t">${esc(s.title)}</h2>${esc(s.text).split(/\n\s*\n/).map((p,i)=>`<p data-sp="${i}">${p}</p>`).join("")}`
+  const pics=(s&&s.pics)||[], busy=s&&stPicBusy[s.id];
+  const fig=i=>pics.filter(x=>x.at===i).map(x=>`<figure class="st-pic"><img alt="${esc(x.alt||"")}" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(x.svg)}"></figure>`).join("")+(busy&&!pics.length&&i===0?`<figure class="st-pic st-pic-wait"><span>${s.lang==="id"?"Menggambar…":"Drawing pictures…"}</span></figure>`:"");
+  $("stBody").innerHTML = s ? `<h2 class="st-t">${esc(s.title)}</h2>${esc(s.text).split(/\n\s*\n/).filter(p=>p.trim()).map((p,i)=>`<p data-sp="${i}">${p}</p>${fig(i)}`).join("")}${!pics.length&&!busy?`<button class="pill st-draw" data-stdraw="${esc(s.id)}">${s.lang==="id"?"Gambar ilustrasinya":"Draw pictures for this story"}</button>`:""}`
     : stLang==="id" ? `<p class="st-empty">Claude menulis cerita pendek yang tenang dengan ${esc(KID)} sebagai tokohnya, dari harinya yang sebenarnya: jadwalnya, apa yang ia makan, dan hal-hal baru di jurnal. Butuh sekitar 20 detik. Lalu bacakan sendiri, atau biarkan layar membacakannya.</p>`
     : `<p class="st-empty">Claude writes a short, calm story with ${esc(KID)} as the hero, woven from her real day: her schedule, what she ate, and any new firsts in the journal. It takes about 20 seconds. Then read it to her yourself, or let the wall read it aloud.</p>`;
   const past=stories().slice().reverse().filter(x=>!s||x.id!==s.id).slice(0,10);
@@ -2742,8 +2754,14 @@ function stDay(){ const t=today();
   return { schedule: occOn(t).map(x=>`${x.t?fmtT(x.t)+" ":""}${x.title}`), meals: MEALS.map(([m])=>{ const r=plannedFor(t,m); return r?`${m}: ${r.title}`:"" }).filter(Boolean),
     weather: (()=>{ try{ const w=wxNow(); return `${w.t}°, ${w.desc}` }catch(e){ return "" } })(),
     notes: ((helperLog&&helperLog.items)||[]).filter(l=>fmtDay(l.t)===t).map(l=>l.text) } }
+// pictures are drawn after the story is written, so the story shows straight away
+const stPicBusy={};
+async function stDraw(id){ if(stPicBusy[id]) return; stPicBusy[id]=1; if(stShown&&stShown.id===id) renderStory();
+  try{ const r=await api.ai({action:"story_pics",id}); storiesCfg={items:stories().map(x=>x.id===id?{...x,pics:r.pics}:x)}; if(stShown&&stShown.id===id) stShown={...stShown,pics:r.pics} }
+  catch(err){ toast(err.message) } finally{ delete stPicBusy[id]; if(stShown&&stShown.id===id) renderStory() } }
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-stdraw]"); if(b) stDraw(b.dataset.stdraw) });
 $("stNew").onclick=async()=>{ const b=$("stNew"); stStop(); b.disabled=true; b.textContent=stLang==="id"?"Sedang menulis…":"Writing…";
-  try{ const v=await api.ai({action:"story",date:today(),lang:stLang,day:stDay()}); storiesCfg={items:[...stories(),v].slice(-30)}; stShown=v; $("storyOv").querySelector(".scroll").scrollTop=0 }
+  try{ const v=await api.ai({action:"story",date:today(),lang:stLang,day:stDay()}); storiesCfg={items:[...stories(),v].slice(-30)}; stShown=v; $("storyOv").querySelector(".scroll").scrollTop=0; setTimeout(()=>stDraw(v.id),50) }
   catch(err){ toast(err.message) } finally{ b.disabled=false; renderStory() } };
 $("stLang").onclick=e=>{ const b=e.target.closest("[data-stl]"); if(!b) return; if(b.dataset.stl===stLang) return; stStop(); stLang=b.dataset.stl; LS.set("stlang",stLang);
   // show today's story in that language, or write one now if tonight's story was in the other language
@@ -3636,7 +3654,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-17.73";
+const APP_VERSION="2026-11-18.74";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
