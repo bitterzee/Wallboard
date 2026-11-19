@@ -2898,7 +2898,8 @@ function renderSleep(){ const c=sleepCfg(); $("slOn").checked=!!c.on; $("slFrom"
 /* ======================== REFRESH BUTTON ======================== */
 async function manualRefresh(btn){
   if(btn) btn.classList.add("spin");
-  try{ await refreshAll(); loadWeather(); if(!DEMO && !isHelper()) syncShopping({quiet:true}); toast(offline ? "Still offline. Showing the last saved info" : "Up to date") }
+  try{ if(!DEMO && navigator.onLine!==false && await checkUpdate(true)) return;
+    await refreshAll(); loadWeather(); if(!DEMO && !isHelper()) syncShopping({quiet:true}); toast(offline ? "Still offline. Showing the last saved info" : `Up to date (version ${APP_VERSION.slice(-2)})`) }
   finally{ if(btn) setTimeout(()=>btn.classList.remove("spin"),300) }
 }
 $("bRefresh").onclick=e=>manualRefresh(e.currentTarget);
@@ -3693,13 +3694,16 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-19.76";
-setInterval(async()=>{
-  if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
-  try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
-    const m=t.match(/APP_VERSION="([^"]+)"/); if(m && m[1]!==APP_VERSION && /<\/html>\s*$/.test(t)) location.replace(location.pathname+"?v="+m[1]);
+const APP_VERSION="2026-11-19.77";
+// Look for a newer version of the app itself and load it. Runs every 5 minutes, and straight away from the Refresh button.
+async function checkUpdate(manual){
+  if(!manual && document.querySelector(".ov.open:not(#login)")) return false; // don't interrupt cooking or editing
+  try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return false; const t=await r.text();
+    const m=t.match(/APP_VERSION="([^"]+)"/); if(m && m[1]!==APP_VERSION && /<\/html>\s*$/.test(t)){ if(manual) toast("Updating the app…"); setTimeout(()=>location.replace(location.pathname+"?v="+m[1]), manual?600:0); return true }
   }catch(e){}
-}, 10*60e3);
+  return false;
+}
+setInterval(()=>checkUpdate(false), 5*60e3);
 window.__wb={setMode:m=>{layout="C";modeOverride=m;renderWall();nextPhoto()},setLayout:l=>{layout=l;renderWall();nextPhoto()}};
 </script>
 </body>
