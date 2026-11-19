@@ -946,6 +946,7 @@ body.phone #menuOv .sheetbox h2{font-size:28px;margin:0 -20px 4px;padding:calc(e
 .pw-timer svg{width:17px;height:17px;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round}
 .ph-rate{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 20px 0;font-size:15px;color:var(--fg2)}.ph-rate .pill{font-size:15px}.ph-rate .hint2{margin:0}
 .fcm{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;margin-top:2px}
+.m-fcm{gap:6px;margin:-4px 0 2px}.m-fcm>div{font-size:15px;padding:7px 0;gap:6px}.m-fcm svg{width:24px;height:24px}
 .fcm>div{display:flex;align-items:center;justify-content:center;gap:4px;font-size:13px;color:var(--fg2);padding:5px 0;border-radius:10px;background:rgba(var(--s1-rgb),.45)}
 .fcm svg{width:20px;height:20px}.fcm b{color:var(--fg);font-weight:600}
 .st-pic{margin:6px 0 22px;border-radius:20px;overflow:hidden;background:rgba(var(--s2-rgb,30,40,48),.6);aspect-ratio:4/3}
@@ -1999,8 +2000,8 @@ function renderWall0(){
         ${wordsHTML()}
         ${kid?`<div class="k-frame">${kid}</div>`:""}${mcard}</div>
       <div class="m2-r"><div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
-        ${wxChips(17)}${apBanner()}${rt}${mChip.trim()?`<div class="m-idea">${mChip}</div>`:""}${ag}${useSoonHTML()}${storyChip()}</div>
-      <div class="m2-b"><div class="fc">${fcHTML()}</div>
+        ${fcMini().replace('class="fcm"','class="fcm m-fcm"')}${wxChips(17)}${apBanner()}${rt}${mChip.trim()?`<div class="m-idea">${mChip}</div>`:""}${ag}${useSoonHTML()}${storyChip()}</div>
+      <div class="m2-b">
         <div class="m-foot"><span class="muted">${esc(WX().place)}${wxNote()}</span></div></div></div>`;
   } else if(m==="day"){
     const ph=currentPhoto();
@@ -3692,7 +3693,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-19.75";
+const APP_VERSION="2026-11-19.76";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
