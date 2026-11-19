@@ -2526,9 +2526,11 @@ function SND(){ return {
 function belOn(){ return LS.get("bellOn")!==false }
 function belSnd(){ const k=LS.get("bellSnd"); return SND()[k] ? k : "alarm" }
 function bellBtn(){ return belOn() && !document.body.classList.contains("phone") ? `<button class="bell" data-bell aria-label="Play the alarm sound"><span>${SND()[belSnd()].e}</span></button>` : "" }
-function playSound(k){
-  try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended") audioCtx.resume() }catch(e){ return }
-  const A=audioCtx, t0=A.currentTime+.03, out=A.createGain(); out.gain.value=.9; out.connect(A.destination);
+// iPad/iPhone mute Web Audio when the device is on silent, so each sound is rendered once into a small WAV file
+// and played through a normal <audio> element, which plays like a video does.
+const sndCache={};
+function synth(A,k,start){
+  const t0=start, out=A.createGain(); out.gain.value=.9; out.connect(A.destination);
   const tone=(f,at,dur,type="sine",vol=.32,f2)=>{ const o=A.createOscillator(), g=A.createGain(); o.type=type; o.frequency.setValueAtTime(f,t0+at); if(f2) o.frequency.exponentialRampToValueAtTime(f2,t0+at+dur);
     g.gain.setValueAtTime(.0001,t0+at); g.gain.exponentialRampToValueAtTime(vol,t0+at+.015); g.gain.exponentialRampToValueAtTime(.0001,t0+at+dur); o.connect(g); g.connect(out); o.start(t0+at); o.stop(t0+at+dur+.05) };
   const N={C5:523,D5:587,E5:659,F5:698,G5:784,A5:880,B5:988,C6:1047,D6:1175,E6:1319,G6:1568};
@@ -2541,11 +2543,28 @@ function playSound(k){
   else if(k==="doorbell"){ tone(659,0,1.2,"sine",.35); tone(523,.55,1.6,"sine",.35) }
   else if(k==="train"){ [0,.75].forEach(at=>{ [440,554,659].forEach(f=>tone(f,at,.55,"sawtooth",.06)) }) }
 }
+function wavURL(buf){ const d=buf.getChannelData(0), n=d.length, b=new DataView(new ArrayBuffer(44+n*2)), w=(o,s)=>[...s].forEach((c,i)=>b.setUint8(o+i,c.charCodeAt(0)));
+  w(0,"RIFF"); b.setUint32(4,36+n*2,true); w(8,"WAVE"); w(12,"fmt "); b.setUint32(16,16,true); b.setUint16(20,1,true); b.setUint16(22,1,true); b.setUint32(24,buf.sampleRate,true); b.setUint32(28,buf.sampleRate*2,true); b.setUint16(32,2,true); b.setUint16(34,16,true); w(36,"data"); b.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++){ const v=Math.max(-1,Math.min(1,d[i])); b.setInt16(44+i*2,v<0?v*0x8000:v*0x7fff,true) }
+  return URL.createObjectURL(new Blob([b],{type:"audio/wav"})) }
+async function prepSound(k){ if(sndCache[k]) return sndCache[k];
+  try{ const O=window.OfflineAudioContext||window.webkitOfflineAudioContext, sr=22050, A=new O(1,Math.round(sr*3.2),sr); synth(A,k,.02);
+    const buf=await A.startRendering(); const a=new Audio(wavURL(buf)); a.preload="auto"; sndCache[k]=a; return a }catch(e){ logErr&&logErr("sound",e); return null } }
+function playSound(k){
+  try{ if(navigator.audioSession) navigator.audioSession.type="playback" }catch(e){}
+  const a=sndCache[k];
+  if(a){ try{ a.pause(); a.currentTime=0; const p=a.play(); if(p&&p.catch) p.catch(()=>liveSound(k)); return }catch(e){} }
+  liveSound(k); prepSound(k);
+}
+function liveSound(k){
+  try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended") audioCtx.resume() }catch(e){ return }
+  synth(audioCtx,k,audioCtx.currentTime+.03);
+}
 document.addEventListener("click",e=>{ const b=e.target.closest("[data-bell]"); if(!b) return; e.stopPropagation(); playSound(belSnd()); b.classList.remove("ring"); void b.offsetWidth; b.classList.add("ring") }, true);
 function renderBellSet(){ $("belOn").checked=belOn(); $("belSnds").innerHTML=Object.entries(SND()).map(([k,v])=>`<button class="snd ${k===belSnd()?"on":""}" data-snd="${k}"><span>${v.e}</span>${v.n}</button>`).join("") }
 $("belOn").onchange=e=>{ LS.set("bellOn",e.target.checked); renderWall() };
-$("belSnds").onclick=e=>{ const b=e.target.closest("[data-snd]"); if(!b) return; LS.set("bellSnd",b.dataset.snd); playSound(b.dataset.snd); renderBellSet(); renderWall() };
-renderBellSet();
+$("belSnds").onclick=e=>{ const b=e.target.closest("[data-snd]"); if(!b) return; LS.set("bellSnd",b.dataset.snd); playSound(b.dataset.snd); prepSound(b.dataset.snd); renderBellSet(); renderWall() };
+renderBellSet(); setTimeout(()=>prepSound(belSnd()),1500);
 const fmtLeft = ms => { const s=Math.max(0,Math.ceil(ms/1000)), h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return h?`${h}:${String(m).padStart(2,"0")}:${String(x).padStart(2,"0")}`:`${m}:${String(x).padStart(2,"0")}` };
 function renderTimers(){
   const now=Date.now(), list=timers().filter(t=>now-t.end<15*60e3);
@@ -3694,7 +3713,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-19.77";
+const APP_VERSION="2026-11-19.78";
 // Look for a newer version of the app itself and load it. Runs every 5 minutes, and straight away from the Refresh button.
 async function checkUpdate(manual){
   if(!manual && document.querySelector(".ov.open:not(#login)")) return false; // don't interrupt cooking or editing
