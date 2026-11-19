@@ -952,6 +952,12 @@ body.phone #menuOv .sheetbox h2{font-size:28px;margin:0 -20px 4px;padding:calc(e
 .st-pic img{display:block;width:100%;height:100%}
 .st-pic-wait{display:flex;align-items:center;justify-content:center;color:var(--fg3);font-size:15px;animation:stpulse 1.6s ease-in-out infinite}
 @keyframes stpulse{50%{opacity:.55}}.st-draw{margin:6px 0 18px}
+.bell{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;margin-left:14px;vertical-align:middle;border-radius:50%;background:rgba(var(--s1-rgb),.75);border:1px solid rgba(var(--rain-rgb),.4);font-size:26px;line-height:1;position:relative;top:-3px}
+.bell.ring span{display:inline-block;animation:bellring .9s ease-in-out}
+@keyframes bellring{0%,100%{transform:rotate(0)}15%{transform:rotate(22deg)}30%{transform:rotate(-20deg)}45%{transform:rotate(16deg)}60%{transform:rotate(-12deg)}75%{transform:rotate(6deg)}}
+.snds{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:18px}
+.snd{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:1px solid var(--line2);font-size:15px;font-weight:600;color:var(--fg);text-align:left}
+.snd span{font-size:22px}.snd.on{border-color:var(--accent);background:rgba(var(--accent-rgb,232,178,62),.14)}
 .pw-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .pw-head{display:flex;flex-direction:column;gap:10px}
 .pw-now{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1;min-width:0;align-self:stretch;padding-bottom:4px}
@@ -1158,6 +1164,10 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
       <div class="f"><label>From<input type="time" id="slFrom" value="22:00"></label></div>
       <div class="f"><label>Until<input type="time" id="slTo" value="06:00"></label></div>
     </div>
+    <h2 class="sh">Alarm button (this device)</h2>
+    <p class="hint2">A bell next to the date on the wall. Tap it to play the sound. Pick the sound here, and tap one to hear it.</p>
+    <label class="hint2" style="display:flex;gap:10px;align-items:center;cursor:pointer;margin:0 0 10px"><input type="checkbox" id="belOn" style="width:22px;height:22px;accent-color:var(--accent)"> Show the alarm button</label>
+    <div class="snds" id="belSnds"></div>
     <h2 class="sh">Weather location</h2>
     <label class="hint2" style="display:flex;gap:10px;align-items:center;cursor:pointer"><input type="checkbox" id="geoOn" style="width:22px;height:22px;accent-color:var(--accent)"> Use this device's location</label>
     <p class="hint2" id="geoStat" style="margin-top:4px"></p>
@@ -1985,7 +1995,7 @@ function renderWall0(){
         <ul>${ing.map(i=>`<li>${esc(i)}</li>`).join("")}</ul></div></div>`; }
     const rt=routineHTML("wall"), hasBag=bagNow().length>0, kid=kidHTML("card", rt?1:(hasBag?2:3)), ag=agendaHTML(rt?(kid?1:2):(kid?(hasBag?2:3):6));
     h=`<div class="m2">
-      <div class="m2-l"><div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}</div></div>
+      <div class="m2-l"><div><div class="t-big m-time js-time">${timeStr()}</div><div class="m-date">${dateStr()}${bellBtn()}</div></div>
         ${wordsHTML()}
         ${kid?`<div class="k-frame">${kid}</div>`:""}${mcard}</div>
       <div class="m2-r"><div class="m-wx">${w.ic}<div><div class="m-temp">${w.t}°</div><div class="m-desc">${w.desc}, feels like ${w.feels}°</div></div></div>
@@ -1996,7 +2006,7 @@ function renderWall0(){
     const ph=currentPhoto();
     const ol=otdLabel(ph);
     h=`<div class="d-credit" style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">${ol?`<span class="otd" style="font-size:20px">${ol}</span>`:""}${ph&&ph.uploaded_by_name?`<span>Added by ${esc(ph.uploaded_by_name)}</span>`:""}</div>
-      <div class="d-strip"><div><div class="t-big d-time js-time">${timeStr()}</div><div class="d-date">${dateStr()}</div>${wordsHTML("d-words")}${kidLine()?`<div class="k-frame d-kf">${kidLine()}</div>`:""}</div>
+      <div class="d-strip"><div><div class="t-big d-time js-time">${timeStr()}</div><div class="d-date">${dateStr()}${bellBtn()}</div>${wordsHTML("d-words")}${kidLine()?`<div class="k-frame d-kf">${kidLine()}</div>`:""}</div>
       <div class="d-right">${wxChips(18)}${(()=>{const e=nextEvent();return e?`<div class="d-next"><span>Next</span> ${evTime(e)} ${esc(e.title)}</div>`:""})()}<div class="d-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${tChip}</div></div>`;
   } else if(m==="fridge"){
     const tn2=tonightRecipe(), r=tn2&&tn2.r, todo=shopping.filter(x=>!x.checked), ko=occOn(today()), ne=nextEvent(), bag=bagNow()[0];
@@ -2006,7 +2016,7 @@ function renderWall0(){
       <button class="fr-st st-shop" data-open="shopOv"><h4>SHOPPING${todo.length?` · ${todo.length}`:""}</h4>${todo.length?`<ul>${todo.slice(0,5).map(x=>`<li>${esc(x.name)}</li>`).join("")}</ul>${todo.length>5?`<small>and ${todo.length-5} more</small>`:""}`:`<b>All bought</b>`}</button>
       <button class="fr-st st-kid" data-open="kidOv"><h4>${esc(KID).toUpperCase()} TODAY</h4>${ko.length?ko.slice(0,3).map(x=>`<small>${x.t?fmtT(x.t)+" ":""}${esc(x.title)}</small>`).join(""):`<small>Nothing planned</small>`}${bag?`<small>Pack: ${esc(bag.items.slice(0,2).join(", "))}${bag.items.length>2?"…":""}</small>`:""}${ne?`<small style="opacity:.7">Next: ${evTime(ne)} ${esc(ne.title)}</small>`:""}</button>
       <div class="fr-alerts">${wxChips(16)}</div>
-      <div class="fr-clock"><div class="t-big js-time">${timeStr()}</div><div class="d">${dateStr()}</div><div class="w">${w.ic}<span>${w.t}° ${esc(w.desc)}${wxNote()}</span></div></div>
+      <div class="fr-clock"><div class="t-big js-time">${timeStr()}</div><div class="d">${dateStr()}${bellBtn()}</div><div class="w">${w.ic}<span>${w.t}° ${esc(w.desc)}${wxNote()}</span></div></div>
     </div>`;
   } else if(m==="dinner"||m==="split"||m==="phone"){
     let card; const tmr=plannedFor(addDays(today(),1));
@@ -2041,7 +2051,7 @@ function renderWall0(){
       </div>`;
     }
     const nrt = m==="split" ? routineHTML("row") : "", nrie = nrt ? "" : kidHTML("row",bagNow().length?1:2);
-    if(m!=="phone") h=`<div class="n-wrap"><div class="n-left"><div><div class="t-big n-time js-time">${timeStr()}</div><div class="n-date">${dateStr()}</div></div>
+    if(m!=="phone") h=`<div class="n-wrap"><div class="n-left"><div><div class="t-big n-time js-time">${timeStr()}</div><div class="n-date">${dateStr()}${bellBtn()}</div></div>
       <div class="n-mid">${wordsHTML("n-words")}${(nrie||(nrt&&kidLine()))?`<div class="k-frame">${nrie||kidLine()}</div>`:""}${nrt}${agendaHTML(wordsOn()?(nrt?1:(nrie?1:3)):(nrt?1:(nrie?(bagNow().length?1:2):4)))}${storyChip()?`<div style="margin-top:10px">${storyChip()}</div>`:""}</div>
       <div style="display:flex;flex-direction:column;gap:15px"><div class="n-wx">${w.ic}<span><b>${w.t}°</b> <span class="muted">${w.desc}</span></span></div>${wxChips(16)}${fc3}
       ${ol?`<span class="otd" style="font-size:15px;align-self:flex-start">${ol}</span>`:""}
@@ -2507,6 +2517,34 @@ const timers = () => ((timersCfg&&timersCfg.items)||[]);
 let tmPick=null, audioCtx=null, lastBeep=0, dismissedLocal=new Set();
 document.addEventListener("pointerdown",()=>{ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended") audioCtx.resume() }catch(e){} },{passive:true});
 function chime(){ if(!audioCtx) return; const t=audioCtx.currentTime; [0,.22,.44].forEach((d,i)=>{ const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type="sine"; o.frequency.value=[880,1175,1568][i]; g.gain.setValueAtTime(.0001,t+d); g.gain.exponentialRampToValueAtTime(.35,t+d+.02); g.gain.exponentialRampToValueAtTime(.0001,t+d+.5); o.connect(g).connect(audioCtx.destination); o.start(t+d); o.stop(t+d+.55) }) }
+/* ---- alarm button: a bell on the wall that plays a chosen sound (made in the browser, no files) ---- */
+// function declarations so the wall can draw the bell even before this part of the script has run
+function SND(){ return {
+  alarm:{n:"Alarm clock",e:"⏰"}, chime:{n:"Chime",e:"🔔"}, musicbox:{n:"Music box",e:"🎶"}, xylo:{n:"Xylophone",e:"🎹"},
+  birds:{n:"Birds",e:"🐦"}, siren:{n:"Fire truck",e:"🚒"}, doorbell:{n:"Doorbell",e:"🚪"}, train:{n:"Train",e:"🚂"} } }
+function belOn(){ return LS.get("bellOn")!==false }
+function belSnd(){ const k=LS.get("bellSnd"); return SND()[k] ? k : "alarm" }
+function bellBtn(){ return belOn() && !document.body.classList.contains("phone") ? `<button class="bell" data-bell aria-label="Play the alarm sound"><span>${SND()[belSnd()].e}</span></button>` : "" }
+function playSound(k){
+  try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended") audioCtx.resume() }catch(e){ return }
+  const A=audioCtx, t0=A.currentTime+.03, out=A.createGain(); out.gain.value=.9; out.connect(A.destination);
+  const tone=(f,at,dur,type="sine",vol=.32,f2)=>{ const o=A.createOscillator(), g=A.createGain(); o.type=type; o.frequency.setValueAtTime(f,t0+at); if(f2) o.frequency.exponentialRampToValueAtTime(f2,t0+at+dur);
+    g.gain.setValueAtTime(.0001,t0+at); g.gain.exponentialRampToValueAtTime(vol,t0+at+.015); g.gain.exponentialRampToValueAtTime(.0001,t0+at+dur); o.connect(g); g.connect(out); o.start(t0+at); o.stop(t0+at+dur+.05) };
+  const N={C5:523,D5:587,E5:659,F5:698,G5:784,A5:880,B5:988,C6:1047,D6:1175,E6:1319,G6:1568};
+  if(k==="alarm") for(let i=0;i<24;i++){ tone(i%2?1320:1180,i*.07,.06,"square",.12) }
+  else if(k==="chime") [880,1175,1568,2093].forEach((f,i)=>tone(f,i*.22,1.4,"sine",.3))
+  else if(k==="musicbox") ["C6","C6","G6","G6","A5","A5","G6"].forEach((n,i)=>{ const f=n==="A5"?1760:N[n]; tone(f,i*.32,.9,"triangle",.22); tone(f*2,i*.32,.4,"sine",.06) })
+  else if(k==="xylo") ["C5","D5","E5","F5","G5","A5","B5","C6"].forEach((n,i)=>tone(N[n]*2,i*.13,.45,"triangle",.3))
+  else if(k==="birds") for(let i=0;i<7;i++){ const at=i*.28+(i%3)*.04; tone(2600+(i%3)*400,at,.09,"sine",.2,4200); tone(3800,at+.1,.07,"sine",.15,2800) }
+  else if(k==="siren") for(let i=0;i<3;i++){ tone(650,i*.9,.45,"sawtooth",.1,1100); tone(1100,i*.9+.45,.45,"sawtooth",.1,650) }
+  else if(k==="doorbell"){ tone(659,0,1.2,"sine",.35); tone(523,.55,1.6,"sine",.35) }
+  else if(k==="train"){ [0,.75].forEach(at=>{ [440,554,659].forEach(f=>tone(f,at,.55,"sawtooth",.06)) }) }
+}
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-bell]"); if(!b) return; e.stopPropagation(); playSound(belSnd()); b.classList.remove("ring"); void b.offsetWidth; b.classList.add("ring") }, true);
+function renderBellSet(){ $("belOn").checked=belOn(); $("belSnds").innerHTML=Object.entries(SND()).map(([k,v])=>`<button class="snd ${k===belSnd()?"on":""}" data-snd="${k}"><span>${v.e}</span>${v.n}</button>`).join("") }
+$("belOn").onchange=e=>{ LS.set("bellOn",e.target.checked); renderWall() };
+$("belSnds").onclick=e=>{ const b=e.target.closest("[data-snd]"); if(!b) return; LS.set("bellSnd",b.dataset.snd); playSound(b.dataset.snd); renderBellSet(); renderWall() };
+renderBellSet();
 const fmtLeft = ms => { const s=Math.max(0,Math.ceil(ms/1000)), h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return h?`${h}:${String(m).padStart(2,"0")}:${String(x).padStart(2,"0")}`:`${m}:${String(x).padStart(2,"0")}` };
 function renderTimers(){
   const now=Date.now(), list=timers().filter(t=>now-t.end<15*60e3);
@@ -3654,7 +3692,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-18.74";
+const APP_VERSION="2026-11-19.75";
 setInterval(async()=>{
   if(document.querySelector(".ov.open:not(#login)")) return; // don't interrupt cooking or editing
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return; const t=await r.text();
