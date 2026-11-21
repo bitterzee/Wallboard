@@ -455,6 +455,13 @@ html,body{overflow-x:hidden;max-width:100vw}
 .kid-none{color:var(--fg3);font-size:16px;padding:4px 2px}
 .kid-up{font-size:15px;color:var(--fg2);padding:2px}.kid-up b{color:var(--fg);font-weight:600}
 .kid-row .kid-r{font-size:15px;padding:3px 2px}
+.dform{grid-template-columns:1fr 1fr}.dform .jwhat{grid-column:1/-1}.dform .pill{grid-column:1/-1;justify-self:start}
+.dsearch{width:100%;padding:.7em .9em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--s1);color:var(--fg);font-size:16px;margin-bottom:10px;box-sizing:border-box}
+.dw{display:grid;grid-template-columns:minmax(90px,38%) 1fr auto;gap:14px;align-items:center;padding:14px 4px;border-bottom:1px solid var(--line)}
+.dw-say{font-family:var(--serif,inherit);font-size:24px;color:var(--accent);word-break:break-word}
+.dw-means{font-size:17px;color:var(--fg);word-break:break-word}.dw-means span{color:var(--fg3);font-size:13px;margin-right:4px}.dw-means small{display:block;color:var(--fg3);font-size:13px;margin-top:3px}
+.dw-x{width:36px;height:36px;border-radius:50%;border:1px solid var(--line2);color:var(--fg3);font-size:14px}
+body.phone #kidOv .famsel .rtabs button{font-size:13px;padding-left:.15em;padding-right:.15em}
 .jform{display:grid;grid-template-columns:2fr 1fr;gap:12px;background:var(--s1);border-radius:16px;padding:14px;margin-bottom:18px}
 .jform label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--fg2)}
 .jform input:not([type=file]){padding:.7em .8em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--bg);color:var(--fg);font-size:16px;min-width:0}
@@ -1242,7 +1249,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
 <!-- child's calendar -->
 <section class="ov" id="kidOv">
   <div class="bar"><h1 class="serif" data-kid>Kid</h1><button class="pill dark" id="kidNew">Add</button><button class="pill" data-close>Close</button></div>
-  <div class="famsel ksel"><div class="rtabs" role="tablist"><button data-rtab="cal" class="on">Calendar</button><button data-rtab="grow">Growth</button><button data-rtab="dev"><span class="lg">Development</span><span class="sm">Skills</span></button><button data-rtab="log">Journal</button><button data-rtab="vax">Vaccines</button></div></div>
+  <div class="famsel ksel"><div class="rtabs" role="tablist"><button data-rtab="cal" class="on">Calendar</button><button data-rtab="grow">Growth</button><button data-rtab="dev"><span class="lg">Development</span><span class="sm">Skills</span></button><button data-rtab="log">Journal</button><button data-rtab="vax">Vaccines</button><button data-rtab="dict">Dictionary</button></div></div>
   <div class="scroll"><div class="wrapc">
     <div id="rtCal">
     <div class="mnav"><button id="rmPrev" aria-label="Previous month">‹</button><h2 id="rmTitle"></h2><button id="rmNext" aria-label="Next month">›</button></div>
@@ -1265,6 +1272,17 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
     </div>
     <div id="rtDev" hidden></div>
     <div id="rtVax" hidden><div id="vaxBody"></div></div>
+    <div id="rtDict" hidden>
+      <p class="hint2">Words <span data-kid>Kid</span> says her own way, and what she means, so everyone who looks after her can understand her.</p>
+      <div class="jform dform">
+        <label>She says<input id="dSay" maxlength="40" placeholder="nana"></label>
+        <label>It means<input id="dMeans" maxlength="60" placeholder="banana"></label>
+        <label class="jwhat">Note (optional)<input id="dNote" maxlength="100" placeholder="Also any fruit she wants"></label>
+        <button class="pill dark" id="dAdd">Add word</button>
+      </div>
+      <input class="dsearch" id="dFind" type="search" placeholder="Search words" autocomplete="off">
+      <div id="dList"></div>
+    </div>
     <div id="rtLog" hidden>
       <p class="hint2">Firsts and new skills, with the date and a photo. You can also tick milestones on the Development tab.</p>
       <div class="jform">
@@ -1658,6 +1676,7 @@ At home, Soto Ayam was the dinner everyone asked for again and again.`,highlight
     async importRecipe(url){ await new Promise(r=>setTimeout(r,700)); if(!/^https?:\/\//.test(url)) throw new Error("Paste a full link that starts with https://");
       return {title:"Ayam Bakar Madu",category:"Dinner",cook_time:"1 hr 10 min",serves:"4",ingredients:["1 kg chicken pieces","4 cloves garlic","5 shallots","3 tbsp honey","4 tbsp kecap manis","1 tsp coriander","2 limes"],steps:["Blend garlic, shallots and coriander into a paste.","Marinate the chicken in the paste, honey and kecap manis for 30 minutes.","Grill over medium heat, basting often, until cooked and sticky.","Serve with lime and rice."],notes:"Demo import: in the real app this comes from the page you paste.",source_url:url,photo_path:null,partial:false} },
     async urls(paths){ const o={}; paths.forEach(p=>o[p]=mem.blobs[p]); return o },
+    forget(){},
     async uploadFile(file,folder){ const p=`${folder}/${uuid()}.jpg`; mem.blobs[p]=URL.createObjectURL(await shrink(file,1600,.84)); urlMap[p]=mem.blobs[p]; return p },
     async removeFile(p){ delete mem.blobs[p] },
     subscribe(f){ listeners.push(f) }, beginRefresh(){}, endRefresh(){},
@@ -1770,6 +1789,7 @@ At home, Soto Ayam was the dinner everyone asked for again and again.`,highlight
     },
     async uploadFile(file,folder){ const p=`${folder}/${uuid()}.jpg`; must(await sb.storage.from("wallboard").upload(p, await shrink(file,1600,.84), {contentType:"image/jpeg"})); Object.assign(urlMap, await this.urls([p])); return p },
     async removeFile(p){ if(p) sb.storage.from("wallboard").remove([p]) },
+    forget(p){ delete cache[p]; snapDirty=true },
     async urls(paths){
       const now=Date.now(), need=[...new Set(paths.filter(p=>p&&!(cache[p]&&cache[p].exp>now)))];
       for(let i=0;i<need.length;i+=100){
@@ -1809,7 +1829,7 @@ if(!DEMO){ const st=api.state, br=api.beginRefresh;
 
 /* ======================== STATE ======================== */
 let reviews={}, rvEdit=null, stockRows=[], stEdit=null, tsRecipe=null, tsSel=[];
-let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, kidCal=null, wordsCfg=null, kidBags=null, kidBagDone=null, kidProfile=null, kidGrowth=null, kidJournal=null, timersCfg=null, autoCfg=null, icloudCfg=null, helperLog=null, kidVax=null, storiesCfg=null, calendars=[], events=[], eventsFailed=[], calIds=null;
+let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, kidCal=null, wordsCfg=null, kidBags=null, kidBagDone=null, kidProfile=null, kidGrowth=null, kidJournal=null, timersCfg=null, autoCfg=null, icloudCfg=null, helperLog=null, kidVax=null, kidDict=null, storiesCfg=null, calendars=[], events=[], eventsFailed=[], calIds=null;
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
 const MODES=["auto","morning","day","dinner","night"];
@@ -1860,7 +1880,7 @@ async function refreshAll0(prime){
   try{
     let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
     planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[pk(p.day,p.meal||"dinner"),p.recipe_id]));
-    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, kidCal, wordsCfg, kidBags, kidBagDone, kidProfile, kidGrowth, familyCfg, kidJournal, timersCfg, autoCfg, icloudCfg, helperLog, kidVax, storiesCfg] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("kid_cal"), api.state("words"), api.state("kid_bags"), api.state("kid_bag_done"), api.state("kid_profile"), api.state("kid_growth"), api.state("family"), api.state("kid_journal"), api.state("timers"), api.state("autopilot"), api.state("icloud"), api.state("helper_log"), api.state("kid_vax"), api.state("stories")]); renderTimers(); applyFamily();
+    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, kidCal, wordsCfg, kidBags, kidBagDone, kidProfile, kidGrowth, familyCfg, kidJournal, timersCfg, autoCfg, icloudCfg, helperLog, kidVax, storiesCfg, kidDict] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("kid_cal"), api.state("words"), api.state("kid_bags"), api.state("kid_bag_done"), api.state("kid_profile"), api.state("kid_growth"), api.state("family"), api.state("kid_journal"), api.state("timers"), api.state("autopilot"), api.state("icloud"), api.state("helper_log"), api.state("kid_vax"), api.state("stories"), api.state("kid_dict")]); renderTimers(); applyFamily();
     reviews={}; (rvs||[]).forEach(x=>{ (reviews[x.recipe_id] ||= {})[x.reviewer]=x });
     if(th && th.theme && th.theme!==theme) applyTheme(th.theme);
     stockRows = pan||[]; pantrySet = new Set(stockRows.map(x=>x.name));
@@ -2399,8 +2419,8 @@ $("rtDev").onclick=async e=>{ const li=e.target.closest("[data-ms]"); if(!li) re
   await addJournal({d:today(),text:t,area:li.dataset.msa,ref:t}, null) };
 $("kidOv").querySelector(".rtabs").onclick=e=>{ const b=e.target.closest("[data-rtab]"); if(b) kidTab(b.dataset.rtab) };
 function kidTab(t){ const ko=$("kidOv"); ko.classList.toggle("km-grow",t!=="cal"); if(t!=="cal") growLast=t; if(isPhone()&&ko.classList.contains("open")) markTab(t==="cal"?"cal":"grow");
-  ko.querySelectorAll(".rtabs button").forEach(x=>{ x.classList.toggle("on",x.dataset.rtab===t); if(x.dataset.rtab===t){ const r=x.parentElement; r.scrollLeft=Math.max(0,x.offsetLeft-(r.clientWidth-x.offsetWidth)/2) } }); $("rtCal").hidden=t!=="cal"; $("rtGrow").hidden=t!=="grow"; $("rtDev").hidden=t!=="dev"; $("rtLog").hidden=t!=="log"; $("rtVax").hidden=t!=="vax"; $("kidNew").style.display=t==="cal"?"":"none";
-  if(t==="grow") renderGrowth(); if(t==="dev") renderDev(); if(t==="log") renderJournal(); if(t==="vax") renderVax() }
+  ko.querySelectorAll(".rtabs button").forEach(x=>{ x.classList.toggle("on",x.dataset.rtab===t); if(x.dataset.rtab===t){ const r=x.parentElement; r.scrollLeft=Math.max(0,x.offsetLeft-(r.clientWidth-x.offsetWidth)/2) } }); $("rtCal").hidden=t!=="cal"; $("rtGrow").hidden=t!=="grow"; $("rtDev").hidden=t!=="dev"; $("rtLog").hidden=t!=="log"; $("rtVax").hidden=t!=="vax"; $("rtDict").hidden=t!=="dict"; $("kidNew").style.display=t==="cal"?"":"none";
+  if(t==="grow") renderGrowth(); if(t==="dev") renderDev(); if(t==="log") renderJournal(); if(t==="vax") renderVax(); if(t==="dict") renderDict() }
 document.addEventListener("click", e=>{ const b=e.target.closest("[data-kidto]"); if(!b) return; e.stopPropagation(); open("kidOv"); kidTab(b.dataset.kidto) }, true);
 
 /* ======================== KID'S JOURNAL ======================== */
@@ -2883,6 +2903,21 @@ function renderVax(){
     <div class="vx-g">${Object.entries(groups).map(([g,vs])=>`<h4>${g}</h4>${vs.map(v=>{ const st=v.done?"done":v.days<-45?"late":v.days<=30?"soon":""; const booked=(kidVax&&kidVax.booked||{})[v.id];
       return `<div class="vx ${st}"><button class="ck" data-vxt="${esc(v.id)}" aria-label="Done">${v.done?"✓":""}</button><div><b>${v.kind==="chk"?"🩺 Checkup":"💉 "+esc(v.name)}${v.dose?` <span style="font-weight:400;color:var(--fg3)">${esc(v.dose)}</span>`:""}</b><small class="w">${v.done?`Done ${dayShort(v.done)}`:v.days<-45?`Due ${dayShort(v.due)}`:v.days<0?"Due now":v.days===0?"Due today":`Due ${dayShort(v.due)}${v.days<=60?`, in ${v.days} days`:""}`}</small></div>${!v.done&&v.days<=60?`<button class="bk" data-vxb="${esc(v.id)}">${booked?"Booked "+dayShort(booked):"Add to calendar"}</button>`:""}</div>` }).join("")}`).join("")}</div>`;
 }
+/* ---- the child's own words: what she says and what she means ---- */
+const dictItems = () => ((kidDict&&kidDict.items)||[]);
+function renderDict(){
+  const q=($("dFind").value||"").trim().toLowerCase();
+  const list=dictItems().filter(x=>!q||[x.say,x.means,x.note].some(v=>(v||"").toLowerCase().includes(q))).sort((a,b)=>a.say.localeCompare(b.say));
+  $("dFind").style.display=dictItems().length>6?"":"none";
+  $("dList").innerHTML = list.length ? list.map(x=>`<div class="dw"><div class="dw-say">${esc(x.say)}</div><div class="dw-means"><span>means</span> ${esc(x.means)}${x.note?`<small>${esc(x.note)}</small>`:""}</div><button class="dw-x" data-dwx="${esc(x.id)}" aria-label="Remove ${esc(x.say)}">✕</button></div>`).join("")
+    : `<p class="empty">${q?"No words match that.":`No words yet. When ${esc(KID)} says something her own way, add it here.`}</p>`;
+}
+async function saveDict(){ renderDict(); try{ await api.setState("kid_dict",kidDict) }catch(e){ toast("Couldn't save. Check your connection") } }
+$("dAdd").onclick=()=>{ const say=$("dSay").value.trim(), means=$("dMeans").value.trim(); if(!say||!means){ toast("Fill in what she says and what it means"); return }
+  const items=dictItems().filter(x=>x.say.toLowerCase()!==say.toLowerCase());
+  kidDict={items:[...items,{id:uuid(),say,means,note:$("dNote").value.trim(),d:today()}]}; $("dSay").value=$("dMeans").value=$("dNote").value=""; $("dFind").value=""; saveDict(); toast(`Added "${say}"`) };
+$("dFind").oninput=renderDict;
+$("dList").onclick=e=>{ const b=e.target.closest("[data-dwx]"); if(!b) return; if(!twoTap("dw"+b.dataset.dwx,b,"Remove?")) return; kidDict={items:dictItems().filter(x=>x.id!==b.dataset.dwx)}; saveDict() };
 async function saveVax(){ renderVax(); renderWall(); try{ await api.setState("kid_vax",kidVax) }catch(e){ toast("Couldn't save. Check your connection") } }
 $("vaxBody").onclick=async e=>{
   kidVax=kidVax||{done:{},booked:{}}; kidVax.done=kidVax.done||{}; kidVax.booked=kidVax.booked||{};
@@ -2975,9 +3010,20 @@ function nextPhoto(){
   if(!order.length){ shown=null; back.style.background=gradients[pi++%gradients.length]; swap(); return }
   const o=otdSet(); slide++;
   const ph = (o.list.length && slide%2===0) ? o.list[otdI++ % o.list.length] : photos.find(p=>p.id===order[pi++%order.length]); if(!ph) return;
-  const url=photoUrl(ph.path), img=new Image();
-  img.onload=()=>{ back.style.background=`#15171b url("${url}") center/cover no-repeat`; shown=ph; swap(); if(["day","split","phone","fridge"].includes(mode())) renderWall() };
-  img.src=url;
+  showPhoto(ph, 0);
+}
+// Load a photo; if its link has expired or the network hiccuped, get a fresh link and retry, then move on to the next photo.
+function showPhoto(ph, tries){
+  const go=url=>{ const img=new Image(); let done=false;
+    const fail=()=>{ if(done) return; done=true; api.forget(ph.path); delete urlMap[ph.path];
+      if(tries<1) api.urls([ph.path]).then(u=>{ if(u[ph.path]){ urlMap[ph.path]=u[ph.path]; showPhoto(ph,tries+1) } else setTimeout(nextPhoto,3000) }).catch(()=>setTimeout(nextPhoto,5000));
+      else setTimeout(nextPhoto,3000) };
+    const to=setTimeout(fail,25000);
+    img.onload=()=>{ if(done) return; done=true; clearTimeout(to); back.style.background=`#15171b url("${url}") center/cover no-repeat`; shown=ph; swap(); if(["day","split","phone","fridge"].includes(mode())) renderWall() };
+    img.onerror=()=>{ clearTimeout(to); fail() };
+    img.src=url };
+  const url=photoUrl(ph.path);
+  if(url) go(url); else api.urls([ph.path]).then(u=>{ if(u[ph.path]){ urlMap[ph.path]=u[ph.path]; go(u[ph.path]) } else setTimeout(nextPhoto,3000) }).catch(()=>setTimeout(nextPhoto,5000));
 }
 // how often the background photo changes, chosen per device (LS "photoSecs"; 0 = never)
 let phTimer=null;
@@ -3713,7 +3759,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-19.78";
+const APP_VERSION="2026-11-21.80";
 // Look for a newer version of the app itself and load it. Runs every 5 minutes, and straight away from the Refresh button.
 async function checkUpdate(manual){
   if(!manual && document.querySelector(".ov.open:not(#login)")) return false; // don't interrupt cooking or editing
