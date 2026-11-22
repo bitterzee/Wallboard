@@ -3769,10 +3769,12 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-22.81";
+const APP_VERSION="2026-11-22.82";
 // Look for a newer version of the app itself and load it. Runs every 5 minutes, and straight away from the Refresh button.
+let lastTouch=Date.now(); addEventListener("pointerdown",()=>{ lastTouch=Date.now() },true);
 async function checkUpdate(manual){
-  if(!manual && document.querySelector(".ov.open:not(#login)")) return false; // don't interrupt cooking or editing
+  // don't interrupt cooking or editing, but don't let a panel left open on the wall block updates for ever
+  if(!manual && document.querySelector(".ov.open:not(#login)") && Date.now()-lastTouch < 20*60e3) return false;
   try{ const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store",signal:tmo(20e3)}); if(!r.ok) return false; const t=await r.text();
     const m=t.match(/APP_VERSION="([^"]+)"/); if(m && m[1]!==APP_VERSION && /<\/html>\s*$/.test(t)){ if(manual) toast("Updating the app…"); setTimeout(()=>location.replace(location.pathname+"?v="+m[1]), manual?600:0); return true }
   }catch(e){}
