@@ -1830,6 +1830,7 @@ if(!DEMO){ const st=api.state, br=api.beginRefresh;
 /* ======================== STATE ======================== */
 let reviews={}, rvEdit=null, stockRows=[], stEdit=null, tsRecipe=null, tsSel=[];
 let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, kidCal=null, wordsCfg=null, kidBags=null, kidBagDone=null, kidProfile=null, kidGrowth=null, kidJournal=null, timersCfg=null, autoCfg=null, icloudCfg=null, helperLog=null, kidVax=null, kidDict=null, storiesCfg=null, calendars=[], events=[], eventsFailed=[], calIds=null;
+const phStat={ok:0,fails:0,lastFail:0,kicks:0}; // photo health for the watchdog and Settings → Health
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
 const MODES=["auto","morning","day","dinner","night"];
@@ -3005,6 +3006,15 @@ function otdLabel(ph){
   if(!ph||!ph.taken_at) return null; const o=otdSet(); if(!o.list.some(p=>p.id===ph.id)) return null;
   const n=+today().slice(0,4) - +ph.taken_at.slice(0,4); return `${o.week?"This week":"On this day"}, ${n} year${n>1?"s":""} ago`;
 }
+// photo health: when the last photo appeared, and a watchdog that restarts the slideshow if it ever stalls
+setInterval(()=>{
+  if(document.hidden || sleeping || mode()==="night" || !photos.length) return;
+  const every=phSecs(), limit=every>0 ? Math.max(every*4, 5*60) : 30*60;
+  const blank=!/url\(/.test(front.style.background||"");
+  if(blank || Date.now()-phStat.ok > limit*1000){ phStat.kicks++; logErr("photo",new Error(blank?"Wall had no photo, restarted the slideshow":"Slideshow had stalled, restarted it"));
+    if(!order.length) api.urls(photos.map(p=>p.path)).then(u=>{ Object.assign(urlMap,u); buildPhotoOrder(); nextPhoto() }).catch(()=>{}); else nextPhoto(); phStat.ok=Date.now()-limit*1000+60e3 }
+}, 60e3);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden && mode()!=="night" && Date.now()-phStat.ok>10*60e3) setTimeout(nextPhoto,1500) });
 function nextPhoto(){
   if(mode()==="night") return;
   if(!order.length){ shown=null; back.style.background=gradients[pi++%gradients.length]; swap(); return }
@@ -3015,11 +3025,11 @@ function nextPhoto(){
 // Load a photo; if its link has expired or the network hiccuped, get a fresh link and retry, then move on to the next photo.
 function showPhoto(ph, tries){
   const go=url=>{ const img=new Image(); let done=false;
-    const fail=()=>{ if(done) return; done=true; api.forget(ph.path); delete urlMap[ph.path];
+    const fail=()=>{ if(done) return; done=true; phStat.fails++; phStat.lastFail=Date.now(); if(tries) logErr("photo",new Error("A photo wouldn't load")); api.forget(ph.path); delete urlMap[ph.path];
       if(tries<1) api.urls([ph.path]).then(u=>{ if(u[ph.path]){ urlMap[ph.path]=u[ph.path]; showPhoto(ph,tries+1) } else setTimeout(nextPhoto,3000) }).catch(()=>setTimeout(nextPhoto,5000));
       else setTimeout(nextPhoto,3000) };
     const to=setTimeout(fail,25000);
-    img.onload=()=>{ if(done) return; done=true; clearTimeout(to); back.style.background=`#15171b url("${url}") center/cover no-repeat`; shown=ph; swap(); if(["day","split","phone","fridge"].includes(mode())) renderWall() };
+    img.onload=()=>{ if(done) return; done=true; clearTimeout(to); phStat.ok=Date.now(); phStat.fails=0; back.style.background=`#15171b url("${url}") center/cover no-repeat`; shown=ph; swap(); if(["day","split","phone","fridge"].includes(mode())) renderWall() };
     img.onerror=()=>{ clearTimeout(to); fail() };
     img.src=url };
   const url=photoUrl(ph.path);
@@ -3559,7 +3569,7 @@ $("wSave").onclick=async()=>{
   const note=$("mamaNote").value.trim(); wordsCfg={on:$("wOn").checked,note:note||null,note_date:note?today():null}; renderWall();
   try{ await api.setState("words",wordsCfg); toast(note?"Today's note for Mama saved":"Saved") }catch(e){ toast("Couldn't save that") }
 };
-function renderDiag(){ const e=ERRS.slice(-3).reverse(); $("diag").innerHTML=`Version ${esc(APP_VERSION)}. ${offline?"<b>Offline right now.</b> ":""}Last synced ${lastOk?new Date(lastOk).toLocaleString(CONFIG.locale,{weekday:"short",hour:"2-digit",minute:"2-digit"}):"not yet"}.${e.length?`<br>Recent problems: ${e.map(x=>esc(new Date(x.t).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"})+" "+x.where+": "+x.m)).join("; ")}`:" No problems logged."}` }
+function renderDiag(){ const e=ERRS.slice(-3).reverse(); $("diag").innerHTML=`Version ${esc(APP_VERSION)}. Photos: ${photos.length} (${order.length} ready), last shown ${phStat.ok?new Date(phStat.ok).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"}):"not yet"}${phStat.kicks?`, restarted ${phStat.kicks}×`:""}. ${offline?"<b>Offline right now.</b> ":""}Last synced ${lastOk?new Date(lastOk).toLocaleString(CONFIG.locale,{weekday:"short",hour:"2-digit",minute:"2-digit"}):"not yet"}.${e.length?`<br>Recent problems: ${e.map(x=>esc(new Date(x.t).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"})+" "+x.where+": "+x.m)).join("; ")}`:" No problems logged."}` }
 function openSettings(){ renderDiag(); renderGeo(); renderSleep(); renderHelpers(); $("icUrl").value=(icloudCfg&&icloudCfg.url)||""; renderIcStat(); $("famKid").value=(familyCfg&&familyCfg.kid)||""; $("famMom").value=(familyCfg&&familyCfg.mom)||""; renderThemes(); rtDraft=JSON.parse(JSON.stringify(routine())); $("wOn").checked=wordsOn(); $("mamaNote").value=(wordsCfg&&wordsCfg.note_date===today()&&wordsCfg.note)||""; renderCalList(); renderRoutineEditor(); $("who2").textContent = DEMO ? "Demo mode." : `Signed in as ${me.name} (${me.email}).`; }
 $("calColor").onclick=e=>{ const b=e.target.closest("[data-col]"); if(b){ calColor=b.dataset.col; renderCalList() } };
 $("calList").onclick=async e=>{ const b=e.target.closest("[data-delcal]"); if(!b) return; if(!twoTap("c"+b.dataset.delcal,b,"Tap to confirm")) return; try{ await api.deleteCalendar(b.dataset.delcal); await refreshAll() }catch(err){ toast("Couldn't remove it") } };
@@ -3759,7 +3769,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-21.80";
+const APP_VERSION="2026-11-22.81";
 // Look for a newer version of the app itself and load it. Runs every 5 minutes, and straight away from the Refresh button.
 async function checkUpdate(manual){
   if(!manual && document.querySelector(".ov.open:not(#login)")) return false; // don't interrupt cooking or editing
