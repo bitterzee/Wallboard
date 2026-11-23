@@ -455,6 +455,9 @@ html,body{overflow-x:hidden;max-width:100vw}
 .kid-none{color:var(--fg3);font-size:16px;padding:4px 2px}
 .kid-up{font-size:15px;color:var(--fg2);padding:2px}.kid-up b{color:var(--fg);font-weight:600}
 .kid-row .kid-r{font-size:15px;padding:3px 2px}
+.zing{font-style:italic;color:var(--accent);font-size:16px;line-height:1.35;margin:4px 0 2px;opacity:.95}
+.m-rc .zing{font-size:14px;margin:2px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item>span:last-child{min-width:0}.item .zl{display:block;font-size:13px;color:var(--fg2);font-style:italic;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .dform{grid-template-columns:1fr 1fr}.dform .jwhat{grid-column:1/-1}.dform .pill{grid-column:1/-1;justify-self:start}
 .dsearch{width:100%;padding:.7em .9em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--s1);color:var(--fg);font-size:16px;margin-bottom:10px;box-sizing:border-box}
 .dw{display:grid;grid-template-columns:minmax(90px,38%) 1fr auto;gap:14px;align-items:center;padding:14px 4px;border-bottom:1px solid var(--line)}
@@ -1660,6 +1663,7 @@ const api = DEMO ? (() => {
       if(body.action==="ask") return {reply:/tonight|cook/i.test(body.text)?"You have chicken thighs and spinach that need using. Soto Ayam would use both, and it's the family's top-rated dish. Want me to put it on for tonight?":"Done. I've added that.",actions:/add|milk|egg/i.test(body.text)?["Added milk, eggs to the shopping list."]:[]};
       if(body.action==="autopilot"){ const d=[...Array(7)].map((_,i)=>addDays(body.start,i)), ids=recipes.map(r=>r.id); const v={week:body.start,created:new Date().toISOString(),summary:"Quick dinners on your busy Tuesday and Thursday, spinach used early in the week before it wilts, and Soto Ayam on Sunday since everyone rated it highest.",meals:d.map((x,i)=>({day:x,meal:"dinner",recipe_id:ids[i%ids.length],why:["Uses the spinach","Quick: late call","Top rated","Rie-friendly","Light after a busy day","Weekend treat","Family favourite"][i]})),status:"draft"}; mem.state.autopilot=v; return v }
       if(body.action==="translate"){ const r=recipes.find(x=>x.id===body.recipe_id)||{}; return {title:r.title,ingredients:(r.ingredients||[]).map(i=>i.replace(/chicken/i,"ayam").replace(/water/i,"air")),steps:(r.steps||[]).map(x=>"(Bahasa) "+x),notes:""} }
+      if(body.action==="zingers"){ const lines=["Weeknight hero: dinner on the table before the rice cooker clicks.","Smells like a warung, tastes like a hug.","The dish that makes leftover rice the main character.","Five ingredients, zero drama, one happy toddler."]; const o={...(mem.state.zingers||{})}; mem.recipes.forEach((r,i)=>{ if(!o[r.id]) o[r.id]=lines[i%lines.length] }); mem.state.zingers=o; return o }
       if(body.action==="story_pics"){ await new Promise(r=>setTimeout(r,1500)); const sky=["#2b3a67","#3d4f86","#24304f"], mk=(i)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="${sky[i]}"/><circle cx="${320-i*90}" cy="70" r="34" fill="#f6d77a"/><path d="M0 230 Q100 190 200 225 T400 215 V300 H0Z" fill="#7fb7a4"/><circle cx="200" cy="185" r="34" fill="#f2c9a5"/><path d="M166 180 Q200 130 234 180 Q220 160 200 162 Q180 160 166 180Z" fill="#3b2a24"/><circle cx="188" cy="188" r="3.5" fill="#2a2a2a"/><circle cx="212" cy="188" r="3.5" fill="#2a2a2a"/><path d="M192 202 Q200 208 208 202" stroke="#a5584a" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="176" y="216" width="48" height="50" rx="20" fill="#f4b6c2"/></svg>`;
         const st=(mem.state.stories&&mem.state.stories.items||[]).find(x=>x.id===body.id); const n=st?st.text.split(/\n\s*\n/).length:6; return {id:body.id,pics:[0,1,2].map(i=>({at:Math.min(n-1,[0,Math.floor(n/2),n-2][i]),alt:"Kiki under the moon",svg:mk(i)}))} }
       if(body.action==="story"){ await new Promise(r=>setTimeout(r,600)); const id=body.lang==="id"; const v={id:uuid(),d:body.date,lang:body.lang,title:id?`${KID} dan Ikan Biru Kecil`:`${KID} and the Little Blue Fish`,text:id?`Hari ini ${KID} pergi berenang.\n\nAir kolam berkilau seperti bintang. Seekor ikan biru kecil berenang di sampingnya dan berkata, "Halo, ${KID}!"\n\nMereka menendang air, cipratan, cipratan, cipratan.\n\nSekarang ikan biru kecil sudah mengantuk. ${KID} juga mengantuk. Selamat tidur, ${KID}.`:`Today ${KID} went swimming.\n\nThe pool sparkled like a sky full of stars. A little blue fish swam up beside her and said, "Hello, ${KID}!"\n\nThey kicked their feet together. Splash, splash, splash.\n\nAfter swimming, ${KID} ate her favourite mango, slice by slice, and said "more mango please" in her biggest voice.\n\nNow the little blue fish is getting sleepy in his little blue pool. ${KID} is getting sleepy too. Her eyes are heavy, like soft warm towels.\n\nGoodnight, little fish. Goodnight, ${KID}.`}; mem.state.stories={items:[...((mem.state.stories&&mem.state.stories.items)||[]),v]}; return v }
@@ -1830,7 +1834,7 @@ if(!DEMO){ const st=api.state, br=api.beginRefresh;
 
 /* ======================== STATE ======================== */
 let reviews={}, rvEdit=null, stockRows=[], stEdit=null, tsRecipe=null, tsSel=[];
-let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, kidCal=null, wordsCfg=null, kidBags=null, kidBagDone=null, kidProfile=null, kidGrowth=null, kidJournal=null, timersCfg=null, autoCfg=null, icloudCfg=null, helperLog=null, kidVax=null, kidDict=null, storiesCfg=null, calendars=[], events=[], eventsFailed=[], calIds=null;
+let recipes=[], photos=[], tonightState=null, urlMap={}, wx=null, wxDemo=false, planMap={}, shopping=[], pantrySet=new Set(), routineCfg=null, routineDone=null, kidCal=null, wordsCfg=null, kidBags=null, kidBagDone=null, kidProfile=null, kidGrowth=null, kidJournal=null, timersCfg=null, autoCfg=null, icloudCfg=null, helperLog=null, kidVax=null, kidDict=null, zingCfg=null, storiesCfg=null, calendars=[], events=[], eventsFailed=[], calIds=null;
 const phStat={ok:0,fails:0,lastFail:0,kicks:0,tries:0,err:""}; // photo health for the watchdog and Settings → Health
 let modeOverride = LS.get("mode","auto");
 let layout = LS.get("layout","C"), layoutChosen = false; // "B" = kitchen split all day, "C" = changes through the day
@@ -1873,7 +1877,7 @@ async function refreshAll(){
   let hung=false;
   refreshing=Promise.race([refreshAll0(), new Promise(r=>setTimeout(()=>{ hung=true; r() },60e3))]);
   try{ await refreshing } finally{
-    if(hung){ logErr("refresh","timed out"); hungN++; if(hungN>=2 && navigator.onLine) location.reload() } else hungN=0; refreshing=null; if(refreshAgain){ refreshAgain=false; setTimeout(refreshAll,50) } }
+    if(hung){ logErr("refresh","timed out"); hungN++; if(hungN>=2 && navigator.onLine) location.reload() } else { hungN=0; if(!offline) setTimeout(ensureZingers,3000) } refreshing=null; if(refreshAgain){ refreshAgain=false; setTimeout(refreshAll,50) } }
 }
 function setOffline(on){ offline=on; document.body.classList.toggle("offline",on); const b=$("offBadge"); if(b) b.textContent = on ? `Offline${lastOk?`, showing info from ${new Date(lastOk).toLocaleTimeString(CONFIG.locale,{hour:"2-digit",minute:"2-digit"})}`:""}` : "" }
 async function primeFromSnap(){ if(DEMO || !SNAP.state) return; forceSnap=true; try{ await refreshAll0(true) }catch(e){} finally{ forceSnap=false } }
@@ -1882,7 +1886,7 @@ async function refreshAll0(prime){
   try{
     let lay, plan; [recipes, photos, tonightState, lay, plan, shopping] = await Promise.all([api.recipes(), api.photos(), api.tonight(), api.layout(), api.plan(), api.shopping()]);
     planMap = Object.fromEntries((plan||[]).filter(p=>p.recipe_id).map(p=>[pk(p.day,p.meal||"dinner"),p.recipe_id]));
-    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, kidCal, wordsCfg, kidBags, kidBagDone, kidProfile, kidGrowth, familyCfg, kidJournal, timersCfg, autoCfg, icloudCfg, helperLog, kidVax, storiesCfg, kidDict] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("kid_cal"), api.state("words"), api.state("kid_bags"), api.state("kid_bag_done"), api.state("kid_profile"), api.state("kid_growth"), api.state("family"), api.state("kid_journal"), api.state("timers"), api.state("autopilot"), api.state("icloud"), api.state("helper_log"), api.state("kid_vax"), api.state("stories"), api.state("kid_dict")]); renderTimers(); applyFamily();
+    let pan, rvs, th; [pan, routineCfg, routineDone, calendars, rvs, th, kidCal, wordsCfg, kidBags, kidBagDone, kidProfile, kidGrowth, familyCfg, kidJournal, timersCfg, autoCfg, icloudCfg, helperLog, kidVax, storiesCfg, kidDict, zingCfg] = await Promise.all([api.pantry(), api.state("routine"), api.state("routine_done"), api.calendars(), api.reviews(), api.state("theme"), api.state("kid_cal"), api.state("words"), api.state("kid_bags"), api.state("kid_bag_done"), api.state("kid_profile"), api.state("kid_growth"), api.state("family"), api.state("kid_journal"), api.state("timers"), api.state("autopilot"), api.state("icloud"), api.state("helper_log"), api.state("kid_vax"), api.state("stories"), api.state("kid_dict"), api.state("zingers")]); renderTimers(); applyFamily();
     reviews={}; (rvs||[]).forEach(x=>{ (reviews[x.recipe_id] ||= {})[x.reviewer]=x });
     if(th && th.theme && th.theme!==theme) applyTheme(th.theme);
     stockRows = pan||[]; pantrySet = new Set(stockRows.map(x=>x.name));
@@ -2011,7 +2015,7 @@ function renderWall0(){
     let mcard="";
     if(tn){ const r=tn.r, ing=r.ingredients||[];
       mcard=`<div class="rc m-rc ${tn.picked?"":"swipeable"}" ${tn.picked?"":`data-swipe-id="${esc(r.id)}"`}><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span><div class="b">
-        <div class="m-rch"><div class="m-rct"><div class="eyebrow">${tn.picked?"Tonight's dinner":"Dinner idea"}${r.cook_time?` <span class="muted">· ${esc(r.cook_time)}</span>`:""}</div><h2 class="serif">${esc(r.title)}</h2></div>
+        <div class="m-rch"><div class="m-rct"><div class="eyebrow">${tn.picked?"Tonight's dinner":"Dinner idea"}${r.cook_time?` <span class="muted">· ${esc(r.cook_time)}</span>`:""}</div><h2 class="serif">${esc(r.title)}</h2>${zingHTML(r)}</div>
         ${tn.picked
           ? `<div class="acts"><button class="btn-cook" data-cook="${esc(r.id)}">Start cooking</button><button class="btn-ghost" data-openbook="${esc(r.id)}">Recipe</button></div>`
           : `<div class="acts"><button class="swbtn no" data-ideano aria-label="Show another idea">✕</button><button class="swbtn yes" data-ideayes="${esc(r.id)}" aria-label="Cook this tonight">♥</button><button class="btn-ghost" data-swipe="dinner">More ideas</button></div>`}</div>
@@ -2045,7 +2049,7 @@ function renderWall0(){
     let card; const tmr=plannedFor(addDays(today(),1));
     if(tn){ const r=tn.r, pu=photoUrl(r.photo_path), ing=r.ingredients||[], show=ing.slice(0,10);
       card=`<div class="rc ${tn.picked?"":"swipeable"}" ${tn.picked?"":`data-swipe-id="${esc(r.id)}"`}><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span>${pu?`<div class="ph" style="background-image:url('${pu}')"></div>`:""}<div class="b">
-        <div class="eyebrow">${tn.picked?"Tonight's dinner":(m==="split"?"Recipe of the day":"Dinner idea")}</div><h2 class="serif">${esc(r.title)}</h2>
+        <div class="eyebrow">${tn.picked?"Tonight's dinner":(m==="split"?"Recipe of the day":"Dinner idea")}</div><h2 class="serif">${esc(r.title)}</h2>${zingHTML(r)}
         <div class="meta">${metaHTML(r)}</div>
         ${rvMini(r)}
         <ul>${show.map(i=>`<li>${esc(i)}</li>`).join("")}${ing.length>show.length?`<li style="color:var(--ink2)">+ ${ing.length-show.length} more</li>`:""}</ul>
@@ -2483,7 +2487,7 @@ function cardHTML(r){
   const pu=photoUrl(r.photo_path), c=coverage(r), sc=score(r.id);
   return `<div class="swc" data-swid="${esc(r.id)}"><span class="stamp yes">Cook it</span><span class="stamp no">Not today</span>
     <div class="ph" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</div>
-    <div class="bd"><h2>${esc(r.title)}</h2>
+    <div class="bd"><h2>${esc(r.title)}</h2>${zingHTML(r)}
       <div class="mt">${[r.cook_time,r.category,sc!=null?`★ ${sc.toFixed(1)}`:null,isTried(r)?`Made ${r.cooked_count||1}×`:"New to us"].filter(Boolean).map(esc).join("<span>·</span>").replace(/<span>·<\/span>/g,"<span aria-hidden=true> </span>")}</div>
       ${c.all?`<div class="have">You have <b>${c.have} of ${c.all}</b> ingredients in stock</div>`:""}
       <div class="ings">${esc((r.ingredients||[]).slice(0,8).join(", "))}</div></div></div>`;
@@ -2905,6 +2909,16 @@ function renderVax(){
     <div class="vx-g">${Object.entries(groups).map(([g,vs])=>`<h4>${g}</h4>${vs.map(v=>{ const st=v.done?"done":v.days<-45?"late":v.days<=30?"soon":""; const booked=(kidVax&&kidVax.booked||{})[v.id];
       return `<div class="vx ${st}"><button class="ck" data-vxt="${esc(v.id)}" aria-label="Done">${v.done?"✓":""}</button><div><b>${v.kind==="chk"?"🩺 Checkup":"💉 "+esc(v.name)}${v.dose?` <span style="font-weight:400;color:var(--fg3)">${esc(v.dose)}</span>`:""}</b><small class="w">${v.done?`Done ${dayShort(v.done)}`:v.days<-45?`Due ${dayShort(v.due)}`:v.days<0?"Due now":v.days===0?"Due today":`Due ${dayShort(v.due)}${v.days<=60?`, in ${v.days} days`:""}`}</small></div>${!v.done&&v.days<=60?`<button class="bk" data-vxb="${esc(v.id)}">${booked?"Booked "+dayShort(booked):"Add to calendar"}</button>`:""}</div>` }).join("")}`).join("")}</div>`;
 }
+/* ---- zingers: one witty line per recipe, written by Claude once and kept in wb_state "zingers" ---- */
+function zingOf(r){ return r && zingCfg && zingCfg[r.id] ? String(zingCfg[r.id]) : "" }
+function zingHTML(r){ const z=zingOf(r); return z ? `<p class="zing">${esc(z)}</p>` : "" }
+let zingBusy=false;
+async function ensureZingers(){
+  if(zingBusy || isHelper() || !recipes.length || recipes.every(r=>zingOf(r))) return;
+  const last=+(LS.get("zingTry")||0); if(Date.now()-last < 6*3600e3) return; // at most every few hours, per device
+  zingBusy=true; LS.set("zingTry",Date.now());
+  try{ const z=await api.ai({action:"zingers"}); if(z && typeof z==="object"){ zingCfg=z; renderWall(); if($("bookOv").classList.contains("open")) renderList() } }catch(e){} finally{ zingBusy=false }
+}
 /* ---- the child's own words: what she says and what she means ---- */
 const dictItems = () => ((kidDict&&kidDict.items)||[]);
 function renderDict(){
@@ -3075,9 +3089,9 @@ function renderBookList(){
   const q=$("q").value.trim().toLowerCase(), tn=tonightRecipe();
   let list=recipes.filter(r=>(cat==="All"||(cat==="Top rated"?score(r.id)!=null:cat==="New to try"?!isTried(r):cat==="Tried"?isTried(r):r.category===cat))&&(!q||(r.title+" "+(r.ingredients||[]).join(" ")).toLowerCase().includes(q)));
   if(cat==="Top rated") list=list.sort((a,b)=>score(b.id)-score(a.id));
-  $("items").innerHTML=list.map(r=>{ const pu=photoUrl(r.photo_path); return `<button class="item ${r.id===selId?"sel":""}" data-id="${esc(r.id)}">
+  $("items").innerHTML=list.map(r=>{ const pu=photoUrl(r.photo_path), z=zingOf(r); return `<button class="item ${r.id===selId?"sel":""}" data-id="${esc(r.id)}">
     <span class="th" ${pu?`style="background-image:url('${pu}')"`:""}>${pu?"":mono(r)}</span>
-    <span><b>${esc(r.title)}${!isTried(r)?`<span class="newtag">New</span>`:""}${tn&&tn.picked&&tn.r.id===r.id?` <span style="color:var(--accent);font-weight:600;font-size:13px">Tonight</span>`:""}</b><small>${esc([r.category,r.cook_time,r.source_kind==="youtube"?"Video":r.source_kind==="instagram"?"Instagram":null].filter(Boolean).join(", "))}${(r.cooked_count||0)>0?`<span class="madetag">Made ${r.cooked_count}×</span>`:""}${(()=>{const sc=score(r.id), b=(reviews[r.id]||{}).baby; return (sc!=null?`<span class="score">★ ${sc.toFixed(1)}</span>`:"")+(b?` ${BABY[b.rating][0]}`:"")})()}</small></span></button>` }).join("")
+    <span><b>${esc(r.title)}${!isTried(r)?`<span class="newtag">New</span>`:""}${tn&&tn.picked&&tn.r.id===r.id?` <span style="color:var(--accent);font-weight:600;font-size:13px">Tonight</span>`:""}</b><small>${esc([r.category,r.cook_time,r.source_kind==="youtube"?"Video":r.source_kind==="instagram"?"Instagram":null].filter(Boolean).join(", "))}${(r.cooked_count||0)>0?`<span class="madetag">Made ${r.cooked_count}×</span>`:""}${(()=>{const sc=score(r.id), b=(reviews[r.id]||{}).baby; return (sc!=null?`<span class="score">★ ${sc.toFixed(1)}</span>`:"")+(b?` ${BABY[b.rating][0]}`:"")})()}</small>${z?`<i class="zl">${esc(z)}</i>`:""}</span></button>` }).join("")
     || `<p class="empty" style="padding:16px">No recipes match.</p>`;
 }
 /* ---------- scale servings, convert units ---------- */
@@ -3138,7 +3152,7 @@ function showRecipe(id){
   $("detail").innerHTML=`<button class="pill mobile-back" data-back style="margin-bottom:14px">← All recipes</button>
     ${ytIdOf(r.source_url) ? `<div class="vid" id="vidBox" style="background-image:url('${pu||`https://i.ytimg.com/vi/${ytIdOf(r.source_url)}/hqdefault.jpg`}')"><button data-play="${ytIdOf(r.source_url)}" aria-label="Play the video"><i></i></button></div>`
       : pu?`<div class="hero" style="background-image:url('${pu}')"></div>`:""}
-    <h2 class="serif">${esc(r.title)}</h2><div class="meta">${metaHTML(r)}${r.created_by_name?`<span>Added by ${esc(r.created_by_name)}</span>`:""}</div>
+    <h2 class="serif">${esc(r.title)}</h2>${zingHTML(r)}<div class="meta">${metaHTML(r)}${r.created_by_name?`<span>Added by ${esc(r.created_by_name)}</span>`:""}</div>
     ${sourceHTML(r)}
     ${triedHTML(r)}
     <div class="row" style="margin:0 0 24px">
@@ -3777,7 +3791,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-22.85";
+const APP_VERSION="2026-11-23.86";
 // Look for a newer version of the app itself and load it. Runs every 5 minutes, and straight away from the Refresh button.
 let lastTouch=Date.now(); addEventListener("pointerdown",()=>{ lastTouch=Date.now() },true);
 async function checkUpdate(manual){
