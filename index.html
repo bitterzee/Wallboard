@@ -458,6 +458,12 @@ html,body{overflow-x:hidden;max-width:100vw}
 .zing{font-style:italic;color:var(--accent);font-size:16px;line-height:1.35;margin:4px 0 2px;opacity:.95}
 .m-rc .zing{font-size:14px;margin:2px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item>span:last-child{min-width:0}.item .zl{display:block;font-size:13px;color:var(--fg2);font-style:italic;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.upbar{position:relative;margin:10px 20px 0;padding:10px 14px;border-radius:14px;background:rgba(var(--s1-rgb),.9);border:1px solid var(--line);font-size:14px;font-weight:600;overflow:hidden}
+.upbar i{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);transition:width .4s}
+figure.up{opacity:.55;position:relative}figure.up.fail{opacity:.3;outline:2px solid #e46b5e}
+figure.up .spin{position:absolute;inset:auto auto 10px 10px;width:20px;height:20px;border-radius:50%;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;animation:upspin .8s linear infinite}
+figure.up.wait .spin{animation-play-state:paused}figure.up.fail .spin{display:none}
+@keyframes upspin{to{transform:rotate(360deg)}}
 .dform{grid-template-columns:1fr 1fr}.dform .jwhat{grid-column:1/-1}.dform .pill{grid-column:1/-1;justify-self:start}
 .dsearch{width:100%;padding:.7em .9em;border:1px solid var(--line);border-radius:var(--r-md);background:var(--s1);color:var(--fg);font-size:16px;margin-bottom:10px;box-sizing:border-box}
 .dw{display:grid;grid-template-columns:minmax(90px,38%) 1fr auto;gap:14px;align-items:center;padding:14px 4px;border-bottom:1px solid var(--line)}
@@ -1117,6 +1123,7 @@ body.phone .ck .nav button{min-height:84px;font-size:20px}
   </div>
   <div class="famsel"><div class="rtabs"><button data-fam="photos" class="on">Photos</button><button data-fam="story">Story time</button><button data-fam="mem">Memory book</button></div></div>
   <div class="ph-rate"><label for="phRate">Change the background photo every</label><select class="pill" id="phRate"><option value="15">15 seconds</option><option value="30">30 seconds</option><option value="60">1 minute</option><option value="300">5 minutes</option><option value="900">15 minutes</option><option value="3600">1 hour</option><option value="0">Never</option></select><span class="hint2">On this device</span></div>
+  <div class="upbar" id="upBar" hidden></div>
   <div class="pgrid" id="pgrid"></div>
   <div style="padding:10px 16px 18px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap">
     <span style="color:var(--ink2);font-size:14px;margin-right:auto" id="who"></span>
@@ -1724,7 +1731,7 @@ At home, Soto Ayam was the dinner everyone asked for again and again.`,highlight
     },
     async deleteRecipe(id){ const r=recipes.find(x=>x.id===id); must(await sb.from("wb_recipes").delete().eq("id",id)); if(r?.photo_path) sb.storage.from("wallboard").remove([r.photo_path]) },
     async photos(){ return must(await sb.from("wb_photos").select("*").order("created_at",{ascending:false})) },
-    async addPhoto(file){ const taken_at=await photoDate(file), p=`photos/${uuid()}.jpg`; must(await sb.storage.from("wallboard").upload(p, await shrink(file,2048,.85), {contentType:"image/jpeg"})); must(await sb.from("wb_photos").insert({path:p,uploaded_by_name:me.name,taken_at})) },
+    async addPhoto(file){ const taken_at=await photoDate(file), p=`photos/${uuid()}.jpg`; must(await sb.storage.from("wallboard").upload(p, await shrink(file,1800,.82), {contentType:"image/jpeg"})); must(await sb.from("wb_photos").insert({path:p,uploaded_by_name:me.name,taken_at})) },
     async deletePhoto(ph){ must(await sb.from("wb_photos").delete().eq("id",ph.id)); sb.storage.from("wallboard").remove([ph.path]) },
     async tonight(){ return await this.state("tonight") },
     async setTonight(id){ must(await sb.from("wb_state").upsert({key:"tonight",value:{recipe_id:id,date:today()},updated_at:new Date().toISOString()})) },
@@ -3066,17 +3073,29 @@ $("phRate").onchange=e=>{ LS.set("photoSecs",+e.target.value); phRateStart(); to
 function swap(){ back.classList.add("on"); front.classList.remove("on"); [front,back]=[back,front] }
 
 function renderPhotoGrid(){
-  $("pgrid").innerHTML = photos.length ? photos.map(p=>`<figure style="background-image:url('${photoUrl(p.path)||""}')">${p.uploaded_by_name||p.taken_at?`<figcaption>${esc([p.taken_at&&dayShort(p.taken_at)+" "+p.taken_at.slice(0,4),p.uploaded_by_name].filter(Boolean).join(", "))}</figcaption>`:""}<button data-delphoto="${esc(p.id)}">Remove</button></figure>`).join("")
-    : `<p class="empty">No family photos yet. Add some from your phone or this iPad — they'll show on the wall right away.</p>`;
+  const pend=upBusy.map((j,k)=>j.state==="done"?"":`<figure data-upj="${k}" class="up ${j.state}" style="background-image:url('${j.url}')"><span class="spin"></span></figure>`).join("");
+  $("pgrid").innerHTML = pend + (photos.length||pend ? photos.map(p=>`<figure style="background-image:url('${photoUrl(p.path)||""}')">${p.uploaded_by_name||p.taken_at?`<figcaption>${esc([p.taken_at&&dayShort(p.taken_at)+" "+p.taken_at.slice(0,4),p.uploaded_by_name].filter(Boolean).join(", "))}</figcaption>`:""}<button data-delphoto="${esc(p.id)}">Remove</button></figure>`).join("") : "")
+    || `<p class="empty">No family photos yet. Add some from your phone or this iPad — they'll show on the wall right away.</p>`;
   $("who").textContent = DEMO ? "Demo mode — add your Supabase keys to share with your wife" : `Signed in as ${me.name} (${me.email})`;
 }
+// Uploading: show the photos straight away as faded tiles with a progress bar, work on two at a time,
+// and put each one on the wall as soon as it's saved instead of waiting for the whole batch.
+let upBusy=[];
 $("photoIn").onchange=async e=>{
   const files=[...e.target.files]; e.target.value=""; if(!files.length) return;
-  let n=0; toast(`Uploading ${files.length}…`);
-  let why="";
-  for(const f of files){ try{ await api.addPhoto(f); n++ }catch(err){ logErr("photo upload",err); why=err.message||String(err) } }
-  toast(n===files.length?`Added ${n} photo${n>1?"s":""}`:`Added ${n} of ${files.length}. ${why?`Problem: ${why.slice(0,90)}`:"Try again"}`); refreshAll();
+  const jobs=files.map(f=>{ let url=""; try{ url=URL.createObjectURL(f) }catch(_){} return {f,url,state:"wait"} });
+  upBusy.push(...jobs); renderPhotoGrid(); upBar();
+  let n=0, why="", i=0;
+  const worker=async()=>{ while(i<jobs.length){ const j=jobs[i++]; j.state="busy"; upBar();
+    try{ await api.addPhoto(j.f); j.state="done"; n++; refreshAll() }catch(err){ j.state="fail"; logErr("photo upload",err); why=err.message||String(err) }
+    upBar() } };
+  await Promise.all([worker(),worker()]);
+  setTimeout(()=>{ upBusy=upBusy.filter(j=>!jobs.includes(j)); jobs.forEach(j=>{ try{ j.url&&URL.revokeObjectURL(j.url) }catch(_){} }); renderPhotoGrid(); upBar() }, 1500);
+  toast(n===files.length?`Added ${n} photo${n>1?"s":""}`:`Added ${n} of ${files.length}. ${why?`Problem: ${why.slice(0,90)}`:"Try again"}`);
 };
+function upBar(){ const b=$("upBar"); if(!b) return; const all=upBusy.length, done=upBusy.filter(j=>j.state==="done"||j.state==="fail").length;
+  b.hidden=!all || done===all; b.innerHTML=`<span>Adding photos… ${Math.min(done+1,all)} of ${all}</span><i style="width:${all?Math.round((done+.5)/all*100):0}%"></i>`;
+  document.querySelectorAll("[data-upj]").forEach(el=>{ const j=upBusy[+el.dataset.upj]; if(j) el.className="up "+j.state }) }
 let armed={};
 function twoTap(key,btn,label){ if(armed[key]&&Date.now()-armed[key]<3000) return true; armed[key]=Date.now(); btn.textContent=label; setTimeout(()=>{ if(btn.isConnected) btn.textContent=btn.dataset.label||btn.textContent },3000); return false }
 $("pgrid").onclick=async e=>{ const id=e.target.dataset.delphoto; if(!id) return; if(!twoTap("p"+id,e.target,"Tap to confirm")) return; await api.deletePhoto(photos.find(p=>p.id===id)); refreshAll() };
@@ -3791,7 +3810,7 @@ async function start(){
 function fit(){ $("wall").style.setProperty("--s", Math.min(innerWidth/1080, innerHeight/810)); const ph=isPhone(); if(ph!==document.body.classList.contains("phone")){ renderWall(); if(!ph) markTab("today") } }
 fit(); addEventListener("resize",fit); addEventListener("orientationchange",()=>setTimeout(fit,300));
 /* Self-update: the wall checks for a newer published version and reloads itself */
-const APP_VERSION="2026-11-23.86";
+const APP_VERSION="2026-11-25.87";
 // Look for a newer version of the app itself and load it. Runs every 5 minutes, and straight away from the Refresh button.
 let lastTouch=Date.now(); addEventListener("pointerdown",()=>{ lastTouch=Date.now() },true);
 async function checkUpdate(manual){
